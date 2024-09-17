@@ -1,6 +1,7 @@
 const express = require("express")
 const dotenv = require("dotenv")
 const cors = require("cors")
+const initRoutes = require("./routes/index")
 dotenv.config()
 const app = express()
 app.use(cors({
@@ -9,7 +10,7 @@ app.use(cors({
 }))
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
-app.use("/", (req, res) => { res.send("server on...") })
+initRoutes(app)
 const port = process.env.PORT || 3333
 app.listen(port, () => {
     console.log("Servers is running")
