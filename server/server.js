@@ -4,8 +4,8 @@ const connectData = require("./src/config/connect-db")
 const cors = require("cors")
 const initRoutes = require("./src/services/routes/index")
 dotenv.config()
-// connect database
-// connectData()
+connect database
+connectData()
 const app = express()
 app.use(cors({
     origin: process.env.CLIENT_URL,
@@ -16,5 +16,6 @@ app.use(express.urlencoded({ extended: true }))
 initRoutes(app)
 const port = process.env.PORT || 3333
 app.listen(port, () => {
-    console.log("Servers is running")
+    console.log("Servers is running !!")
 })
+// 
