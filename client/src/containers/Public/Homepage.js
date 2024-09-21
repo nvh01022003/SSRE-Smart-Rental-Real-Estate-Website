@@ -10,28 +10,33 @@ const Homepage = () => {
     const { categories, prices, areas } = useSelector(state => state.app)
 
     return (
-        <div className='w-full flex flex-col gap-3' >
-            <Search />
-            <div>
-                <h1 className='text-[28px] font-bold' >{text.HOME_TITLE}</h1>
+        <div className='w-full h-full flex flex-col gap-3 items-center justify-center'>
+
+            <div className='w-full flex flex-col  text-center'>
+                <h1 className='text-[28px] font-semibold'>{text.HOME_TITLE}</h1>
                 <p className='text-base text-gray-700'>{text.HOME_DESCRIPTION}</p>
             </div>
-            <Province />
+            <div className='w-full flex flex-col  text-center'>
+                <p className='text-[18px] font-semibold ' >Prominent area</p>
+                <Province />
+            </div>
+
+            <Search />
+
             <div className='w-full flex gap-4'>
                 <div className='w-[70%]'>
                     <List />
                     <Pagination />
                 </div>
-                <div className='w-[30%] flex flex-col gap-4 justify-start items-center'>
-                    <ItemSidebar content={categories} title='Danh sách cho thuê' />
-                    <ItemSidebar isDouble={true} type='priceCode' content={prices} title='Xem theo giá' />
-                    <ItemSidebar isDouble={true} type='areaCode' content={areas} title='Xem theo diện tích' />
+                <div className='w-[30%] flex flex-col gap-4'>
+                    <ItemSidebar title='Danh sách cho thuê' items={categories} />
+                    <ItemSidebar title='Xem theo giá' items={prices} />
+                    <ItemSidebar title='Xem theo diện tích' items={areas} />
                     <RelatedPost />
                 </div>
             </div>
-
         </div>
     )
 }
 
-export default Homepage
+export default Homepage;

@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react'
-import logo from '../../assets/logowithoutbg.png'
+import logo from '../../assets/logo.png'
 import { Button, User } from '../../components'
 import icons from '../../ultils/icons'
 import { useNavigate, Link, useSearchParams } from 'react-router-dom'
@@ -26,18 +26,26 @@ const Header = () => {
     }, [searchParams.get('page')])
 
     return (
-        <div ref={headerRef} className='w-3/5 '>
+        <div ref={headerRef} className='w-4/5 '>
             <div className='w-full flex items-center justify-between'>
-                <Link to={'/'} >
+                <Link to={'/'} className='flex items-center'>
                     <img
                         src={logo}
                         alt="logo"
-                        className='w-[240px] h-[70px] object-contain'
+                        className='w-[90px] h-[70px] object-contain mt-4'
                     />
+                    <div className='ml-2'>
+                        <span className='text-2xl font-semibold block'>
+                            Smart Rental Real Estate Website
+                        </span>
+                        <span className='text-sm text-gray-600 block'>
+                            A platform connecting landlords and tenants, optimizing rental search with AI
+                        </span>
+                    </div>
                 </Link>
                 <div className='flex items-center gap-1'>
                     {!isLoggedIn && <div className='flex items-center gap-1'>
-                        <small>Phongtro123.com xin chào !</small>
+
                         <Button
                             text={'Đăng nhập'}
                             textColor='text-white'
