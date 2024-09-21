@@ -2,10 +2,10 @@ const express = require("express")
 const dotenv = require("dotenv")
 const connectData = require("./src/config/connect-db")
 const cors = require("cors")
-const initRoutes = require("./src/services/routes/index")
+const initRoutes = require("./src/routes/index")
 dotenv.config()
-connect database
-connectData()
+// connect database
+// connectData()
 const app = express()
 app.use(cors({
     origin: process.env.CLIENT_URL,
