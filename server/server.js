@@ -16,6 +16,6 @@ app.use(express.urlencoded({ extended: true }))
 initRoutes(app)
 const port = process.env.PORT || 3333
 app.listen(port, () => {
-    console.log("Servers is running !!")
+    console.log("Servers runs successfully!")
 })
 // 
