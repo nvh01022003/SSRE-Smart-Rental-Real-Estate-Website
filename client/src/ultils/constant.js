@@ -17,8 +17,8 @@ export const path = {
 }
 
 export const text = {
-    HOME_TITLE: 'Real Estate For Rent, Cheap, Comfortable, Newest 2024',
-    HOME_DESCRIPTION: "Real estate rental - The number 1 platform for the latest affordable real estate in 2024. All properties for rent at the best prices. Find the best real estate for rent at the best prices.",
+    HOME_TITLE: 'Cho Thuê Bất Động Sản Giá Rẻ, Tiện Nghi, Mới Nhất 2024',
+    HOME_DESCRIPTION: "Cho thuê bất động sản - Nền tảng số 1 về bất động sản giá phải chăng mới nhất vào năm 2024. Tất cả bất động sản cho thuê với giá tốt nhất. Tìm bất động sản cho thuê tốt nhất với giá tốt nhất.",
 }
 
 export const location = [

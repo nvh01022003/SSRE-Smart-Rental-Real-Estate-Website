@@ -17,7 +17,7 @@ const Homepage = () => {
                 <p className='text-base text-gray-700'>{text.HOME_DESCRIPTION}</p>
             </div>
             <div className='w-full flex flex-col  text-center'>
-                <p className='text-[18px] font-semibold ' >Prominent area</p>
+                <p className='text-[18px] font-semibold ' >Khu vực nổi bật</p>
                 <Province />
             </div>
 

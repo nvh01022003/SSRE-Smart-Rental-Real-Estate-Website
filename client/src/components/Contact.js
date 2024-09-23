@@ -29,7 +29,7 @@ const Contact = () => {
                 })}
             </div>
             <Button
-                text='Send contact'
+                text='Gửi liên hệ'
                 bgColor='bg-blue-600'
                 textColor='text-white'
                 px='px-6'

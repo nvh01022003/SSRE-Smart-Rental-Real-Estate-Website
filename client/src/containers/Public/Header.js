@@ -20,10 +20,15 @@ const Header = () => {
     const [isShowMenu, setIsShowMenu] = useState(false)
     const goLogin = useCallback((flag) => {
         navigate(path.LOGIN, { state: { flag } })
-    }, [])
+    }, [navigate])
     useEffect(() => {
         headerRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' })
     }, [searchParams.get('page')])
+
+    useEffect(() => {
+        console.log('Header re-rendered. isLoggedIn:', isLoggedIn); // Add this line
+    }, [isLoggedIn]);
+
 
     return (
         <div ref={headerRef} className='w-4/5 '>
@@ -39,7 +44,7 @@ const Header = () => {
                             Smart Rental Real Estate Website
                         </span>
                         <span className='text-sm text-gray-600 block'>
-                            A platform connecting landlords and tenants, optimizing rental search with AI
+                            Nền tảng kết nối chủ nhà và người thuê, tối ưu hóa tìm kiếm nhà thuê bằng AI
                         </span>
                     </div>
                 </Link>

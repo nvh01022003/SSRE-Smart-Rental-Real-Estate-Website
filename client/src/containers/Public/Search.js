@@ -60,7 +60,7 @@ const Search = () => {
     }
     return (
         <>
-            <div className='p-[10px] w-4/5 my-3 bg-[#febb02] rounded-lg flex-col lg:flex-row flex items-center justify-around gap-2' >
+            <div className='p-[10px] w-full my-5 bg-[#febb02] rounded-lg flex-col lg:flex-row flex items-center justify-around gap-2' >
                 <span onClick={() => handleShowModal(categories, 'category', 'Tìm tất cả')} className='cursor-pointer flex-1'>
                     <SearchItem IconBefore={<MdOutlineHouseSiding />} fontWeight IconAfter={<BsChevronRight color='rgb(156, 163, 175)' />} text={queries.category} defaultText={'Tìm tất cả'} />
                 </span>

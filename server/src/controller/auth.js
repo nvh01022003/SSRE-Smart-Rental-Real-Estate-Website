@@ -1,5 +1,5 @@
 const registerService = require("../services/auth")
-const resgister = async (req, res) => {
+const register = async (req, res) => {
     let { firstName, lastName, numberPhone, email, password } = req.body
     try {
         if (!firstName || !lastName || !numberPhone || !email || !password) {
@@ -28,4 +28,4 @@ const login = async (req, res) => {
 
 
 }
-module.exports = { resgister, login }
+module.exports = { register, login }

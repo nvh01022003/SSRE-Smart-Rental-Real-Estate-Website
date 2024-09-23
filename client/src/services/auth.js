@@ -28,14 +28,16 @@
 //     }
 // })
 
+
+import axios from 'axios';
 import axiosConfig from '../axiosConfig'
 
 export const apiRegister = (payload) => new Promise(async (resolve, reject) => {
     console.log('Payload:', payload); // Kiểm tra dữ liệu trước khi gửi
     try {
-        const response = await axiosConfig({
+        const response = await axios({
             method: 'post',
-            url: '/api/v1/auth/register',
+            url: 'http://localhost:5000/api/v1/auth/register',
             data: payload
         });
         resolve(response.data); // Trả về dữ liệu từ response.data
@@ -48,9 +50,9 @@ export const apiRegister = (payload) => new Promise(async (resolve, reject) => {
 
 export const apiLogin = (payload) => new Promise(async (resolve, reject) => {
     try {
-        const response = await axiosConfig({
+        const response = await axios({
             method: 'post',
-            url: '/api/v1/auth/login',
+            url: 'http://localhost:5000/api/v1/auth/login',
             data: payload
         });
         resolve(response.data); // Trả về dữ liệu từ response.data
