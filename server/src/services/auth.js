@@ -37,7 +37,7 @@ const registerService = async ({ firstName, lastName, numberPhone, email, passwo
         };
     }
 }
-// LOGIN
+// LOGIN taht
 const loginService = async ({ email, password }) => {
     console.log(password)
     const user = await User.findOne({
