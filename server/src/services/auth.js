@@ -1,7 +1,11 @@
 const bcryptjs = require("bcryptjs");
 const gravatar = require("gravatar");
+const jwt = require("jsonwebtoken");
 const { where } = require("sequelize");
 const { User, sequelize } = require("../models/index");
+const { response } = require("express");
+require('dotenv').config();
+
 // RESGISTER 
 const registerService = async ({ firstName, lastName, numberPhone, email, password }) => {
     try {
@@ -47,22 +51,19 @@ const loginService = async ({ email, password }) => {
     })
     if (user) {
         const checkPass = bcryptjs.compareSync(password, user.pass);
+        const token = checkPass ? jwt.sign({ id: user.id, email: user.email }, process.env.JWT_SECRET, { expiresIn: '5d' }) : null;
+        console.log("Token generated:", token);  // Log token để kiểm tra
         if (checkPass) {
             return {
                 err: 0,
-                msg: 'Login success'
+                msg: 'Login success',
+                'access_token': token
             };
         }
-        else {
-            return {
-                err: 1,
-                msg: error.message
-            };
-        }
-    }
-    else {
+    } else {
         return {
-            msg: 'Email not exits'
+            err: 1,
+            msg: 'Email does not exist'
         };
     }
 };

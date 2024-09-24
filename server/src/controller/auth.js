@@ -20,10 +20,14 @@ const login = async (req, res) => {
     let { email, password } = req.body
     const response = await registerService.loginService({ email, password })
     if (response.err == 0) {
-        res.status(200).send(response.msg)
+        // res.status(200).send(response.msg)
+        return res.status(200).json(response);
+
     }
     else {
-        res.status(400).send(response.msg)
+        //res.status(400).send(response.msg)
+        return res.status(200).json(response);
+
     }
 
 
