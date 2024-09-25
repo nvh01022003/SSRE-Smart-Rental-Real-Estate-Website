@@ -133,26 +133,42 @@ const Login = () => {
                 const data = response.data;
                 console.log('Response Data:', data); // Debugging log
 
-                if (data.token) {
-                    dispatch(actions.loginSuccess(data));
-                    Swal.fire('Success', 'User logged in successfully', 'success').then(() => {
-                        navigate('/');
-                    });
-                }
-                // else if (data.message === 'User registered successfully') { // test vài bữa sẽ xóa
-                //     dispatch(actions.registerSuccess(data));
-                //     Swal.fire('Success', 'User registered successfully', 'success').then(() => {
-                //         navigate('/');
-                //     });
-                // }
-                else if (isRegister && data.err === 0) {
-                    Swal.fire('Success', 'User registered successfully', 'success').then(() => {
-                        navigate('/'); // Redirect to login page after successful registration
-                    });
+                if (data.err === 0) {
+                    if (isRegister) {
+                        Swal.fire('Success', 'User registered successfully', 'success').then(() => {
+                            navigate('/');
+                        });
+                    } else {
+                        dispatch(actions.loginSuccess(data.user));
+                        Swal.fire('Success', 'User logged in successfully', 'success').then(() => {
+                            navigate('/');
+                        });
+                    }
                 }
                 else {
                     Swal.fire('Oops !', data.message, 'error');
                 }
+
+                // if (data.token) {
+                //     dispatch(actions.loginSuccess(data));
+                //     Swal.fire('Success', 'User logged in successfully', 'success').then(() => {
+                //         navigate('/');
+                //     });
+                // }
+                // // else if (data.message === 'User registered successfully') { // test vài bữa sẽ xóa
+                // //     dispatch(actions.registerSuccess(data));
+                // //     Swal.fire('Success', 'User registered successfully', 'success').then(() => {
+                // //         navigate('/');
+                // //     });
+                // // }
+                // else if (isRegister && data.err === 0) {
+                //     Swal.fire('Success', 'User registered successfully', 'success').then(() => {
+                //         navigate('/'); // Redirect to login page after successful registration
+                //     });
+                // }
+                // else {
+                //     Swal.fire('Oops !', data.message, 'error');
+                // }
             } else {
                 Swal.fire('Oops !', 'No response data', 'error');
             }

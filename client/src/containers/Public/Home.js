@@ -4,7 +4,7 @@ import { Outlet } from 'react-router-dom'
 import { Navigation, Search } from './index'
 import { Contact } from '../../components'
 import { useDispatch, useSelector } from 'react-redux'
-
+import Footer from './Footer'
 
 
 const Home = () => {
@@ -19,8 +19,10 @@ const Home = () => {
                 <Outlet />
             </div>
             <Contact />
-            <div className='h-[500px]'>
-
+            <br />
+            <hr className='w-4/5 h-[2px] bg-gray-300' />
+            <div >
+                <Footer />
             </div>
         </div>
     )
