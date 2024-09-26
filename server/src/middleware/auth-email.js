@@ -62,7 +62,7 @@ const createCodeVery = async (req, res, next) => {
 const verifiedMail = async (req, res, next) => {
     const { email } = req.body
     // tao code fake de test nek
-    const codeEmail = "14042003"// nhap vao
+    const codeEmail = sessionStorage.getItem('tempCode');
     const resCode = await VeriMail.findOne({ where: { email } });
     if (codeEmail == resCode.code) {
         next();
