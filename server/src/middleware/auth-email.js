@@ -3,7 +3,6 @@ const validator = require('validator');
 const { where } = require("sequelize");
 const readline = require('readline');
 const { VeriMail, User, sequelize } = require("../models/index");
-const { error } = require("console");
 // gui code den email nguoi dung
 const createCodeVery = async (req, res, next) => {
     const { firstName, lastName, numberPhone, email, password } = req.body
@@ -45,6 +44,10 @@ const createCodeVery = async (req, res, next) => {
                     email,
                     code: verificationCode
                 });
+                // xoa code da luu sau 60s
+                setTimeout(() => {
+                    VeriMail.destroy({ where: { email } })
+                }, 60000);
 
                 // Chuyển tiếp đến middleware hoặc xử lý tiếp theo
                 next();
@@ -62,7 +65,8 @@ const createCodeVery = async (req, res, next) => {
 const verifiedMail = async (req, res, next) => {
     const { email } = req.body
     // tao code fake de test nek
-    const codeEmail = sessionStorage.getItem('tempCode');
+    // const codeEmail = sessionStorage.getItem('tempCode');
+    const codeEmail = "14042003"
     const resCode = await VeriMail.findOne({ where: { email } });
     if (codeEmail == resCode.code) {
         next();
@@ -71,32 +75,5 @@ const verifiedMail = async (req, res, next) => {
         res.status(200).send("Very email fail!")
     }
 }
-// check email va sdt da ton tai ch
-const validateEmailPhone = async (req, res, next) => {
-    const { email, numberPhone } = req.body
-    try {
-        const existingEmail = await User.findOne({ where: { email } });
-        const existingPhone = await User.findOne({ where: { phone: numberPhone } });
-        if (existingEmail) {
-            return res.status(200).json({
-                err: 0,
-                msg: 'Email already exists'
-            });
-        }
-        else if (existingPhone) {
-            return res.status(200).json({
-                err: 0,
-                msg: 'Phone number already exists'
-            });
-        }
-        else
-            next()
-    }
-    catch (err) {
-        return res.status(400).json({
-            err: 10,
-            msg: err.message
-        });
-    }
-}
-module.exports = { createCodeVery, verifiedMail, validateEmailPhone }
+
+module.exports = { createCodeVery, verifiedMail }
