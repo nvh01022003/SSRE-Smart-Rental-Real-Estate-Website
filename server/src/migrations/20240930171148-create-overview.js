@@ -2,47 +2,32 @@
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable('Posts', {
+    await queryInterface.createTable('Overviews', {
       id: {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
         type: Sequelize.INTEGER
       },
-      title: {
-        type: Sequelize.STRING
-      },
-      rank: {
-        type: Sequelize.DOUBLE
-      },
-      label: {
-        type: Sequelize.STRING
-      },
-      address: {
-        type: Sequelize.STRING
-      },
-      price: {
-        type: Sequelize.DECIMAL
-      },
-      category_id: {
-        type: Sequelize.INTEGER
-      },
-      description: {
-        type: Sequelize.STRING
-      },
-      user_id: {
-        type: Sequelize.INTEGER
-      },
-      hashtag: {
+      code: {
         type: Sequelize.STRING
       },
       area: {
         type: Sequelize.STRING
       },
-      status: {
-        type: Sequelize.BOOLEAN
+      type: {
+        type: Sequelize.STRING
       },
-      zalo: {
+      target: {
+        type: Sequelize.STRING
+      },
+      created: {
+        type: Sequelize.DATE
+      },
+      expire: {
+        type: Sequelize.DATE
+      },
+      bonus: {
         type: Sequelize.STRING
       },
       createdAt: {
@@ -56,6 +41,6 @@ module.exports = {
     });
   },
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable('Posts');
+    await queryInterface.dropTable('Overviews');
   }
 };

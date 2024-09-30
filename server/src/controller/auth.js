@@ -1,4 +1,5 @@
 const registerService = require("../services/auth")
+//RESGISTER
 const resgister = async (req, res) => {
     // let { firstName, lastName, numberPhone, email, password } = req.body
     try {
@@ -11,6 +12,7 @@ const resgister = async (req, res) => {
         })
     }
 }
+// LOGIN
 const login = async (req, res) => {
     let { email, password } = req.body
     const response = await registerService.loginService({ email, password })
@@ -20,9 +22,7 @@ const login = async (req, res) => {
 
     }
     else {
-        //res.status(400).send(response.msg)
-        return res.status(200).json(response);
-
+        res.status(400).send(response.msg)
     }
 
 
