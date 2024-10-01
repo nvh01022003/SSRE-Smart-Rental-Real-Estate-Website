@@ -63,11 +63,20 @@ const createCodeVery = async (req, res, next) => {
 // client nhập code mail để so sanh với code trong db
 const verifiedMail = async (req, res, next) => {
     const { email } = req.body
+
     const codeEmail = req.cookies.codeEmail;
-    // tao code fake de test nek
-    // const codeEmail = sessionStorage.getItem('tempCode');
+    const statusCookie = async () => {
+        if (!codeEmail) {
+            return false
+        }
+        else {
+            return true
+        }
+
+    }
+    const cookieExists = await statusCookie();
     const resCode = await VeriMail.findOne({ where: { email } });
-    if (codeEmail != null && codeEmail != undefined && codeEmail == resCode.code) {
+    if (cookieExists != false && codeEmail == resCode.code) {
         next();
     }
     else {
