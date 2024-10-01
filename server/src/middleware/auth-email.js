@@ -19,8 +19,7 @@ const createCodeVery = async (req, res, next) => {
         }
         else {
             // Tạo mã xác thực random
-            // const verificationCode = Math.floor(100000 + Math.random() * 900000).toString();
-            const verificationCode = "14042003"
+            const verificationCode = Math.floor(100000 + Math.random() * 900000).toString();
             // config
             let transporter = nodemailer.createTransport({
                 service: 'gmail',
@@ -64,11 +63,11 @@ const createCodeVery = async (req, res, next) => {
 // client nhập code mail để so sanh với code trong db
 const verifiedMail = async (req, res, next) => {
     const { email } = req.body
+    const codeEmail = req.cookies.codeEmail;
     // tao code fake de test nek
     // const codeEmail = sessionStorage.getItem('tempCode');
-    const codeEmail = "14042003"
     const resCode = await VeriMail.findOne({ where: { email } });
-    if (codeEmail == resCode.code) {
+    if (codeEmail != null && codeEmail != undefined && codeEmail == resCode.code) {
         next();
     }
     else {
