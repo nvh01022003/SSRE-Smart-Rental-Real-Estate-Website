@@ -71,7 +71,7 @@ const verifiedMail = async (req, res, next) => {
         next();
     }
     else {
-        res.status(200).send("Very email fail!")
+        res.status(400).send("Very email fail!")
     }
 }
 
