@@ -3,7 +3,6 @@ import logo from '../../assets/logo.png'
 import { Button, User } from '../../components'
 import icons from '../../ultils/icons'
 import { useNavigate, Link, useSearchParams } from 'react-router-dom'
-import { path } from '../../ultils/constant'
 import { useSelector, useDispatch } from 'react-redux'
 import * as actions from '../../store/actions'
 import menuManage from '../../ultils/menuManage'
@@ -18,9 +17,9 @@ const Header = () => {
     const headerRef = useRef()
     const { isLoggedIn } = useSelector(state => state.auth)
     const [isShowMenu, setIsShowMenu] = useState(false)
-    const goLogin = useCallback((flag) => {
-        navigate(path.LOGIN, { state: { flag } })
-    }, [navigate])
+    const navigateTo = useCallback((path) => {
+        navigate(path);
+    }, [navigate]);
     useEffect(() => {
         headerRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' })
     }, [searchParams.get('page')])
@@ -55,13 +54,13 @@ const Header = () => {
                             text={'Đăng nhập'}
                             textColor='text-white'
                             bgColor='bg-[#3961fb]'
-                            onClick={() => goLogin(false)}
+                            onClick={() => navigateTo('/login')}
                         />
                         <Button
                             text={'Đăng ký'}
                             textColor='text-white'
                             bgColor='bg-[#3961fb]'
-                            onClick={() => goLogin(true)}
+                            onClick={() => navigateTo('/register')}
                         />
                     </div>}
                     {isLoggedIn && <div className='flex items-center gap-3 relative'>

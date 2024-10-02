@@ -11,17 +11,38 @@ const initState = {
 
 const authReducer = (state = initState, action) => {
     switch (action.type) {
+        case actionTypes.VERIFY_SUCCESS:
+            {
+                localStorage.setItem('isLoggedIn', true);
+
+
+                return {
+                    ...state,
+                    isLoggedIn: true,
+                    error: null,
+                }
+            }
         case actionTypes.REGISTER_SUCCESS:
+            {
+                //localStorage.setItem('isLoggedIn', true);
+
+
+                return {
+                    ...state,
+                    //isLoggedIn: true,
+                    error: null,
+                }
+            }
         case actionTypes.LOGIN_SUCCESS:
             localStorage.setItem('isLoggedIn', true);
-            localStorage.setItem('token', action.payload.token);
-            localStorage.setItem('user', JSON.stringify(action.payload.user));
+            localStorage.setItem('token', action.data.token); // Lưu token vào localStorage
+            localStorage.setItem('user', JSON.stringify(action.data.user));   // Lưu user vào localStorage
             return {
                 ...state,
                 isLoggedIn: true,
-                token: action.payload.token,
+                token: action.data.token,
                 // msg: ''
-                user: action.payload.user,
+                user: action.data.user,
                 error: null,
             }
         case actionTypes.REGISTER_FAIL:
@@ -36,7 +57,7 @@ const authReducer = (state = initState, action) => {
                 token: null,
                 // update: !state.update
                 user: null,
-                error: action.payload,
+                error: action.data,
             }
         case actionTypes.LOGOUT:
             return {
@@ -47,12 +68,7 @@ const authReducer = (state = initState, action) => {
                 user: null,
                 error: null,
             }
-        case 'LOGIN':
-            return {
-                ...state,
-                isLoggedIn: true,
-                token: action.payload
-            };
+
         default:
             return state;
     }

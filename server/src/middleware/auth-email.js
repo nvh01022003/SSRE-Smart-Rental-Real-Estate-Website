@@ -2,7 +2,12 @@ const nodemailer = require("nodemailer")
 const validator = require('validator');
 const { where } = require("sequelize");
 const readline = require('readline');
-const { User, VeriMail, sequelize } = require("../models/index");
+
+const cookieParser = require('cookie-parser');
+const { VeriMail, User, sequelize } = require("../models/index");
+const { request } = require("http");
+// gui code den email nguoi dung
+
 const createCodeVery = async (req, res, next) => {
     const { firstName, lastName, numberPhone, email, password } = req.body
     console.log('ok')
@@ -22,7 +27,6 @@ const createCodeVery = async (req, res, next) => {
         else {
             // Tạo mã xác thực random
             const verificationCode = Math.floor(100000 + Math.random() * 900000).toString();
-            //const verificationCode = "14042003"
             // config
             let transporter = nodemailer.createTransport({
                 service: 'gmail',
@@ -35,7 +39,7 @@ const createCodeVery = async (req, res, next) => {
             let mailOptions = {
                 from: process.env.EMAIL_USER, // Email người gửi
                 to: email, // Email người nhận
-                subject: 'Mã xác thực của bạn cho SSRE là:',
+                subject: `Chào ${firstName} Mã xác thực của bạn cho SSRE là:`,
                 text: `Mã xác thực của bạn là: ${verificationCode}`,
             }
             try {
@@ -51,8 +55,12 @@ const createCodeVery = async (req, res, next) => {
                     VeriMail.destroy({ where: { email } })
                 }, 60000);
 
-                // Chuyển tiếp đến middleware hoặc xử lý tiếp theo
-                next();
+                // Trả về phản hồi cho FE
+                return res.status(200).json({
+                    err: 0,
+                    msg: 'Verification code sent to your email',
+                });
+
             } catch (error) {
                 console.error("Error sending email:", error);
                 return res.status(500).json({
@@ -62,18 +70,34 @@ const createCodeVery = async (req, res, next) => {
             }
         }
     }
+
 }
+
+// client nhập code mail để so sanh với code trong db
 const verifiedMail = async (req, res, next) => {
-    const { email, verificationCode } = req.body
-    // tao code fake de test nek
-    //const codeEmail = "140420023"
-    const resCode = await VeriMail.findOne({ where: { email } });
-    if (verificationCode == resCode.code) {
-        next();
-    }
-    else {
+
+    const { email } = req.body
+    const codeMail = req.params.codeMail;
+    console.log('Email:', email);
+    console.log('CodeMail:', codeMail);
+    console.log('Type of codeMail:', typeof email);
+    console.log('Type of codeMail:', typeof codeMail);
+
+
+    try {
+        const resCode = await VeriMail.findOne({ where: { email } });
+        console.log(resCode);
+        console.log('Type of resCode.code:', typeof resCode.code);
+        if (codeMail == resCode.code) {
+            next();
+        }
+        else {
+            res.status(400).send("Very email fail!")
+        }
+    } catch (err) {
         res.status(400).send("Very email fail!")
     }
+
 }
 
 module.exports = { createCodeVery, verifiedMail }

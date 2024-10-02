@@ -5,6 +5,8 @@ import { System, CreatePost } from './containers/System'
 import * as actions from './store/actions'
 import { useDispatch, useSelector } from 'react-redux'
 import { useEffect } from 'react'
+import Register from './containers/Public/Register'
+import Verify from './containers/Public/Verify'
 
 
 
@@ -29,6 +31,8 @@ function App() {
         <Route path={path.HOME} element={<Home />}>
           <Route path='*' element={<Homepage />} />
           <Route path={path.LOGIN} element={<Login />} />
+          <Route path={path.REGISTER} element={<Register />} />
+          <Route path="register/verify" element={<Verify />} />
           <Route path={path.CHO_THUE_CAN_HO} element={<Rental />} />
           <Route path={path.CHO_THUE_MAT_BANG} element={<Rental />} />
           <Route path={path.CHO_THUE_PHONG_TRO} element={<Rental />} />

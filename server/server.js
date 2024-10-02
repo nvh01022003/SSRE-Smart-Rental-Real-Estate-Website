@@ -1,17 +1,19 @@
 const express = require("express")
 const dotenv = require("dotenv")
-const connectData = require("./src/config/connect-db")
 const cors = require("cors")
 const initRoutes = require("./src/routes/index")
+const cookieParser = require('cookie-parser');
+
 dotenv.config()
-// connect database
-// connectData()
 const app = express()
 app.use(cors({
     origin: process.env.CLIENT_URL,
-    methods: ["POST", "GET", "PUT", "DELETE"]
+    methods: ["POST", "GET", "PUT", "DELETE"],
+    credentials: true
 }))
+app.use(cookieParser());
 app.use(express.json())
+
 app.use(express.urlencoded({ extended: true }))
 initRoutes(app)
 const port = process.env.PORT || 3333

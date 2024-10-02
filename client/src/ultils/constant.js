@@ -5,6 +5,7 @@ import dn from '../assets/dn.jpg'
 export const path = {
     HOME: '/*',
     HOME__PAGE: ':page',
+    REGISTER: 'register',
     LOGIN: 'login',
     CHO_THUE_CAN_HO: 'cho-thue-can-ho',
     CHO_THUE_MAT_BANG: 'cho-thue-mat-bang',
