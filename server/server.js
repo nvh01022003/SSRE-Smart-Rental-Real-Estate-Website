@@ -9,7 +9,7 @@ dotenv.config()
 const app = express()
 app.use(cors({
     origin: process.env.CLIENT_URL,
-    method: ["POST", "GET", "PUT", "DELETE"]
+    methods: ["POST", "GET", "PUT", "DELETE"]
 }))
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
