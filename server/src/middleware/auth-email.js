@@ -2,7 +2,9 @@ const nodemailer = require("nodemailer")
 const validator = require('validator');
 const { where } = require("sequelize");
 const readline = require('readline');
+const cookieParser = require('cookie-parser');
 const { VeriMail, User, sequelize } = require("../models/index");
+const { request } = require("http");
 // gui code den email nguoi dung
 const createCodeVery = async (req, res, next) => {
     const { firstName, lastName, numberPhone, email, password } = req.body
@@ -47,9 +49,6 @@ const createCodeVery = async (req, res, next) => {
                 setTimeout(() => {
                     VeriMail.destroy({ where: { email } })
                 }, 60000);
-
-                // Chuyển tiếp đến middleware hoặc xử lý tiếp theo
-                next();
             } catch (error) {
                 console.error("Error sending email:", error);
                 return res.status(500).json({
@@ -60,28 +59,23 @@ const createCodeVery = async (req, res, next) => {
         }
     }
 }
+
 // client nhập code mail để so sanh với code trong db
 const verifiedMail = async (req, res, next) => {
     const { email } = req.body
-
-    const codeEmail = req.cookies.codeEmail;
-    const statusCookie = async () => {
-        if (!codeEmail) {
-            return false
+    const codeMail = req.params.codeMail;
+    try {
+        const resCode = await VeriMail.findOne({ where: { email } });
+        if (codeMail == resCode.code) {
+            next();
         }
         else {
-            return true
+            res.status(400).send("Very email fail!")
         }
-
-    }
-    const cookieExists = await statusCookie();
-    const resCode = await VeriMail.findOne({ where: { email } });
-    if (cookieExists != false && codeEmail == resCode.code) {
-        next();
-    }
-    else {
+    } catch (err) {
         res.status(400).send("Very email fail!")
     }
+
 }
 
 module.exports = { createCodeVery, verifiedMail }
