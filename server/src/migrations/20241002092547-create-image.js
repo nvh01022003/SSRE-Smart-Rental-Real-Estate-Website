@@ -12,6 +12,9 @@ module.exports = {
       img_url: {
         type: Sequelize.STRING
       },
+      post_id: {
+        type: Sequelize.INTEGER
+      },
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE
@@ -21,7 +24,10 @@ module.exports = {
         type: Sequelize.DATE
       }
     });
+
+    await queryInterface.addIndex('Images', ['post_id']);
   },
+
   async down(queryInterface, Sequelize) {
     await queryInterface.dropTable('Images');
   }

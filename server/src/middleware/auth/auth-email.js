@@ -99,5 +99,4 @@ const verifiedMail = async (req, res, next) => {
     }
 
 }
-
 module.exports = { createCodeVery, verifiedMail }

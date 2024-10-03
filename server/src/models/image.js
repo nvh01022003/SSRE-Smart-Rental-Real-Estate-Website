@@ -9,12 +9,19 @@ module.exports = (sequelize, DataTypes) => {
      * This method is not a part of Sequelize lifecycle.
      * The `models/index` file will call this method automatically.
      */
-    static associate(models) {
-      // define association here
+    static associate({ Post }) {
+      this.hasOne(Post, { Image: "post_id" })
     }
   }
   Image.init({
-    img_url: DataTypes.STRING
+    img_url: DataTypes.STRING,
+    post_id: {
+      type: DataTypes.INTEGER,
+      references: {
+        model: 'Post',
+        key: "post_id"
+      }
+    }
   }, {
     sequelize,
     modelName: 'Image',

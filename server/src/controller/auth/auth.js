@@ -1,11 +1,13 @@
-const registerService = require("../../services/auth")
 
+const registerService = require("../../services/auth/auth")
+const jwt = require("jsonwebtoken");
 
+//RESGISTER
 const register = async (req, res) => {
     // let { firstName, lastName, numberPhone, email, password } = req.body
     try {
         const response = await registerService.registerService(req.body)
-        console.log(response)
+
         return res.status(200).json(response)
     } catch (error) {
         return res.status(500).json({
@@ -17,6 +19,7 @@ const register = async (req, res) => {
 // LOGIN
 const login = async (req, res) => {
     let { email, password } = req.body
+
 
     try {
         const response = await registerService.loginService({ email, password })
@@ -35,6 +38,7 @@ const login = async (req, res) => {
         });
     }
 }
+
 
 const authenticateToken = (req, res, next) => {
     // Lấy token từ header
@@ -55,3 +59,4 @@ const authenticateToken = (req, res, next) => {
 };
 
 module.exports = { register, login, authenticateToken }
+
