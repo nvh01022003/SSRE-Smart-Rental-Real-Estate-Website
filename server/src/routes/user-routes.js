@@ -6,5 +6,7 @@ const router = express.Router()
 router.get("/showInfo", authentication.authenticateToken, tenantsController.showInfoUser)
 router.post("/changeInfo", authentication.authenticateToken, tenantsController.changeInfo)
 router.post("/savePost/:id", authentication.authenticateToken, tenantsController.savaPost)
+router.post("/reportPost/:id", authentication.authenticateToken, tenantsController.reportPost)
+
 
 module.exports = router
