@@ -22,8 +22,22 @@ const changeInfo = async (req, res) => {
     } catch (error) {
         return res.status(500).json({
             err: -1,
-            msg: 'Fail at auth controller showInfoUser: ' + error
+            msg: 'Fail at auth controller changeInfo: ' + error
         })
     }
 }
-module.exports = { showInfoUser, changeInfo }
+
+const savaPost = async (req, res) => {
+    const userId = req.user.id
+    const postId = req.params.id
+    try {
+        const response = await tenanstService.savePost(userId, postId)
+        return res.status(200).json(response)
+    } catch (error) {
+        return res.status(500).json({
+            err: -1,
+            msg: 'Fail at auth controller savaPost: ' + error
+        })
+    }
+}
+module.exports = { showInfoUser, changeInfo, savaPost }

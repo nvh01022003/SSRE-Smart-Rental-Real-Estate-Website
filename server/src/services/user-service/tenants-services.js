@@ -2,7 +2,7 @@ const bcryptjs = require("bcryptjs");
 const gravatar = require("gravatar");
 const jwt = require("jsonwebtoken");
 const { where } = require("sequelize");
-const { User, sequelize } = require("../../models/index");
+const { User, Favourite, sequelize } = require("../../models/index");
 const { response } = require("express");
 require('dotenv').config();
 // GET INFO USER
@@ -49,4 +49,22 @@ const changeInfoUser = async (userId, userUpdate) => {
     }
 }
 
-module.exports = { getInfoUser, changeInfoUser };
+// SAVEPOST
+const savePost = async (userId, postId) => {
+    try {
+        const postSaved = await Favourite.create({
+            user_id: userId,
+            post_id: postId
+        })
+        return {
+            err: 0,
+            msg: postSaved
+        }
+    } catch (err) {
+        return {
+            err: 1,
+            msg: err
+        }
+    }
+}
+module.exports = { getInfoUser, changeInfoUser, savePost };
