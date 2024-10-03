@@ -1,0 +1,31 @@
+const bcryptjs = require("bcryptjs");
+const gravatar = require("gravatar");
+const jwt = require("jsonwebtoken");
+const { where } = require("sequelize");
+const { User, sequelize } = require("../../models/index");
+const { response } = require("express");
+require('dotenv').config();
+// GET INFO USER
+const getInfoUser = async (userId) => {
+    try {
+        const user = await User.findOne({
+            where: {
+                id: userId,
+            },
+            attributes: ['id', 'firstName', 'lastName', 'email', 'phone', 'img_avt']
+        })
+        if (user) {
+            return {
+                err: 0,
+                msg: 'get info user success',
+                'info_user': user,
+            };
+        }
+    } catch (err) {
+        return {
+            err: 1,
+            msg: err
+        };
+    }
+};
+module.exports = { getInfoUser };

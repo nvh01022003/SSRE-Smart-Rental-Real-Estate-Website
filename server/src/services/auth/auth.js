@@ -2,7 +2,7 @@ const bcryptjs = require("bcryptjs");
 const gravatar = require("gravatar");
 const jwt = require("jsonwebtoken");
 const { where } = require("sequelize");
-const { User, sequelize } = require("../models/index");
+const { User, sequelize } = require("../../models/index");
 const { response } = require("express");
 require('dotenv').config();
 
