@@ -1,4 +1,4 @@
-const registerService = require("../services/auth")
+const registerService = require("../../services/auth")
 
 
 const register = async (req, res) => {
@@ -34,7 +34,24 @@ const login = async (req, res) => {
             msg: 'Fail at auth controller: ' + error
         });
     }
-
-
 }
-module.exports = { register, login }
+
+const authenticateToken = (req, res, next) => {
+    // Lấy token từ header
+    const token = req.headers["token"];
+
+    if (!token) {
+        return res.status(401).json({ err: 1, msg: 'Token not exits' });
+    }
+
+    // Giải mã và xác thực token
+    jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
+        if (err) {
+            return res.status(403).json({ err: 1, msg: 'Token not valid' });
+        }
+        req.user = user; // Thêm thông tin người dùng vào request
+        next();
+    });
+};
+
+module.exports = { register, login, authenticateToken }

@@ -1,6 +1,6 @@
 const express = require("express")
-const authController = require("../controller/auth")
-const middleware = require("../middleware/auth-email")
+const authController = require("../controller/auth/auth")
+const middleware = require("../middleware/auth/auth-email")
 const validate = require("../middleware/validate/validateMailPhone")
 const router = express.Router()
 

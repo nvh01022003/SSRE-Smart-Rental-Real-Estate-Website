@@ -4,7 +4,7 @@ const { where } = require("sequelize");
 const readline = require('readline');
 
 const cookieParser = require('cookie-parser');
-const { VeriMail, User, sequelize } = require("../models/index");
+const { VeriMail, User, sequelize } = require("../../models/index");
 const { request } = require("http");
 // gui code den email nguoi dung
 
