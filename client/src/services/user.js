@@ -1,14 +1,11 @@
-import axios from '../axiosConfig'
+// import axios from 'axios';
 
-export const apiGetCurrent = () => new Promise(async (resolve, reject) => {
-    try {
-        const response = await axios({
-            method: 'get',
-            url: '/api/v1/user/get-current',
-        })
-        resolve(response)
+// export const apiGetCurrent = async () => {
+//     try {
+//         const response = await axios.get('http://localhost:5000/api/v1/user/showInfo');
+//         return response.data;
 
-    } catch (error) {
-        reject(error)
-    }
-})
+//     } catch (error) {
+//         console.error('API GetCurrent Error:', error); // Ghi log lỗi chi tiết
+//     }
+// }

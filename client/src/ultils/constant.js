@@ -14,7 +14,8 @@ export const path = {
     DETAL_POST__TITLE__POSTID: 'chi-tiet/:title/:postId',
     SEARCH: 'tim-kiem',
     SYSTEM: '/he-thong/*',
-    CREATE_POST: 'tao-moi-bai-dang'
+    CREATE_POST: 'tao-moi-bai-dang',
+    PERSONAL_INFO: 'thong-tin-ca-nhan',
 }
 
 export const text = {

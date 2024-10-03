@@ -1,64 +1,7 @@
-// import actionTypes from './actionTypes'
-// import { apiRegister, apiLogin } from '../../services/auth'
-
-// export const register = (payload) => async (dispatch) => {
-//     try {
-//         const response = await apiRegister(payload)
-//         console.log('Register Response:', response); // Log the response
-//         if (response?.err === 0) {
-//             dispatch({
-//                 type: actionTypes.REGISTER_SUCCESS,
-//                 data: response
-//             })
-//             return response;  // Trả về `response` từ đây
-//         } else {
-//             dispatch({
-//                 type: actionTypes.REGISTER_FAIL,
-//                 data: response.msg
-//             })
-//             return response;  // Trả về `response` từ đây
-//         }
-
-//     } catch (error) {
-//         console.error('Register Action Error:', error); // Log detailed error
-//         dispatch({
-//             type: actionTypes.REGISTER_FAIL,
-//             data: null
-//         })
-//         throw error;  // Trả lỗi về nếu có lỗi xảy ra
-//     }
-// }
-// export const login = (payload) => async (dispatch) => {
-//     try {
-//         const response = await apiLogin(payload)
-//         console.log('Login Response:', response); // Log the response
-//         if (response?.err === 0) {
-//             dispatch({
-//                 type: actionTypes.LOGIN_SUCCESS,
-//                 data: response.token
-//             })
-//         } else {
-//             dispatch({
-//                 type: actionTypes.LOGIN_FAIL,
-//                 data: response.msg
-//             })
-//         }
-
-//     } catch (error) {
-//         console.error('Login Action Error:', error); // Log detailed error
-//         dispatch({
-//             type: actionTypes.LOGIN_FAIL,
-//             data: null
-//         })
-//     }
-// }
-
-// export const logout = () => ({
-//     type: actionTypes.LOGOUT
-// })
-
 import actionTypes from './actionTypes';
 import { apiRegister, apiLogin } from '../../services/auth';
+import { persistStore } from 'redux-persist';
+import ClearPersistedState from './ClearPersistedState';
 
 // Action for user registration
 export const register = (payload) => async (dispatch) => {
@@ -126,6 +69,12 @@ export const login = (payload) => async (dispatch) => {
 };
 
 // Action for user logout
-export const logout = () => ({
-    type: actionTypes.LOGOUT
-});
+export const logout = () => {
+    return (dispatch) => {
+        dispatch({
+            type: actionTypes.LOGOUT
+        });
+        const persistor = persistStore(ClearPersistedState);
+        persistor.purge(); // Clear persisted state
+    };
+};

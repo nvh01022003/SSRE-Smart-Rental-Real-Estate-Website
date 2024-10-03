@@ -1,10 +1,12 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import anonAvatar from '../../assets/anon-avatar.png'
 import { useSelector, useDispatch } from 'react-redux'
 import menuSidebar from '../../ultils/menuSidebar'
 import { NavLink } from 'react-router-dom'
 import * as actions from '../../store/actions'
 import { AiOutlineLogout } from 'react-icons/ai'
+import { logout } from '../../store/actions/auth'
+import { getPersonalInfo } from '../../services/userService'
 
 const activeStyle = 'hover:bg-gray-200 flex  rounded-md items-center gap-2 py-2 font-bold bg-gray-200'
 const notActiceStyle = 'hover:bg-gray-200 flex  rounded-md items-center gap-2 py-2 cursor-pointer'
@@ -12,18 +14,36 @@ const notActiceStyle = 'hover:bg-gray-200 flex  rounded-md items-center gap-2 py
 const Sidebar = () => {
 
     const dispatch = useDispatch()
-    const { currentData } = useSelector(state => state.user)
+    const [personalInfo, setPersonalInfo] = useState(null);
+
+    useEffect(() => {
+        const fetchPersonalInfo = async () => {
+            try {
+                const data = await getPersonalInfo();
+                setPersonalInfo(data.info_user);
+            } catch (error) {
+                console.error('Error fetching personal information:', error);
+            }
+        };
+
+        fetchPersonalInfo();
+    }, []);
+
+    const fullName = personalInfo ? `${personalInfo.firstName} ${personalInfo.lastName}`.trim() : '';
+
+    const handleLogout = () => {
+        dispatch(logout());
+    };
+
     return (
         <div className='w-[256px] flex-none p-4 flex flex-col gap-6'>
             <div className='flex flex-col gap-4'>
                 <div className='flex items-center gap-4'>
-                    <img src={anonAvatar} alt="avatar" className='w-12 h-12 object-cover rounded-full border-2 border-white' />
+                    <img src={personalInfo?.img_avt || anonAvatar} alt="avatar" className='w-12 h-12 object-cover rounded-full border-2 border-white' />
                     <div className='flex flex-col justify-center'>
-                        <span className='font-semibold'>{currentData?.name}</span>
-                        <small>{currentData?.phone}</small>
+                        <span className='font-semibold'>{fullName}</span>
                     </div>
                 </div>
-                <span >Mã thành viên: <small className='font-medium'>{currentData?.id?.match(/\d/g).join('')?.slice(0, 6)}</small></span>
             </div>
             <div>
                 {menuSidebar.map(item => {
@@ -38,7 +58,10 @@ const Sidebar = () => {
                         </NavLink>
                     )
                 })}
-                <span onClick={() => dispatch(actions.logout())} className={notActiceStyle}><AiOutlineLogout />Thoát</span>
+                <span onClick={() => {
+                    dispatch(actions.logout())
+                    onclick = { handleLogout }
+                }} className={notActiceStyle}><AiOutlineLogout />Đăng xuất</span>
             </div>
         </div>
     )

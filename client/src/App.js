@@ -7,7 +7,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { useEffect } from 'react'
 import Register from './containers/Public/Register'
 import Verify from './containers/Public/Verify'
-
+import PersonalInfo from './components/PersonalInfo/PersonalInfo'
 
 
 function App() {
@@ -43,6 +43,7 @@ function App() {
         </Route>
         <Route path={path.SYSTEM} element={<System />} >
           <Route path={path.CREATE_POST} element={<CreatePost />} />
+          <Route path={path.PERSONAL_INFO} element={<PersonalInfo />} />
         </Route>
 
       </Routes>

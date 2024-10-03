@@ -6,6 +6,7 @@ import { useNavigate, Link, useSearchParams } from 'react-router-dom'
 import { useSelector, useDispatch } from 'react-redux'
 import * as actions from '../../store/actions'
 import menuManage from '../../ultils/menuManage'
+import { logout } from '../../store/actions/auth'
 
 
 const { AiOutlinePlusCircle, AiOutlineLogout, BsChevronDown } = icons
@@ -28,7 +29,9 @@ const Header = () => {
         console.log('Header re-rendered. isLoggedIn:', isLoggedIn); // Add this line
     }, [isLoggedIn]);
 
-
+    const handleLogout = () => {
+        dispatch(logout());
+    };
     return (
         <div ref={headerRef} className='w-4/5 '>
             <div className='w-full flex items-center justify-between'>
@@ -91,6 +94,7 @@ const Header = () => {
                                 onClick={() => {
                                     setIsShowMenu(false)
                                     dispatch(actions.logout())
+                                    onclick = { handleLogout }
                                 }}
                             >
                                 <AiOutlineLogout />
