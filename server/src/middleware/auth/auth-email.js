@@ -7,8 +7,8 @@ const { VeriMail, User, sequelize } = require("../../models/index");
 const { request } = require("http");
 // gui code den email nguoi dung
 const createCodeVery = async (req, res, next) => {
-    const { firstName, lastName, numberPhone, email, password } = req.body
-    if (!firstName || !lastName || !numberPhone || !email || !password) {
+    const { firstName, lastName, phone, email, password } = req.body
+    if (!firstName || !lastName || !phone || !email || !password) {
         res.status(400).send("Enter all fields!")
     }
     else {

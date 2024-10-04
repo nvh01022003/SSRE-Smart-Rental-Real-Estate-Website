@@ -31,12 +31,7 @@ const getInfoUser = async (userId) => {
 // CHANGE INFO USER
 const changeInfoUser = async (userId, userUpdate) => {
     try {
-        await User.update({
-            firstName: userUpdate.firstName,
-            lastName: userUpdate.lastName,
-            email: userUpdate.email,
-            phone: userUpdate.phone
-        }, { where: { id: userId } })
+        await User.update(userUpdate, { where: { id: userId } })
         return {
             err: 0,
             msg: "Update success"
