@@ -45,7 +45,7 @@ const createCodeVery = async (req, res, next) => {
                     email,
                     code: verificationCode
                 });
-                res.send.status(200).json({
+                res.status(200).json({
                     err: 0,
                     msg: 'Verification code sent to email'
                 });
