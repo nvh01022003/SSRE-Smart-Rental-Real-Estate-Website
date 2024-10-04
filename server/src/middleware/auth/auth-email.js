@@ -45,6 +45,10 @@ const createCodeVery = async (req, res, next) => {
                     email,
                     code: verificationCode
                 });
+                res.send.status(200).json({
+                    err: 0,
+                    msg: 'Verification code sent to email'
+                });
                 // xoa code da luu sau 60s
                 setTimeout(() => {
                     VeriMail.destroy({ where: { email } })

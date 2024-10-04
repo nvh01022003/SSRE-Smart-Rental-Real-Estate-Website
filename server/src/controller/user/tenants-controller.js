@@ -1,4 +1,3 @@
-const { report } = require("../../routes/auth")
 const tenanstService = require("../../services/user-service/tenants-services")
 
 const showInfoUser = async (req, res) => {
