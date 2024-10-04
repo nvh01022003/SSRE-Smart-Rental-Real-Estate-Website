@@ -39,7 +39,6 @@ const login = async (req, res) => {
     }
 }
 
-
 const authenticateToken = (req, res, next) => {
     // Lấy token từ header
     const token = req.headers["token"];

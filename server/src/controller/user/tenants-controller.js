@@ -1,4 +1,3 @@
-const { report } = require("../../routes/auth")
 const tenanstService = require("../../services/user-service/tenants-services")
 
 const showInfoUser = async (req, res) => {
@@ -17,6 +16,7 @@ const showInfoUser = async (req, res) => {
 const changeInfo = async (req, res) => {
     const userId = req.user.id
     const userUpdate = req.body
+    console.log(userUpdate)
     try {
         const response = await tenanstService.changeInfoUser(userId, userUpdate)
         return res.status(200).json(response)

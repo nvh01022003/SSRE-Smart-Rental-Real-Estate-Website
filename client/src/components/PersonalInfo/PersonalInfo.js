@@ -12,8 +12,11 @@ const PersonalInfo = () => {
         lastName: '',
         email: '',
         phone: '',
-        img_avt: ''
+        img_avt: '',
+        password: ''
     });
+
+    const [selectedFile, setSelectedFile] = useState(null);
 
     const [errors, setErrors] = useState({});
 
@@ -30,6 +33,8 @@ const PersonalInfo = () => {
                         phone: data.info_user.phone,
                         img_avt: data.info_user.img_avt
                     });
+                    console.log('Personal information:', data.info_user);
+                    console.log('Form data:', formData);
                 } else {
                     console.error('Error fetching personal information:', data.msg);
                 }
@@ -56,6 +61,10 @@ const PersonalInfo = () => {
         setFormData({ ...formData, [name]: formattedValue });
     };
 
+    const handleFileChange = (e) => {
+        setSelectedFile(e.target.files[0]);
+    };
+
     const validate = () => {
         const newErrors = {};
         if (!formData.firstName.trim()) {
@@ -79,23 +88,54 @@ const PersonalInfo = () => {
     };
 
     const handleUpdate = async () => {
-
         if (!validate()) {
             return;
         }
+        try {
+            const token = localStorage.getItem('token');
+
+            console.log('Sending data:', formData); // Debug log
+
+            const response = await axios.post('http://localhost:5000/api/v1/user/changeInfo', formData, {
+                headers: {
+                    'token': `${token}`
+                }
+
+            });
+
+            console.log('API Response:', response); // Debug log
+
+            if (response.data.err === 0) {
+                Swal.fire('Success', 'Cập nhật thành công !', 'success');
+            } else if (response.data.err === 1) {
+                Swal.fire('Error', 'Email đã tồn tại', 'error');
+            } else if (response.data.err === 2) {
+                Swal.fire('Error', 'Số điện thoại đã tồn tại', 'error');
+            } else {
+                Swal.fire('Error', 'Cập nhật thất bại', 'error');
+            }
+        } catch (error) {
+            console.error('Error updating personal information:', error);
+        }
+    };
+
+    const handleFileUpload = async (e) => {
+        e.preventDefault();
+        const formData = new FormData();
+        formData.append('avatar', selectedFile);
 
         try {
             const token = localStorage.getItem('token');
-            const response = await axios.post('http://localhost:5000/api/v1/user/changeInfo', formData, {
+            const response = await axios.post('http://localhost:5000/api/v1/auth/upload', formData, {
                 headers: {
                     'token': `${token}`
                 }
             });
             if (response.data.err === 0) {
-                Swal.fire('Success', 'Cập nhật thành công !', 'success');
+                Swal.fire('Success', 'Cập nhật ảnh mới thành công !', 'success');
             }
         } catch (error) {
-            console.error('Error updating personal information:', error);
+            alert('Error uploading image');
         }
     };
 
@@ -162,7 +202,20 @@ const PersonalInfo = () => {
             >
                 CẬP NHẬT
             </button>
+
+
+
+            <div className="upload-section">
+                <form onSubmit={handleFileUpload}>
+                    <label htmlFor="avatar" className="label">Upload Avatar</label>
+                    <input type="file" id="avatar" name="avatar" onChange={handleFileChange} />
+                    <button type="submit" className="btn-upload">Upload</button>
+                </form>
+            </div>
+
+
         </div>
+
 
     );
 };

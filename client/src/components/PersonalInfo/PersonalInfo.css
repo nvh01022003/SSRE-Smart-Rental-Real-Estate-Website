@@ -1,9 +1,9 @@
 .personal-info {
     display: flex;
     flex-direction: column;
-    gap: 20px; /* Khoảng cách giữa các khối */
+    gap: 20px; 
     max-width: 500px;
-    margin: 0 auto; /* Căn giữa */
+    margin: 0 auto; 
     padding: 20px;
     background-color: #f9f9f9;
     border-radius: 8px;
@@ -25,15 +25,6 @@
     display: inline-block;
 }
 
-/* input[type="text"],
-input[type="email"] {
-    width: 100%;
-    padding: 10px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    box-sizing: border-box;
-    margin-top: 8px;
-} */
 .input-email
  {
     width: 100%;
@@ -84,12 +75,12 @@ span input {
     margin-right: 8px;
 }
 
-.btn-update {
+.btn-update .btn-upload {
     display: block;
     width: 100%;
     padding: 12px;
     background-color: blue;
-    color: white;
+    color: rgb(34, 57, 231);
     border: none;
     border-radius: 4px;
     font-size: 16px;
@@ -105,4 +96,10 @@ input[type="email"]:focus {
     border-color: #007bff;
     outline: none;
     box-shadow: 0px 0px 5px rgba(0, 123, 255, 0.5);
+}
+
+.upload-section {
+    display: flex;
+    align-items: center;
+    margin-top: 16px;
 }
