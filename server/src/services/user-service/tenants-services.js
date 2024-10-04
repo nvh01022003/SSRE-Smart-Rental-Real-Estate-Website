@@ -1,6 +1,7 @@
 const bcryptjs = require("bcryptjs");
 const gravatar = require("gravatar");
 const jwt = require("jsonwebtoken");
+const authServices = require("../../services/auth/auth");
 const { where } = require("sequelize");
 const { User, Favourite, Report, sequelize } = require("../../models/index");
 const { response } = require("express");
@@ -30,6 +31,9 @@ const getInfoUser = async (userId) => {
 };
 // CHANGE INFO USER
 const changeInfoUser = async (userId, userUpdate) => {
+    if (userUpdate.pass) {
+        userUpdate.pass = authServices.hashPass(userUpdate.pass);
+    }
     try {
         await User.update(userUpdate, { where: { id: userId } })
         return {

@@ -5,14 +5,16 @@ const { where } = require("sequelize");
 const { User, sequelize } = require("../../models/index");
 const { response } = require("express");
 require('dotenv').config();
+// MÃ HÓA MẬT KHẨU
+const hashPass = (password) => {
+    const salt = bcryptjs.genSaltSync(10);
+    return bcryptjs.hashSync(password, salt);
+}
 
 // RESGISTER 
 const registerService = async ({ firstName, lastName, numberPhone, email, password }) => {
     try {
-        // Tạo chuỗi salt để mã hóa mật khẩu
-        const salt = bcryptjs.genSaltSync(10);
-        // Mã hóa mật khẩu
-        const hashPass = bcryptjs.hashSync(password, salt);
+        const hashPass = hashPass(password);
         console.log('Hashed password:', hashPass);
         // Tạo avatar mặc định sử dụng email
         const avtDefaul = gravatar.url(email);
@@ -67,4 +69,4 @@ const loginService = async ({ email, password }) => {
         };
     }
 };
-module.exports = { registerService, loginService };
+module.exports = { registerService, loginService, hashPass };
