@@ -3,7 +3,6 @@ const jwt = require("jsonwebtoken");
 
 //RESGISTER
 const resgister = async (req, res) => {
-    // let { firstName, lastName, numberPhone, email, password } = req.body
     try {
         const response = await registerService.registerService(req.body)
         return res.status(200).json(response)
