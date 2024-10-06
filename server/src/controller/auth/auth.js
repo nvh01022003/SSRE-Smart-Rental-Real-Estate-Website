@@ -1,10 +1,12 @@
 
+const { response } = require("express");
 const registerService = require("../../services/auth/auth")
 const jwt = require("jsonwebtoken");
 
 //RESGISTER
 const register = async (req, res) => {
-    // let { firstName, lastName, numberPhone, email, password } = req.body
+    //let { firstName, lastName, numberPhone, email, password } = req.body
+    console.log(req.body)
     try {
         const response = await registerService.registerService(req.body)
 

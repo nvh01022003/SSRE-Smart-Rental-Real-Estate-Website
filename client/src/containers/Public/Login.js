@@ -66,7 +66,7 @@ const Login = () => {
         e.preventDefault();
 
         if (!validateForm()) {
-            Swal.fire('Error', 'Please fill in all fields correctly', 'error');
+            //Swal.fire('Error', 'Điền đúng định dạng các trường !', 'error');
             return;
         }
 

@@ -1,11 +1,13 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useContext, useState, useRef } from 'react';
 import { getPersonalInfo } from '../../services/userService';
 import axios from 'axios';
 import './PersonalInfo.css';
 import Swal from 'sweetalert2';
+import { AuthContext } from '../../Context/AuthContext';
 
 const PersonalInfo = () => {
     const [personalInfo, setPersonalInfo] = useState(null);
+    const { token } = useContext(AuthContext);
 
     const [formData, setFormData] = useState({
         firstName: '',
@@ -20,19 +22,29 @@ const PersonalInfo = () => {
 
     const [errors, setErrors] = useState({});
 
+    const initialFormData = useRef(formData);
+
     useEffect(() => {
         const fetchPersonalInfo = async () => {
             try {
-                const data = await getPersonalInfo();
+                // Extract token from localStorage
+                //const authData = JSON.parse(localStorage.getItem('persist:auth'));
+                //const token = JSON.parse(authData.token);
+
+                //const token = localStorage.getItem('token'); // Pass the token to the service
+                console.log('Token on fetch:', token); // Debug log
+
+                const data = await getPersonalInfo(token);
                 if (data.err === 0) {
                     setPersonalInfo(data.info_user);
-                    setFormData({
+                    initialFormData.current = {
                         firstName: data.info_user.firstName,
                         lastName: data.info_user.lastName,
                         email: data.info_user.email,
                         phone: data.info_user.phone,
                         img_avt: data.info_user.img_avt
-                    });
+                    };
+                    setFormData(initialFormData.current);
                     console.log('Personal information:', data.info_user);
                     console.log('Form data:', formData);
                 } else {
@@ -92,8 +104,9 @@ const PersonalInfo = () => {
             return;
         }
         try {
-            const token = localStorage.getItem('token');
-
+            console.log('Token on fetch:', token); // Debug log
+            //const token = localStorage.getItem('token');
+            //console.log('Token on update:', token); // Debug log
             console.log('Sending data:', formData); // Debug log
 
             const response = await axios.post('http://localhost:5000/api/v1/user/changeInfo', formData, {
@@ -125,7 +138,8 @@ const PersonalInfo = () => {
         formData.append('avatar', selectedFile);
 
         try {
-            const token = localStorage.getItem('token');
+            //const token = localStorage.getItem('token');
+            console.log('Token on upload:', token); // Debug log
             const response = await axios.post('http://localhost:5000/api/v1/auth/upload', formData, {
                 headers: {
                     'token': `${token}`

@@ -14,6 +14,12 @@ function App() {
   const dispatch = useDispatch()
   const { isLoggedIn } = useSelector(state => state.auth)
   useEffect(() => {
+
+    // Clear localStorage items related to authentication
+    localStorage.removeItem('persist:auth');
+    localStorage.removeItem('token');
+    localStorage.removeItem('persist:root');
+
     setTimeout(() => {
       isLoggedIn && dispatch(actions.getCurrent())
     }, 1000)

@@ -16,11 +16,12 @@ export const register = (payload) => async (dispatch) => {
                 data: response
             });
             return response;  // Trả về `response` từ đây nếu thành công
-        } else {
+        }
+        else {
             // Lỗi không xác định
             dispatch({
                 type: actionTypes.REGISTER_FAIL,
-                data: response.msg || 'Registration failed'
+                data: 'Registration failed'
             });
         }
         return response;  // Trả về `response` từ đây nếu có lỗi
@@ -30,8 +31,10 @@ export const register = (payload) => async (dispatch) => {
         console.error('Register Action Error:', error); // Log detailed error
         dispatch({
             type: actionTypes.REGISTER_FAIL,
-            data: 'An error occurred during registration'  // Xử lý lỗi khi có lỗi từ BE
+            data: error.msg || 'An error occurred during registration'  // Xử lý lỗi khi có lỗi từ BE
+
         });
+        console.log(error.msg); // Log detailed error
         throw error;  // Trả lỗi về nếu có lỗi xảy ra
     }
 };
