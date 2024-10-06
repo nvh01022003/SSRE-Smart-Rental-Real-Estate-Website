@@ -3,21 +3,22 @@ const {
   Model
 } = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
-  class Image extends Model {
+  class Coordinates extends Model {
     /**
      * Helper method for defining associations.
      * This method is not a part of Sequelize lifecycle.
      * The `models/index` file will call this method automatically.
      */
-    static associate({ Post }) {
-      this.hasOne(Post, { foreignKey: 'img_id' })
+    static associate(models) {
+      // define association here
     }
   }
-  Image.init({
-    img_url_list: DataTypes.STRING
+  Coordinates.init({
+    lat: DataTypes.STRING,
+    lon: DataTypes.STRING
   }, {
     sequelize,
-    modelName: 'Image',
+    modelName: 'Coordinates',
   });
-  return Image;
+  return Coordinates;
 };

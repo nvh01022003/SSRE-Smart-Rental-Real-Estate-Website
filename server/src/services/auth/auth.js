@@ -2,19 +2,19 @@ const bcryptjs = require("bcryptjs");
 const gravatar = require("gravatar");
 const jwt = require("jsonwebtoken");
 const { where } = require("sequelize");
-const { User, sequelize } = require("../../models/index");
+const { User, Role, sequelize } = require("../../models/index");
 const { response } = require("express");
 require('dotenv').config();
 // MÃ HÓA MẬT KHẨU
-const hashPass = (password) => {
+const hashPassWord = (password) => {
     const salt = bcryptjs.genSaltSync(10);
     return bcryptjs.hashSync(password, salt);
 }
 
 // RESGISTER 
-const registerService = async ({ firstName, lastName, numberPhone, email, password }) => {
+const registerService = async ({ firstName, lastName, phone, email, password }) => {
     try {
-        const hashPass = hashPass(password);
+        const hashPass = await hashPassWord(password);
         console.log('Hashed password:', hashPass);
         // Tạo avatar mặc định sử dụng email
         const avtDefaul = gravatar.url(email);
@@ -24,10 +24,10 @@ const registerService = async ({ firstName, lastName, numberPhone, email, passwo
             lastName,
             email,
             pass: hashPass,
-            phone: numberPhone,
+            phone,
             img_avt: avtDefaul
         });
-
+        await Role.create({ user_id: newUser.id, type: 'tenants' });
         // Trả về người dùng mới
         return {
             err: 0,
@@ -75,4 +75,4 @@ const loginService = async ({ email, password }) => {
         };
     }
 };
-module.exports = { registerService, loginService, hashPass };
+module.exports = { registerService, loginService, hashPassWord };

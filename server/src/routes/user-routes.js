@@ -2,6 +2,7 @@ const express = require("express")
 const tenantsController = require("../controller/user/tenants-controller")
 const validate = require("../middleware/validate/validateMailPhone")
 const authentication = require("../controller/auth/auth")
+const authorization = require("../middleware/authorize/check-role")
 const router = express.Router()
 // TENANTS
 // show info user
@@ -15,6 +16,6 @@ router.post("/reportPost/:id", authentication.authenticateToken, tenantsControll
 
 // LADNLORD
 // create post
-// router.post("/createPost", authentication.authenticateToken, tenantsController.createPost)
+router.post("/createPost", authentication.authenticateToken, authorization.checkRoleUser, tenantsController.createPost)
 
 module.exports = router

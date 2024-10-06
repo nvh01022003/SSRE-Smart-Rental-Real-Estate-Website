@@ -74,7 +74,16 @@ module.exports = {
         type: Sequelize.INTEGER,
         references: {
           model: 'Images',
-          key: "post_id"
+          key: "id"
+        },
+        onUpdate: 'CASCADE',
+        onDelete: 'CASCADE'
+      },
+      coordinates_id: {
+        type: Sequelize.INTEGER,
+        references: {
+          model: 'Coordinates',
+          key: "id"
         },
         onUpdate: 'CASCADE',
         onDelete: 'CASCADE'

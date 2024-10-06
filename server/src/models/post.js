@@ -15,7 +15,7 @@ module.exports = (sequelize, DataTypes) => {
       this.hasOne(Category, { foreignKey: 'id' })
       this.hasOne(Attributes, { foreignKey: 'id' })
       this.hasOne(Overview, { foreignKey: 'id' })
-      this.hasMany(Image, { foreignKey: 'post_id' })
+      this.hasOne(Image, { foreignKey: 'id' })
       this.hasOne(User, { foreignKey: 'id' })
 
     }
@@ -31,7 +31,8 @@ module.exports = (sequelize, DataTypes) => {
     user_id: DataTypes.INTEGER,
     status: DataTypes.INTEGER,
     overview_id: DataTypes.INTEGER,
-    img_id: DataTypes.INTEGER
+    img_id: DataTypes.INTEGER,
+    coordinates_id: DataTypes.INTEGER
   }, {
     sequelize,
     modelName: 'Post',
