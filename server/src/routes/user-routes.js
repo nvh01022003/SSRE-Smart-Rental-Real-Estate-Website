@@ -1,6 +1,6 @@
 const express = require("express")
 const tenantsController = require("../controller/user/tenants-controller")
-const validate = require("../middleware/validate/validateMailPhone")
+const validate = require("../middleware/validate/validate-user")
 const authentication = require("../controller/auth/auth")
 const authorization = require("../middleware/authorize/check-role")
 const router = express.Router()

@@ -1,4 +1,7 @@
 const { User, sequelize } = require("../../models/index");
+const authServices = require("../../services/auth/auth");
+const bcryptjs = require("bcryptjs");
+
 // check email va sdt da ton tai ch
 const validateEmailPhone = async (req, res, next) => {
     const { email, phone } = req.body;
@@ -72,4 +75,19 @@ const validateUpdate = async (req, res, next) => {
     }
 
 };
-module.exports = { validateEmailPhone, validateUpdate }
+const validatePass = async (req, res, next) => {
+    const { oldPass } = req.body;
+    const userId = req.user.id
+    const user = await User.findOne({ where: { id: userId } });
+    const checkPass = bcryptjs.compareSync(oldPass, user.pass);
+    if (checkPass) {
+        next();
+    } else {
+        return res.status(400).json({
+            err: 1,
+            msg: 'Password is incorrect'
+        });
+    }
+
+};
+module.exports = { validateEmailPhone, validateUpdate, validatePass }

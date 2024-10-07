@@ -1,10 +1,11 @@
-const registerService = require("../../services/auth/auth")
+const authServices = require("../../services/auth/auth")
+
 const jwt = require("jsonwebtoken");
 
 //RESGISTER
 const resgister = async (req, res) => {
     try {
-        const response = await registerService.registerService(req.body)
+        const response = await authServices.registerService(req.body)
         return res.status(200).json(response)
     } catch (error) {
         return res.status(500).json({
@@ -16,7 +17,7 @@ const resgister = async (req, res) => {
 // LOGIN
 const login = async (req, res) => {
     let { email, password } = req.body
-    const response = await registerService.loginService({ email, password })
+    const response = await authServices.loginService({ email, password })
     if (response.err == 0) {
         // res.status(200).send(response.msg)
         return res.status(200).json(response);
@@ -27,6 +28,20 @@ const login = async (req, res) => {
     }
 
 
+}
+// change password
+const changePass = async (req, res) => {
+    const userId = req.user.id
+    const { newPass } = req.body
+    try {
+        const response = await authServices.changePassWord(userId, newPass)
+        return res.status(200).json(response)
+    } catch (error) {
+        return res.status(500).json({
+            err: -1,
+            msg: 'Fail at auth controller changePass: ' + error
+        })
+    }
 }
 // CHECK TOKEN
 const authenticateToken = (req, res, next) => {
@@ -46,4 +61,4 @@ const authenticateToken = (req, res, next) => {
         next();
     });
 };
-module.exports = { resgister, login, authenticateToken }
+module.exports = { resgister, login, authenticateToken, changePass }

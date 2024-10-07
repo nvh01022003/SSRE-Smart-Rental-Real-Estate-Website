@@ -75,4 +75,20 @@ const loginService = async ({ email, password }) => {
         };
     }
 };
-module.exports = { registerService, loginService, hashPassWord };
+// change password
+const changePassWord = async (userId, password) => {
+    try {
+        const hashPass = await hashPassWord(password);
+        await User.update({ pass: hashPass }, { where: { id: userId } })
+        return {
+            err: 0,
+            msg: 'Change password success'
+        }
+    } catch (err) {
+        return {
+            err: 1,
+            msg: err
+        }
+    }
+}
+module.exports = { registerService, loginService, hashPassWord, changePassWord };
