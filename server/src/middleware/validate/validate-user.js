@@ -76,12 +76,19 @@ const validateUpdate = async (req, res, next) => {
 
 };
 const validatePass = async (req, res, next) => {
-    const { oldPass } = req.body;
+    const { oldPass, newPass } = req.body;
     const userId = req.user.id
     const user = await User.findOne({ where: { id: userId } });
     const checkPass = bcryptjs.compareSync(oldPass, user.pass);
     if (checkPass) {
-        next();
+        if (newPass.length >= 6)
+            next();
+        else {
+            return res.status(400).json({
+                err: 1,
+                msg: 'Password from 6 characters'
+            });
+        }
     } else {
         return res.status(400).json({
             err: 1,
