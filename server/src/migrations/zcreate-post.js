@@ -12,30 +12,14 @@ module.exports = {
       title: {
         type: Sequelize.STRING
       },
-      star: {
-        type: Sequelize.STRING
-      },
-      label_id: {
+      address_id: {
         type: Sequelize.INTEGER,
         references: {
-          model: 'Labels',
+          model: "Addresses",
           key: "id"
         },
         onUpdate: 'CASCADE',
         onDelete: 'CASCADE'
-      },
-      address: {
-        type: Sequelize.STRING
-      },
-      attributes_id: {
-        type: Sequelize.INTEGER,
-        references: {
-          model: 'Attributes',
-          key: "id"
-        },
-        onUpdate: 'CASCADE',
-        onDelete: 'CASCADE'
-
       },
       category_id: {
         type: Sequelize.INTEGER,
