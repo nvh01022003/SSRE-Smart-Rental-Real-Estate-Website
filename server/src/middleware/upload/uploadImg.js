@@ -31,7 +31,9 @@ const checkFileType = (req, res, next) => {
 const updateImg = async (req, res, next) => {
     try {
         const file = req.file;
+
         console.log('File:', file);
+
         // Upload ảnh lên Cloudinary
         const result = await new Promise((resolve, reject) => {
             cloudinary.uploader.upload_stream({ resource_type: 'image' }, (error, result) => {

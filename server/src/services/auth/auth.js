@@ -1,7 +1,10 @@
 const bcryptjs = require("bcryptjs");
 const gravatar = require("gravatar");
 const jwt = require("jsonwebtoken");
-const { User } = require("../../models/index");
+
+const { where } = require("sequelize");
+const { User, Role, sequelize } = require("../../models/index");
+const { response } = require("express");
 
 require('dotenv').config();
 // MÃ HÓA MẬT KHẨU
@@ -23,10 +26,11 @@ const registerService = async ({ firstName, lastName, phone, email, password }) 
             lastName,
             email,
             pass: hashPass,
-            phone: phone,
+            phone,
             img_avt: avtDefaul
         });
-        //await Role.create({ user_id: newUser.id, type: 'tenants' });
+        await Role.create({ user_id: newUser.id, type: 'tenants' });
+
         // Trả về người dùng mới
         return {
             err: 0,
@@ -52,6 +56,8 @@ const loginService = async ({ email, password }) => {
         const checkPass = bcryptjs.compareSync(password, user.pass);
         const token = checkPass ? jwt.sign({ id: user.id, email: user.email }, process.env.JWT_SECRET, { expiresIn: '5d' }) : null;
 
+        // console.log("Token generated:", token);  // Log token để kiểm tra
+
         if (checkPass) {
             return {
                 err: 0,
@@ -65,7 +71,6 @@ const loginService = async ({ email, password }) => {
                 msg: 'Email hoặc mật khẩu không đúng !' // Trả về thông báo lỗi nếu mật khẩu sai
             };
         }
-
     } else {
         return {
             err: 1,
@@ -74,5 +79,21 @@ const loginService = async ({ email, password }) => {
     }
 };
 
-module.exports = { registerService, loginService, hashPassWord };
+// change password
+const changePassWord = async (userId, password) => {
+    try {
+        const hashPass = await hashPassWord(password);
+        await User.update({ pass: hashPass }, { where: { id: userId } })
+        return {
+            err: 0,
+            msg: 'Change password success'
+        }
+    } catch (err) {
+        return {
+            err: 1,
+            msg: err
+        }
+    }
+}
+module.exports = { registerService, loginService, hashPassWord, changePassWord };
 

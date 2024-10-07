@@ -12,7 +12,7 @@ const showInfoUser = async (req, res) => {
         })
     }
 }
-
+// change info user
 const changeInfo = async (req, res) => {
     const userId = req.user.id
     const userUpdate = req.body
@@ -56,4 +56,10 @@ const reportPost = async (req, res) => {
         })
     }
 }
-module.exports = { showInfoUser, changeInfo, savaPost, reportPost }
+
+const createPost = async (req, res) => {
+    const userId = req.user.id
+    const contentPost = req.body
+    console.log(contentPost)
+}
+module.exports = { showInfoUser, changeInfo, savaPost, createPost, reportPost }

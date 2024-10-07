@@ -3,21 +3,22 @@ const {
   Model
 } = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
-  class Label extends Model {
+  class Coordinates extends Model {
     /**
      * Helper method for defining associations.
      * This method is not a part of Sequelize lifecycle.
      * The `models/index` file will call this method automatically.
      */
-    static associate({ Post }) {
-      this.hasOne(Post, { foreignKey: "label_id" })
+    static associate(models) {
+      // define association here
     }
   }
-  Label.init({
-    label_name: DataTypes.STRING
+  Coordinates.init({
+    lat: DataTypes.STRING,
+    lon: DataTypes.STRING
   }, {
     sequelize,
-    modelName: 'Label',
+    modelName: 'Coordinates',
   });
-  return Label;
+  return Coordinates;
 };

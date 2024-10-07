@@ -1,3 +1,5 @@
+// Thẻ component xem thông tin bài đăng bất động sản cho thuê
+
 import React, { memo, useState } from 'react'
 import icons from '../ultils/icons'
 import { useNavigate, Link } from 'react-router-dom'

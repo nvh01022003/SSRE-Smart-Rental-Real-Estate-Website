@@ -32,7 +32,7 @@ const getInfoUser = async (userId) => {
 // CHANGE INFO USER
 const changeInfoUser = async (userId, userUpdate) => {
     if (userUpdate.pass) {
-        userUpdate.pass = authServices.hashPass(userUpdate.pass);
+        userUpdate.pass = authServices.hashPassWord(userUpdate.pass);
     }
     try {
         await User.update(userUpdate, { where: { id: userId } })

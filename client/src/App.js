@@ -8,6 +8,7 @@ import { useEffect } from 'react'
 import Register from './containers/Public/Register'
 import Verify from './containers/Public/Verify'
 import PersonalInfo from './components/PersonalInfo/PersonalInfo'
+import ChangePass from './components/ChangePass/ChangePass'
 
 
 function App() {
@@ -50,6 +51,7 @@ function App() {
         <Route path={path.SYSTEM} element={<System />} >
           <Route path={path.CREATE_POST} element={<CreatePost />} />
           <Route path={path.PERSONAL_INFO} element={<PersonalInfo />} />
+          <Route path={path.CHANGE_PASS} element={<ChangePass />} />
         </Route>
 
       </Routes>

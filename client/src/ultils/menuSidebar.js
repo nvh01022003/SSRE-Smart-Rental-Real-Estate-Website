@@ -23,8 +23,8 @@ const memuSidebar = [
     },
     {
         id: 5,
-        text: 'Liên hệ',
-        path: '/he-thong/lien-he',
+        text: 'Đổi mật khẩu',
+        path: '/he-thong/doi-mat-khau',
         icon: <BiUserPin />
     }
 ]

@@ -10,13 +10,7 @@ const { request } = require("http");
 
 const createCodeVery = async (req, res, next) => {
 
-    // const { firstName, lastName, phone, email, password } = req.body
-    // if (!firstName || !lastName || !phone || !email || !password) {
-
     const { firstName, lastName, phone, email, password } = req.body
-    console.log('ok')
-    console.log(req.body)
-
     if (!firstName || !lastName || !phone || !email || !password) {
 
         res.status(400).send("Enter all fields!")
@@ -59,6 +53,7 @@ const createCodeVery = async (req, res, next) => {
                 //     err: 0,
                 //     msg: 'Verification code sent to email'
                 // });
+
                 // xoa code da luu sau 60s
                 setTimeout(() => {
                     VeriMail.destroy({ where: { email } })

@@ -21,14 +21,8 @@ module.exports = {
       target: {
         type: Sequelize.STRING
       },
-      created: {
-        type: Sequelize.DATE
-      },
       expire: {
         type: Sequelize.DATE
-      },
-      bonus: {
-        type: Sequelize.STRING
       },
       createdAt: {
         allowNull: false,

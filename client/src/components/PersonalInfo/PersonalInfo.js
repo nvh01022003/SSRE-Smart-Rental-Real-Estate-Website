@@ -18,8 +18,6 @@ const PersonalInfo = () => {
         password: ''
     });
 
-    const [selectedFile, setSelectedFile] = useState(null);
-
     const [errors, setErrors] = useState({});
 
     const initialFormData = useRef(formData);
@@ -27,11 +25,6 @@ const PersonalInfo = () => {
     useEffect(() => {
         const fetchPersonalInfo = async () => {
             try {
-                // Extract token from localStorage
-                //const authData = JSON.parse(localStorage.getItem('persist:auth'));
-                //const token = JSON.parse(authData.token);
-
-                //const token = localStorage.getItem('token'); // Pass the token to the service
                 console.log('Token on fetch:', token); // Debug log
 
                 const data = await getPersonalInfo(token);
@@ -46,17 +39,20 @@ const PersonalInfo = () => {
                     };
                     setFormData(initialFormData.current);
                     console.log('Personal information:', data.info_user);
-                    console.log('Form data:', formData);
                 } else {
                     console.error('Error fetching personal information:', data.msg);
+                    Swal.fire('Error', data.msg || 'Error fetching personal information', 'error');
                 }
             } catch (error) {
                 console.error('Error fetching personal information:', error);
+                Swal.fire('Error', 'Error fetching personal information', 'error');
             }
         };
 
-        fetchPersonalInfo();
-    }, []);
+        if (token) { // Ensure token is available
+            fetchPersonalInfo();
+        }
+    }, [token]);
 
     const handleChange = (event) => {
         const { name, value } = event.target;
@@ -73,8 +69,11 @@ const PersonalInfo = () => {
         setFormData({ ...formData, [name]: formattedValue });
     };
 
-    const handleFileChange = (e) => {
-        setSelectedFile(e.target.files[0]);
+    const handleFileChange = async (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            await handleFileUpload(file);
+        }
     };
 
     const validate = () => {
@@ -104,22 +103,21 @@ const PersonalInfo = () => {
             return;
         }
         try {
-            console.log('Token on fetch:', token); // Debug log
-            //const token = localStorage.getItem('token');
-            //console.log('Token on update:', token); // Debug log
+            console.log('Token on update:', token); // Debug log
             console.log('Sending data:', formData); // Debug log
 
             const response = await axios.post('http://localhost:5000/api/v1/user/changeInfo', formData, {
                 headers: {
                     'token': `${token}`
                 }
-
             });
 
             console.log('API Response:', response); // Debug log
 
             if (response.data.err === 0) {
-                Swal.fire('Success', 'Cập nhật thành công !', 'success');
+                Swal.fire('Success', 'Cập nhật thành công!', 'success');
+                // Optionally, refetch personal info to ensure data consistency
+                // fetchPersonalInfo();
             } else if (response.data.err === 1) {
                 Swal.fire('Error', 'Email đã tồn tại', 'error');
             } else if (response.data.err === 2) {
@@ -129,27 +127,45 @@ const PersonalInfo = () => {
             }
         } catch (error) {
             console.error('Error updating personal information:', error);
+            Swal.fire('Error', 'Error updating personal information', 'error');
         }
     };
 
-    const handleFileUpload = async (e) => {
-        e.preventDefault();
-        const formData = new FormData();
-        formData.append('avatar', selectedFile);
+    const handleFileUpload = async (file) => {
+        const uploadData = new FormData();
+        uploadData.append('avatar', file); // Ensure the field name matches what the server expects
 
         try {
-            //const token = localStorage.getItem('token');
             console.log('Token on upload:', token); // Debug log
-            const response = await axios.post('http://localhost:5000/api/v1/auth/upload', formData, {
+            const response = await axios.post('http://localhost:5000/api/v1/auth/upload', uploadData, {
                 headers: {
-                    'token': `${token}`
+                    'token': `${token}`,
                 }
             });
+
+            console.log('Upload API Response:', response); // Debug log
+
             if (response.data.err === 0) {
-                Swal.fire('Success', 'Cập nhật ảnh mới thành công !', 'success');
+                Swal.fire('Success', 'Cập nhật ảnh mới thành công!', 'success');
+
+                // If the server returns the URL of the uploaded image, use it.
+                // Assuming response.data.url contains the image URL
+                const newImgUrl = response.data.url;
+
+                // To prevent caching issues, append a timestamp
+                const timestamp = new Date().getTime();
+                const finalImgUrl = newImgUrl ? `${newImgUrl}?t=${timestamp}` : URL.createObjectURL(file);
+
+                setFormData((prevFormData) => ({
+                    ...prevFormData,
+                    img_avt: finalImgUrl
+                }));
+            } else {
+                Swal.fire('Error', response.data.msg || 'Failed to upload image', 'error');
             }
         } catch (error) {
-            alert('Error uploading image');
+            console.error('Error uploading image:', error);
+            Swal.fire('Error', 'Error uploading image', 'error');
         }
     };
 
@@ -158,80 +174,97 @@ const PersonalInfo = () => {
     }
 
     return (
-        <div className="personal-info">
-            <img src={formData.img_avt} alt="Avatar" className="avatar" />
-            <div style={{ display: 'flex', alignItems: 'center' }}>
-                <div >
-                    <label className='lable'>HỌ, TÊN ĐỆM :</label>
+        <div className="px-6">
+            <h1 className='text-3xl font-medium py-4 border-b border-gray-200'>Thông tin cá nhân</h1>
 
-                    <input className='input-firstName'
-                        type="text"
-                        name="firstName"
-                        value={formData.firstName}
-                        onChange={handleChange}
-                        placeholder="First Name"
-                        style={{ marginRight: '8px' }}
-                    />
-                    {errors.firstName && <small className='text-red-500 italic'>{errors.firstName}</small>}
-                </div>
-
+            <div className='flex pt-8'>
                 <div>
-                    <label className='lable'>TÊN :</label>
+                    <div style={{ display: 'flex', alignItems: 'center' }}>
+                        <div>
+                            <label className='text-sm text-gray-700 font-medium'>HỌ, TÊN ĐỆM :</label>
+                            <input
+                                className='input-firstName'
+                                type="text"
+                                name="firstName"
+                                value={formData.firstName}
+                                onChange={handleChange}
+                                placeholder="First Name"
+                                style={{ marginRight: '8px' }}
+                            />
+                            {errors.firstName && <small className='text-red-500 italic'>{errors.firstName}</small>}
+                        </div>
 
-                    <input className='input-lastName'
-                        type="text"
-                        name="lastName"
-                        value={formData.lastName}
-                        onChange={handleChange}
-                        placeholder="Last Name"
-                    />
-                    {errors.lastName && <small className='text-red-500 italic'>{errors.lastName}</small>}
+                        <div>
+                            <label className='text-sm text-gray-700 font-medium'>TÊN :</label>
+                            <input
+                                className='input-lastName'
+                                type="text"
+                                name="lastName"
+                                value={formData.lastName}
+                                onChange={handleChange}
+                                placeholder="Last Name"
+                            />
+                            {errors.lastName && <small className='text-red-500 italic'>{errors.lastName}</small>}
+                        </div>
+                    </div>
+                    <div>
+                        <label className='text-sm text-gray-700 font-medium'>EMAIL :</label>
+                        <input
+                            className='input-email'
+                            type="email"
+                            name="email"
+                            value={formData.email}
+                            onChange={handleChange}
+                            placeholder="Email"
+                        />
+                        {errors.email && <small className='text-red-500 italic'>{errors.email}</small>}
+                    </div>
+                    <div>
+                        <label className='text-sm text-gray-700 font-medium'>SỐ ĐIỆN THOẠI :</label>
+                        <input
+                            className='input-phone'
+                            type="text"
+                            name="phone"
+                            value={formData.phone}
+                            onChange={handleChange}
+                            placeholder="Phone"
+                        />
+                        {errors.phone && <small className='text-red-500 italic'>{errors.phone}</small>}
+                    </div>
+                    <button
+                        className='btn-update'
+                        onClick={handleUpdate}
+                    >
+                        Cập Nhật
+                    </button>
                 </div>
 
+                <div className="center-container">
+                    <div className='center-content'>
+                        <img src={formData.img_avt} alt="Avatar" className="avatar" />
+                        <div className="upload-section">
+                            <button
+                                type="button"
+                                className="btn-upload"
+                                onClick={() => document.getElementById('avatar').click()}
+                            >
+                                Chọn Ảnh
+                            </button>
+                            <input
+                                hidden
+                                type="file"
+                                id="avatar"
+                                name="avatar"
+                                accept="image/*"
+                                onChange={handleFileChange}
+                            />
+                        </div>
+                    </div>
+                </div>
             </div>
-            <div>
-                <label className='lable'>EMAIL :</label>
-                <input className='input-email'
-                    type="email"
-                    name="email"
-                    value={formData.email}
-                    onChange={handleChange}
-                    placeholder="Email"
-                />
-                {errors.email && <small className='text-red-500 italic'>{errors.email}</small>}
-            </div>
-            <div>
-                <label className='lable'>SỐ ĐIỆN THOẠI :</label>
-                <input className='input-phone'
-                    type="text"
-                    name="phone"
-                    value={formData.phone}
-                    onChange={handleChange}
-                    placeholder="Phone"
-                />
-                {errors.phone && <small className='text-red-500 italic'>{errors.phone}</small>}
-            </div>
-            <button className='btn-update'
-                onClick={handleUpdate}
-            >
-                CẬP NHẬT
-            </button>
-
-
-
-            <div className="upload-section">
-                <form onSubmit={handleFileUpload}>
-                    <label htmlFor="avatar" className="label">Upload Avatar</label>
-                    <input type="file" id="avatar" name="avatar" onChange={handleFileChange} />
-                    <button type="submit" className="btn-upload">Upload</button>
-                </form>
-            </div>
-
-
         </div>
-
-
     );
 };
 
 export default PersonalInfo;
+
