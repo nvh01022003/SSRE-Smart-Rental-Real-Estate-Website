@@ -91,7 +91,7 @@ const validatePass = async (req, res, next) => {
         }
     } else {
         return res.status(400).json({
-            err: 1,
+            err: 2,
             msg: 'Password is incorrect'
         });
     }
