@@ -43,6 +43,28 @@ const changePass = async (req, res) => {
         })
     }
 }
+// reset password
+const resetPass = async (req, res) => {
+    const { newPass, email } = req.body
+    if (newPass.length >= 6) {
+        try {
+            const response = await authServices.resetPassWord(email, newPass)
+            return res.status(200).json(response)
+        } catch (error) {
+            return res.status(500).json({
+                err: -1,
+                msg: 'Fail at auth controller resetPass: ' + error
+            })
+        }
+    }
+    else {
+        return res.status(400).json({
+            err: 1,
+            msg: 'Password from 6 characters'
+        });
+    }
+
+}
 // CHECK TOKEN
 const authenticateToken = (req, res, next) => {
     // Lấy token từ header
@@ -61,4 +83,4 @@ const authenticateToken = (req, res, next) => {
         next();
     });
 };
-module.exports = { resgister, login, authenticateToken, changePass }
+module.exports = { resgister, login, authenticateToken, changePass, resetPass }

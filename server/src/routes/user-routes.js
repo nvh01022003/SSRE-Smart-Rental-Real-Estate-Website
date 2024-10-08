@@ -1,5 +1,6 @@
 const express = require("express")
 const tenantsController = require("../controller/user/tenants-controller")
+const ladnlordController = require("../controller/user/ladnlord-controller")
 const validate = require("../middleware/validate/validate-user")
 const authentication = require("../controller/auth/auth")
 const authorization = require("../middleware/authorize/check-role")
@@ -16,6 +17,6 @@ router.post("/reportPost/:id", authentication.authenticateToken, tenantsControll
 
 // LADNLORD
 // create post
-router.post("/createPost", authentication.authenticateToken, authorization.checkRoleUser, tenantsController.createPost)
+router.post("/createPost", authentication.authenticateToken, authorization.checkRoleUser, ladnlordController.createPost)
 
 module.exports = router
