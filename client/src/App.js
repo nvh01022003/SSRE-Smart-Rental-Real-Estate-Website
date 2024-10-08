@@ -1,3 +1,5 @@
+import React from 'react';
+import ChatGPT from './components/ChatGPT';
 import { Routes, Route } from 'react-router-dom'
 import { Home, Login, Rental, Homepage, DetailPost, SearchDetail } from './containers/Public'
 import { path } from './ultils/constant'
@@ -9,7 +11,6 @@ import Register from './containers/Public/Register'
 import Verify from './containers/Public/Verify'
 import PersonalInfo from './components/PersonalInfo/PersonalInfo'
 
-
 function App() {
   const dispatch = useDispatch()
   const { isLoggedIn } = useSelector(state => state.auth)
@@ -17,16 +18,16 @@ function App() {
     setTimeout(() => {
       isLoggedIn && dispatch(actions.getCurrent())
     }, 1000)
-  }, [isLoggedIn])
+  }, [isLoggedIn, dispatch])
 
   useEffect(() => {
     dispatch(actions.getPrices())
     dispatch(actions.getAreas())
     dispatch(actions.getProvinces())
-  }, [])
+  }, [dispatch])
 
   return (
-    <div className="bg-primary">
+    <div className="App">
       <Routes>
         <Route path={path.HOME} element={<Home />}>
           <Route path='*' element={<Homepage />} />
@@ -45,8 +46,8 @@ function App() {
           <Route path={path.CREATE_POST} element={<CreatePost />} />
           <Route path={path.PERSONAL_INFO} element={<PersonalInfo />} />
         </Route>
-
       </Routes>
+      <ChatGPT />
     </div>
   );
 }
