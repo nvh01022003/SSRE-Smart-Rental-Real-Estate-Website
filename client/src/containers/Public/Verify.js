@@ -1,64 +1,3 @@
-// import React, { useState } from 'react';
-// import { useDispatch } from 'react-redux';
-// import Swal from 'sweetalert2';
-// import InputForm from '../../components/InputForm';
-// import Button from '../../components/Button';
-// import axios from 'axios';
-// import { useNavigate } from 'react-router-dom';
-
-// const Verify = () => {
-//     const [verificationCode, setVerificationCode] = useState('');
-//     const [invalidFields, setInvalidFields] = useState([]);
-//     const dispatch = useDispatch();
-//     const navigate = useNavigate();
-
-//     const handleVerify = async (e) => {
-//         e.preventDefault();
-
-//         try {
-//             const response = await axios.post(`http://localhost:5000/api/v1/auth/register/${verificationCode}`);
-
-//             if (response && response.data.err === 0) {
-//                 Swal.fire('Success', 'Verification successful', 'success').then(() => {
-//                     navigate('/');
-//                 });
-//             } else {
-//                 Swal.fire('Error', response.data.msg, 'error');
-//             }
-//         } catch (error) {
-//             const errorMessage = error.response?.data?.message || 'An error occurred';
-//             Swal.fire('Oops !', errorMessage, 'error');
-//         }
-//     };
-
-//     return (
-//         <div className='w-full flex items-center justify-center'>
-//             <div className='bg-white w-[500px] p-[10px] pb-[100px] rounded-md shadow-sm'>
-//                 <h3 className='font-semibold text-2xl mb-3'>Nhập mã xác thực email</h3>
-//                 <form onSubmit={handleVerify} className='w-full flex flex-col gap-5'>
-//                     <InputForm
-//                         setInvalidFields={setInvalidFields}
-//                         invalidFields={invalidFields}
-//                         label={'Mã xác thực'}
-//                         value={verificationCode}
-//                         setValue={setVerificationCode}
-//                         keyPayload={'verificationCode'}
-//                     />
-//                     <Button
-//                         text={'Xác minh'}
-//                         bgColor='bg-secondary1'
-//                         textColor='text-white'
-//                         fullWidth
-//                         onClick={handleVerify}
-//                     />
-//                 </form>
-//             </div>
-//         </div>
-//     );
-// };
-
-// export default Verify;
-
 import React, { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import Swal from 'sweetalert2';
@@ -76,19 +15,21 @@ const Verify = () => {
         e.preventDefault();
 
         const registerData = JSON.parse(localStorage.getItem('registerData'));  // Lấy lại thông tin đăng ký từ localStorage
-        const { email, firstName, lastName, numberPhone, password } = registerData; // Destructure thông tin
+        const { email, firstName, lastName, phone, password } = registerData; // Destructure thông tin
+        //console.log('Register Data:', registerData); // Log thông tin đăng ký
 
 
         try {
             const response = await axios.post(`http://localhost:5000/api/v1/auth/register/${verificationCode}`, {
-                email, firstName, lastName, numberPhone, password, verificationCode  // Gửi toàn bộ dữ liệu cùng mã xác thực
+                email, firstName, lastName, phone, password, verificationCode // Gửi toàn bộ dữ liệu cùng mã xác thực
             });
             console.log('API Register Response:', response); // Log the response
 
-            if (response && response.status === 200) {
+            if (response && response.data.err === 0) {
                 // Dispatch action VERIFY_SUCCESS sau khi xác thực thành công
                 dispatch({
-                    type: 'VERIFY_SUCCESS',  // Dispatch action VERIFY_SUCCESS
+                    type: 'VERIFY_SUCCESS',
+                    data: response.data.msg  // Dispatch action VERIFY_SUCCESS
                 });
 
                 // Xóa email khỏi localStorage sau khi xác thực thành công
@@ -97,13 +38,13 @@ const Verify = () => {
                 localStorage.removeItem('registerData');  // Xóa dữ liệu tạm khi hoàn thành
 
                 Swal.fire('Success', 'Xác thực thành công', 'success').then(() => {
-                    navigate('/');
+                    navigate('/login'); // Chuyển hướng đến trang đăng nhập
                 });
             } else {
-                Swal.fire('Error', response.msg, 'error');
+                Swal.fire('Error', response.data.msg, 'error');
             }
         } catch (error) {
-            const errorMessage = error.response?.message || 'An error ';
+            const errorMessage = error.response?.message || 'An error occurded';
             Swal.fire('Oops !', errorMessage, 'error');
         }
     };
@@ -112,7 +53,7 @@ const Verify = () => {
         <div className='w-full flex items-center justify-center'>
             <div className='bg-white w-[500px] p-[10px] pb-[100px] rounded-md shadow-sm'>
                 <h3 className='font-semibold text-2xl mb-3'>Nhập mã xác thực email</h3>
-                <form onSubmit={handleVerify} className='w-full flex flex-col gap-5'>
+                <form className='w-full flex flex-col gap-5'>
                     {/* Thẻ input trực tiếp */}
                     <label htmlFor="verificationCode" className='text-lg font-medium'>Mã xác thực</label>
                     <input

@@ -9,11 +9,10 @@ const { request } = require("http");
 // gui code den email nguoi dung
 
 const createCodeVery = async (req, res, next) => {
-    const { firstName, lastName, numberPhone, email, password } = req.body
-    console.log('ok')
-    console.log(req.body)
 
-    if (!firstName || !lastName || !numberPhone || !email || !password) {
+    const { firstName, lastName, phone, email, password } = req.body
+    if (!firstName || !lastName || !phone || !email || !password) {
+
         res.status(400).send("Enter all fields!")
     }
     else {
@@ -50,13 +49,18 @@ const createCodeVery = async (req, res, next) => {
                     email,
                     code: verificationCode
                 });
+                // res.status(200).json({
+                //     err: 0,
+                //     msg: 'Verification code sent to email'
+                // });
+
                 // xoa code da luu sau 60s
                 setTimeout(() => {
                     VeriMail.destroy({ where: { email } })
                 }, 60000);
 
                 // Trả về phản hồi cho FE
-                return res.status(200).json({
+                res.status(200).json({
                     err: 0,
                     msg: 'Verification code sent to your email',
                 });

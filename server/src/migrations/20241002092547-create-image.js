@@ -9,11 +9,8 @@ module.exports = {
         primaryKey: true,
         type: Sequelize.INTEGER
       },
-      img_url: {
+      img_url_list: {
         type: Sequelize.STRING
-      },
-      post_id: {
-        type: Sequelize.INTEGER
       },
       createdAt: {
         allowNull: false,
@@ -24,8 +21,6 @@ module.exports = {
         type: Sequelize.DATE
       }
     });
-
-    await queryInterface.addIndex('Images', ['post_id']);
   },
 
   async down(queryInterface, Sequelize) {

@@ -1,6 +1,7 @@
 const bcryptjs = require("bcryptjs");
 const gravatar = require("gravatar");
 const jwt = require("jsonwebtoken");
+const authServices = require("../../services/auth/auth");
 const { where } = require("sequelize");
 const { User, Favourite, Report, sequelize } = require("../../models/index");
 const { response } = require("express");
@@ -30,13 +31,11 @@ const getInfoUser = async (userId) => {
 };
 // CHANGE INFO USER
 const changeInfoUser = async (userId, userUpdate) => {
+    if (userUpdate.pass) {
+        userUpdate.pass = authServices.hashPassWord(userUpdate.pass);
+    }
     try {
-        await User.update({
-            firstName: userUpdate.firstName,
-            lastName: userUpdate.lastName,
-            email: userUpdate.email,
-            phone: userUpdate.phone
-        }, { where: { id: userId } })
+        await User.update(userUpdate, { where: { id: userId } })
         return {
             err: 0,
             msg: "Update success"

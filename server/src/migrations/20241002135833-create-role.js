@@ -12,12 +12,12 @@ module.exports = {
       user_id: {
         type: Sequelize.INTEGER,
         references: {
-          model: 'users',
-          key: "id"
+          model: 'Users', // Đảm bảo bảng 'Users' được viết đúng
+          key: 'id'
         },
         onUpdate: 'CASCADE',
-        onDelete: 'CASCADE'
-
+        onDelete: 'CASCADE',
+        unique: true // Đảm bảo ràng buộc UNIQUE để tạo quan hệ 1:1
       },
       type: {
         type: Sequelize.STRING

@@ -10,18 +10,11 @@ module.exports = (sequelize, DataTypes) => {
      * The `models/index` file will call this method automatically.
      */
     static associate({ Post }) {
-      this.hasOne(Post, { Image: "post_id" })
+      this.hasOne(Post, { foreignKey: 'img_id' })
     }
   }
   Image.init({
-    img_url: DataTypes.STRING,
-    post_id: {
-      type: DataTypes.INTEGER,
-      references: {
-        model: 'Post',
-        key: "post_id"
-      }
-    }
+    img_url_list: DataTypes.STRING
   }, {
     sequelize,
     modelName: 'Image',

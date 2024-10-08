@@ -14,8 +14,9 @@ const authReducer = (state = initState, action) => {
                 //localStorage.setItem('isLoggedIn', true);
                 return {
                     ...state,
-                    isLoggedIn: true,
+                    //isLoggedIn: true,
                     error: null,
+                    //token: action.data.token,
                 }
             }
         case actionTypes.REGISTER_SUCCESS:

@@ -13,10 +13,12 @@ const Register = () => {
         email: '',
         firstName: '',
         lastName: '',
-        numberPhone: '',
+        phone: '',
         password: '',
     });
     const [invalidFields, setInvalidFields] = useState([]);
+
+
 
     useEffect(() => {
         if (msg) {
@@ -28,7 +30,7 @@ const Register = () => {
         let invalids = 0;
         const newInvalidFields = [];
 
-        const fields = ['email', 'firstName', 'lastName', 'numberPhone', 'password'];
+        const fields = ['email', 'firstName', 'lastName', 'phone', 'password'];
         fields.forEach(field => {
             if (!payload[field]) {
                 newInvalidFields.push({
@@ -55,9 +57,9 @@ const Register = () => {
             invalids++;
         }
 
-        if (payload.numberPhone && !/^\d+$/.test(payload.numberPhone)) {
+        if (payload.phone && !/^\d{10}$/.test(payload.phone)) {
             newInvalidFields.push({
-                name: 'numberPhone',
+                name: 'phone',
                 message: 'Số điện thoại không hợp lệ.'
             });
             invalids++;
@@ -71,7 +73,6 @@ const Register = () => {
         e.preventDefault();
 
         if (!validateForm()) {
-            Swal.fire('Error', 'Please fill in all fields correctly', 'error');
             return;
         }
 
@@ -82,19 +83,17 @@ const Register = () => {
                     localStorage.setItem('registerData', JSON.stringify(payload));  // Lưu toàn bộ thông tin vào localStorage
                     navigate('/register/verify');
                 });
-            } else if (response?.err === 1) {
-                // Email đã tồn tại
-                Swal.fire('Oops!', 'Email đã tồn tại !', 'error');
-            } else if (response?.err === 2) {
-                // Số điện thoại đã tồn tại
-                Swal.fire('Oops!', 'Số điện thoại đã tồn tại !', 'error');
             } else {
-                // Xử lý lỗi chung
                 Swal.fire('Oops!', response?.msg || 'No response data', 'error');
             }
         } catch (error) {
-            const errorMessage = error.response?.data?.msg || 'An error occurred';
-            Swal.fire('Oops !', errorMessage, 'error');
+            if (error.err === 1) {
+                Swal.fire('Oops !', 'Email đã được sử dụng', 'error');
+            } else if (error.err === 2) {
+                Swal.fire('Oops !', 'Số điện thoại đã được sử dụng', 'error');
+            } else {
+                Swal.fire('Oops !', 'Đã có lỗi xảy ra', 'error');
+            }
         }
     };
 
@@ -102,6 +101,7 @@ const Register = () => {
         <div className='w-full flex items-center justify-center'>
             <div className='bg-white w-[600px] p-[30px] pb-[100px] rounded-md shadow-sm'>
                 <h3 className='font-semibold text-2xl mb-3'>Đăng kí tài khoản</h3>
+
                 <form className='w-full flex flex-col gap-5'>
                     <InputForm
                         setInvalidFields={setInvalidFields}
@@ -123,9 +123,9 @@ const Register = () => {
                         setInvalidFields={setInvalidFields}
                         invalidFields={invalidFields}
                         label={'SỐ ĐIỆN THOẠI'}
-                        value={payload.numberPhone}
+                        value={payload.phone}
                         setValue={setPayload}
-                        keyPayload={'numberPhone'}
+                        keyPayload={'phone'}
                     />
                     <InputForm
                         setInvalidFields={setInvalidFields}

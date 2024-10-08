@@ -1,5 +1,4 @@
 import React from 'react';
-import ChatGPT from './components/ChatGPT';
 import { Routes, Route } from 'react-router-dom'
 import { Home, Login, Rental, Homepage, DetailPost, SearchDetail } from './containers/Public'
 import { path } from './ultils/constant'
@@ -10,11 +9,18 @@ import { useEffect } from 'react'
 import Register from './containers/Public/Register'
 import Verify from './containers/Public/Verify'
 import PersonalInfo from './components/PersonalInfo/PersonalInfo'
-
+import ChangePass from './components/ChangePass/ChangePass'
+import ChatGPT from './components/Chat/ChatGPT'
 function App() {
   const dispatch = useDispatch()
   const { isLoggedIn } = useSelector(state => state.auth)
   useEffect(() => {
+
+    // Clear localStorage items related to authentication
+    localStorage.removeItem('persist:auth');
+    localStorage.removeItem('token');
+    localStorage.removeItem('persist:root');
+
     setTimeout(() => {
       isLoggedIn && dispatch(actions.getCurrent())
     }, 1000)
@@ -45,6 +51,7 @@ function App() {
         <Route path={path.SYSTEM} element={<System />} >
           <Route path={path.CREATE_POST} element={<CreatePost />} />
           <Route path={path.PERSONAL_INFO} element={<PersonalInfo />} />
+          <Route path={path.CHANGE_PASS} element={<ChangePass />} />
         </Route>
       </Routes>
       <ChatGPT />

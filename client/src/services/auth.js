@@ -11,11 +11,20 @@ export const apiRegister = async (payload) => {
         // });
         const response = await axiosConfig.post('http://localhost:5000/api/v1/auth/validatemail', payload);
         console.log('API Register Response:', response); // Log the response
+
+
         return response.data;
 
-    } catch (error) {
-        console.error('API Register Error:', error); // Ghi log lỗi chi tiết
-        throw error.response ? error.response.data : 'Something went wrong';
+    }
+    catch (error) {
+        // Kiểm tra nếu có lỗi từ phản hồi của server (400, 500, ...)
+        if (error.response) {
+            console.error('API Register Error Response:', error.response.data);  // In ra lỗi từ server
+            throw error.response.data;  // Ném ra lỗi từ server để xử lý ở chỗ gọi hàm
+        } else {
+            // Nếu không có phản hồi từ server, ném ra lỗi mặc định
+            throw new Error('Something went wrong');
+        }
     }
 };
 

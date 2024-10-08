@@ -1,4 +1,3 @@
-const { report } = require("../../routes/auth")
 const tenanstService = require("../../services/user-service/tenants-services")
 
 const showInfoUser = async (req, res) => {
@@ -13,10 +12,11 @@ const showInfoUser = async (req, res) => {
         })
     }
 }
-
+// change info user
 const changeInfo = async (req, res) => {
     const userId = req.user.id
     const userUpdate = req.body
+    console.log(userUpdate)
     try {
         const response = await tenanstService.changeInfoUser(userId, userUpdate)
         return res.status(200).json(response)
@@ -56,4 +56,10 @@ const reportPost = async (req, res) => {
         })
     }
 }
-module.exports = { showInfoUser, changeInfo, savaPost, reportPost }
+
+const createPost = async (req, res) => {
+    const userId = req.user.id
+    const contentPost = req.body
+    console.log(contentPost)
+}
+module.exports = { showInfoUser, changeInfo, savaPost, createPost, reportPost }

@@ -1,8 +1,8 @@
 import axios from 'axios';
 
-export const getPersonalInfo = async () => {
+export const getPersonalInfo = async (token) => {
     try {
-        const token = localStorage.getItem('token'); // Retrieve token from local storage
+        //const token = localStorage.getItem('token'); // Retrieve token from local storage
         const response = await axios.get('http://localhost:5000/api/v1/user/showInfo', {
             headers: {
                 'token': ` ${token}` // Include token in headers

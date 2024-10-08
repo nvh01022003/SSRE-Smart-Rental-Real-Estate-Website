@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useContext } from 'react'
 import anonAvatar from '../../assets/anon-avatar.png'
 import { useSelector, useDispatch } from 'react-redux'
 import menuSidebar from '../../ultils/menuSidebar'
@@ -7,6 +7,7 @@ import * as actions from '../../store/actions'
 import { AiOutlineLogout } from 'react-icons/ai'
 import { logout } from '../../store/actions/auth'
 import { getPersonalInfo } from '../../services/userService'
+import { AuthContext } from '../../Context/AuthContext';
 
 const activeStyle = 'hover:bg-gray-200 flex  rounded-md items-center gap-2 py-2 font-bold bg-gray-200'
 const notActiceStyle = 'hover:bg-gray-200 flex  rounded-md items-center gap-2 py-2 cursor-pointer'
@@ -16,10 +17,12 @@ const Sidebar = () => {
     const dispatch = useDispatch()
     const [personalInfo, setPersonalInfo] = useState(null);
 
+    const { token } = useContext(AuthContext);
+
     useEffect(() => {
         const fetchPersonalInfo = async () => {
             try {
-                const data = await getPersonalInfo();
+                const data = await getPersonalInfo(token);
                 setPersonalInfo(data.info_user);
             } catch (error) {
                 console.error('Error fetching personal information:', error);
@@ -41,7 +44,7 @@ const Sidebar = () => {
                 <div className='flex items-center gap-4'>
                     <img src={personalInfo?.img_avt || anonAvatar} alt="avatar" className='w-12 h-12 object-cover rounded-full border-2 border-white' />
                     <div className='flex flex-col justify-center'>
-                        <span className='font-semibold'>{fullName}</span>
+                        <span classNam e='font-semibold'>{fullName}</span>
                     </div>
                 </div>
             </div>
