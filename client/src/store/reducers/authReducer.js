@@ -1,9 +1,12 @@
 import actionTypes from "../actions/actionTypes";
 
 const initState = {
-    isLoggedIn: JSON.parse(localStorage.getItem('isLoggedIn')) || false,
-    token: localStorage.getItem('token') || null,
-    user: JSON.parse(localStorage.getItem('user')) || null,
+    isLoggedIn: false,
+    //JSON.parse(localStorage.getItem('isLoggedIn')) ||
+    token: null,
+    //localStorage.getItem('token') ||
+    user: null,
+    //JSON.parse(localStorage.getItem('user')) ||
     error: null,
 }
 

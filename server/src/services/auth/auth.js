@@ -82,6 +82,7 @@ const loginService = async ({ email, password }) => {
 // change password
 const changePassWord = async (userId, password) => {
     try {
+
         const hashPass = await hashPassWord(password);
         await User.update({ pass: hashPass }, { where: { id: userId } })
         return {
@@ -95,5 +96,23 @@ const changePassWord = async (userId, password) => {
         }
     }
 }
-module.exports = { registerService, loginService, hashPassWord, changePassWord };
+
+// reset password
+const resetPassWord = async (email, newPass) => {
+
+    try {
+        const hashPass = await hashPassWord(newPass);
+        await User.update({ pass: hashPass }, { where: { email } })
+        return {
+            err: 0,
+            msg: 'Reset password success'
+        }
+    } catch (err) {
+        return {
+            err: 1,
+            msg: err
+        }
+    }
+}
+module.exports = { registerService, loginService, hashPassWord, changePassWord, resetPassWord };
 

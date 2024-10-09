@@ -32,6 +32,19 @@ const validateEmailPhone = async (req, res, next) => {
         });
     }
 };
+// check email va sdt da ton tai ch khi reset pass
+const validateEmailPhoneReset = async (req, res, next) => {
+    const { email } = req.body;
+    const recCheck = await User.findOne({ where: { email } });
+    if (recCheck) {
+        next();
+    } else {
+        return res.status(404).json({
+            err: 1,
+            msg: 'Email not found in the system',
+        });
+    }
+}
 const validateUpdate = async (req, res, next) => {
     const { email, phone } = req.body;
     if (!email && !phone) {
@@ -97,4 +110,4 @@ const validatePass = async (req, res, next) => {
     }
 
 };
-module.exports = { validateEmailPhone, validateUpdate, validatePass }
+module.exports = { validateEmailPhone, validateUpdate, validatePass, validateEmailPhoneReset }

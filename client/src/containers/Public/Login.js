@@ -110,7 +110,13 @@ const Login = () => {
                     />
                 </form>
                 <div className='mt-7 flex items-center justify-between'>
-                    <small className='text-[blue] hover:text-[red] cursor-pointer'>Bạn quên mật khẩu</small>
+                    <small
+                        onClick={() => navigate('/login/quen-mat-khau')}
+                        className='text-[blue] hover:text-[red] cursor-pointer'
+                    >
+                        Bạn quên mật khẩu
+                    </small>
+
                     <small
                         onClick={() => navigate('/register')}
                         className='text-[blue] hover:text-[red] cursor-pointer'

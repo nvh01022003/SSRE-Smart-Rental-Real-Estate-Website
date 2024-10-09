@@ -54,5 +54,20 @@ const updateImg = async (req, res, next) => {
         res.status(500).json({ err: 1, msg: 'Failed to upload avatar' });
     }
 };
+// upload nhiều ảnh
+const uploadImagesToCloudinary = async (files) => {
+    const uploadPromises = files.map(file => {
+        return new Promise((resolve, reject) => {
+            cloudinary.uploader.upload_stream({ resource_type: 'image' }, (error, result) => {
+                if (error) {
+                    reject(error);
+                } else {
+                    resolve(result.secure_url);
+                }
+            }).end(file.buffer);
+        });
+    });
 
-module.exports = { updateImg, upload, checkFileType };
+    return Promise.all(uploadPromises);
+};
+module.exports = { updateImg, upload, checkFileType, uploadImagesToCloudinary };

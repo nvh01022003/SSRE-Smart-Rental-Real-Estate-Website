@@ -9,6 +9,7 @@ import Register from './containers/Public/Register'
 import Verify from './containers/Public/Verify'
 import PersonalInfo from './components/PersonalInfo/PersonalInfo'
 import ChangePass from './components/ChangePass/ChangePass'
+import ForgotPassword from './containers/Public/ForgotPass'
 
 
 function App() {
@@ -34,10 +35,12 @@ function App() {
 
   return (
     <div className="bg-primary">
-      <Routes>
+      {/* <Routes>
         <Route path={path.HOME} element={<Home />}>
           <Route path='*' element={<Homepage />} />
-          <Route path={path.LOGIN} element={<Login />} />
+          <Route path={path.LOGIN} element={<Login />} >
+            <Route path={path.FORGOT_PASS} element={<ForgotPassword />} />
+          </Route>
           <Route path={path.REGISTER} element={<Register />} />
           <Route path="register/verify" element={<Verify />} />
           <Route path={path.CHO_THUE_CAN_HO} element={<Rental />} />
@@ -54,7 +57,9 @@ function App() {
           <Route path={path.CHANGE_PASS} element={<ChangePass />} />
         </Route>
 
-      </Routes>
+      </Routes> */}
+
+      <ForgotPassword />
     </div>
   );
 }

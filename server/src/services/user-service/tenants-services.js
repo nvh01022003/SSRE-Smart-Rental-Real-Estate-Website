@@ -6,7 +6,7 @@ const { where } = require("sequelize");
 const { User, Favourite, Report, sequelize } = require("../../models/index");
 const { response } = require("express");
 require('dotenv').config();
-// GET INFO USER
+// CREATE 
 const getInfoUser = async (userId) => {
     try {
         const user = await User.findOne({

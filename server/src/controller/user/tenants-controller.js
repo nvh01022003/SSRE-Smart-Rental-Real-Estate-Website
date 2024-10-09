@@ -57,9 +57,5 @@ const reportPost = async (req, res) => {
     }
 }
 
-const createPost = async (req, res) => {
-    const userId = req.user.id
-    const contentPost = req.body
-    console.log(contentPost)
-}
-module.exports = { showInfoUser, changeInfo, savaPost, createPost, reportPost }
+
+module.exports = { showInfoUser, changeInfo, savaPost, reportPost }
