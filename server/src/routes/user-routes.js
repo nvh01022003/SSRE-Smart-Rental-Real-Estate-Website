@@ -11,7 +11,7 @@ const router = express.Router()
 router.get("/showInfo", authentication.authenticateToken, tenantsController.showInfoUser)
 // change info user
 
-router.post("/changeInfo", authentication.authenticateToken, tenantsController.changeInfo)
+router.post("/changeInfo", authentication.authenticateToken, validate.validateUpdate, tenantsController.changeInfo)
 //, validate.validateUpdate
 
 // save post
