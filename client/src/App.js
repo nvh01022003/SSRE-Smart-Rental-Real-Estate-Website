@@ -1,3 +1,4 @@
+import React from 'react';
 import { Routes, Route } from 'react-router-dom'
 import { Home, Login, Rental, Homepage, DetailPost, SearchDetail } from './containers/Public'
 import { path } from './ultils/constant'
@@ -10,7 +11,7 @@ import Verify from './containers/Public/Verify'
 import PersonalInfo from './components/PersonalInfo/PersonalInfo'
 import ChangePass from './components/ChangePass/ChangePass'
 import ForgotPassword from './containers/Public/ForgotPass'
-
+import ChatGPT from './components/Chat/ChatGPT'
 
 function App() {
   const dispatch = useDispatch()
@@ -25,17 +26,18 @@ function App() {
     setTimeout(() => {
       isLoggedIn && dispatch(actions.getCurrent())
     }, 1000)
-  }, [isLoggedIn])
+  }, [isLoggedIn, dispatch])
 
   useEffect(() => {
     dispatch(actions.getPrices())
     dispatch(actions.getAreas())
     dispatch(actions.getProvinces())
-  }, [])
+  }, [dispatch])
 
   return (
+
     <div className="bg-primary">
-      {/* <Routes>
+      <Routes>
         <Route path={path.HOME} element={<Home />}>
           <Route path='*' element={<Homepage />} />
           <Route path={path.LOGIN} element={<Login />} >
@@ -57,9 +59,9 @@ function App() {
           <Route path={path.CHANGE_PASS} element={<ChangePass />} />
         </Route>
 
-      </Routes> */}
+      </Routes>
+      <ChatGPT />
 
-      <ForgotPassword />
     </div>
   );
 }
