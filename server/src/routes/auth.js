@@ -13,6 +13,7 @@ const storage = multer.memoryStorage();
 const upload = multer({ storage });
 const router = express.Router()
 
+//register
 router.post("/validatemail", validate.validateEmailPhone, validateEmpty.checkEmptyUser, middleware.createCodeVery)
 router.post("/register/:codeMail", middleware.verifiedMail, authController.register)
 
@@ -23,7 +24,8 @@ router.post("/changePass", authentication.authenticateToken, validate.validatePa
 
 // reset password
 router.post("/codeChangePass", validate.validateEmailPhoneReset, validateEmpty.checkEmptyEmail, middleware.createCodeVery)
-router.post("/resetPass/:codeMail", middleware.verifiedMail, authController.resetPass)
+router.post("/verifiedMail/:codeMail", middleware.verifiedMail)
+router.post("/resetPass", authController.resetPass)
 
 router.post('/upload', authentication.authenticateToken, upload.single('avatar'), img.checkFileType, img.updateImg, tenantsController.changeInfo);
 module.exports = router

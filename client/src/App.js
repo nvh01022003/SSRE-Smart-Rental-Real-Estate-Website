@@ -10,8 +10,10 @@ import Register from './containers/Public/Register'
 import Verify from './containers/Public/Verify'
 import PersonalInfo from './components/PersonalInfo/PersonalInfo'
 import ChangePass from './components/ChangePass/ChangePass'
-import ForgotPassword from './containers/Public/ForgotPass'
+import ForgotPassword from './containers/Public/ForgotPass/ForgotPass'
 import ChatGPT from './components/Chat/ChatGPT'
+import ValidateCode from './containers/Public/ForgotPass/ValidateCode';
+import ResetPass from './containers/Public/ForgotPass/ResetPass';
 
 function App() {
   const dispatch = useDispatch()
@@ -41,7 +43,11 @@ function App() {
         <Route path={path.HOME} element={<Home />}>
           <Route path='*' element={<Homepage />} />
           <Route path={path.LOGIN} element={<Login />} >
-            <Route path={path.FORGOT_PASS} element={<ForgotPassword />} />
+            <Route path={path.FORGOT_PASS} element={<ForgotPassword />} >
+              <Route path={path.VALIDATE_CODE} element={<ValidateCode />} >
+                <Route path={path.RESET_PASS} element={<ResetPass />} />
+              </Route>
+            </Route>
           </Route>
           <Route path={path.REGISTER} element={<Register />} />
           <Route path="register/verify" element={<Verify />} />
@@ -52,6 +58,7 @@ function App() {
           <Route path={path.SEARCH} element={<SearchDetail />} />
           <Route path={path.DETAL_POST__TITLE__POSTID} element={<DetailPost />} />
           <Route path={'chi-tiet/*'} element={<DetailPost />} />
+
         </Route>
         <Route path={path.SYSTEM} element={<System />} >
           <Route path={path.CREATE_POST} element={<CreatePost />} />
