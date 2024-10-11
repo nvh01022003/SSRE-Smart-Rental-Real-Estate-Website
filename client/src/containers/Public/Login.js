@@ -67,7 +67,7 @@ const Login = () => {
             const response = await dispatch(actions.login(payload)); // Gọi hàm login từ redux action
             console.log(response); // Log response để kiểm tra
             if (response?.access_token) {
-                localStorage.setItem('token', response.access_token);
+                //localStorage.setItem('token', response.access_token);
 
                 Swal.fire('Success', 'Đăng nhập thành công !', 'success').then(() => {
                     navigate('/');

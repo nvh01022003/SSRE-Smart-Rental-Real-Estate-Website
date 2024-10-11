@@ -8,12 +8,13 @@ import { useDispatch, useSelector } from 'react-redux'
 import { useEffect } from 'react'
 import Register from './containers/Public/Register'
 import Verify from './containers/Public/Verify'
-import PersonalInfo from './components/PersonalInfo/PersonalInfo'
-import ChangePass from './components/ChangePass/ChangePass'
+import PersonalInfo from './containers/System/PersonalInfo/PersonalInfo'
+import ChangePass from './containers/System/ChangePass'
 import ForgotPassword from './containers/Public/ForgotPass/ForgotPass'
 import ChatGPT from './components/Chat/ChatGPT'
 import ValidateCode from './containers/Public/ForgotPass/ValidateCode';
 import ResetPass from './containers/Public/ForgotPass/ResetPass';
+import Item from './components/Item';
 
 function App() {
   const dispatch = useDispatch()
@@ -70,6 +71,11 @@ function App() {
       <ChatGPT />
 
     </div>
+
+
+    // <div>
+    //   <Item />
+    // </div>
   );
 }
 

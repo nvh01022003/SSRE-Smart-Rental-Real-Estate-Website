@@ -1,8 +1,12 @@
 import axios from 'axios';
 
-export const apiGetCurrent = async () => {
+export const apiGetCurrent = async (token) => {
     try {
-        const response = await axios.get('http://localhost:5000/api/v1/user/showInfo');
+        const response = await axios.get('http://localhost:5000/api/v1/user/showInfo', {
+            headers: {
+                'token': ` ${token}` // Include token in headers
+            }
+        });
         return response.data;
 
     } catch (error) {

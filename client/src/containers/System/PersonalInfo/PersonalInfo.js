@@ -1,15 +1,16 @@
 import React, { useEffect, useContext, useState, useRef } from 'react';
-import { getPersonalInfo } from '../../services/userService';
+import { getPersonalInfo } from '../../../services/userService';
 import axios from 'axios';
 import './PersonalInfo.css';
 import Swal from 'sweetalert2';
-import { AuthContext } from '../../Context/AuthContext';
+import { AuthContext } from '../../../Context/AuthContext';
 
 const PersonalInfo = () => {
     const [personalInfo, setPersonalInfo] = useState(null);
     const { token } = useContext(AuthContext);
 
     const [formData, setFormData] = useState({
+        id: '',
         firstName: '',
         lastName: '',
         email: '',
@@ -31,6 +32,7 @@ const PersonalInfo = () => {
                 if (data.err === 0) {
                     setPersonalInfo(data.info_user);
                     initialFormData.current = {
+                        id: data.info_user.id,
                         firstName: data.info_user.firstName,
                         lastName: data.info_user.lastName,
                         email: data.info_user.email,
@@ -118,16 +120,29 @@ const PersonalInfo = () => {
                 Swal.fire('Success', 'Cập nhật thành công!', 'success');
                 // Optionally, refetch personal info to ensure data consistency
                 // fetchPersonalInfo();
-            } else if (response.data.err === 1) {
-                Swal.fire('Error', 'Email đã tồn tại', 'error');
-            } else if (response.data.err === 2) {
-                Swal.fire('Error', 'Số điện thoại đã tồn tại', 'error');
-            } else {
-                Swal.fire('Error', 'Cập nhật thất bại', 'error');
             }
         } catch (error) {
-            console.error('Error updating personal information:', error);
-            Swal.fire('Error', 'Error updating personal information', 'error');
+            if (error.response.data.err === 1) {
+                Swal.fire('Error', 'Email đã được sử dụng !', 'error');
+
+                // đặt lại email ban đầu khi báo lỗi
+                setFormData((prevFormData) => ({
+                    ...prevFormData,
+                    email: initialFormData.current.email
+                }));
+            }
+            else if (error.response.data.err === 2) {
+                Swal.fire('Error', 'Số điện thoại đã được sử dụng !', 'error');
+
+                // đặt lại phone ban đầu khi báo lỗi
+                setFormData((prevFormData) => ({
+                    ...prevFormData,
+                    phone: initialFormData.current.phone
+                }));
+            }
+            else {
+                Swal.fire('Error', 'Lỗi khi cập nhật thông tin người dùng !', 'error');
+            }
         }
     };
 
@@ -207,7 +222,8 @@ const PersonalInfo = () => {
                             {errors.lastName && <small className='text-red-500 italic'>{errors.lastName}</small>}
                         </div>
                     </div>
-                    <div>
+
+                    <div className='mt-3'>
                         <label className='text-sm text-gray-700 font-medium'>EMAIL :</label>
                         <input
                             className='input-email'
@@ -219,7 +235,7 @@ const PersonalInfo = () => {
                         />
                         {errors.email && <small className='text-red-500 italic'>{errors.email}</small>}
                     </div>
-                    <div>
+                    <div className='mt-3'>
                         <label className='text-sm text-gray-700 font-medium'>SỐ ĐIỆN THOẠI :</label>
                         <input
                             className='input-phone'
@@ -229,7 +245,7 @@ const PersonalInfo = () => {
                             onChange={handleChange}
                             placeholder="Phone"
                         />
-                        {errors.phone && <small className='text-red-500 italic'>{errors.phone}</small>}
+                        {errors.phone && <small className='text-red-500 italic '>{errors.phone}</small>}
                     </div>
                     <button
                         className='btn-update'
