@@ -35,8 +35,8 @@ const validateEmailPhone = async (req, res, next) => {
 // check email va sdt da ton tai ch khi reset pass
 const validateEmailPhoneReset = async (req, res, next) => {
     const { email } = req.body;
-    const recCheck = await User.findOne({ where: { email } });
-    if (recCheck) {
+    const resCheck = await User.findOne({ where: { email } });
+    if (resCheck) {
         next();
     } else {
         return res.status(404).json({
@@ -47,44 +47,31 @@ const validateEmailPhoneReset = async (req, res, next) => {
 }
 const validateUpdate = async (req, res, next) => {
     const { email, phone } = req.body;
-    if (!email && !phone) {
-        next();
-    }
-    else if (email && !phone) {
-        try {
-            const existingEmail = await User.findOne({ where: { email } });
-            if (existingEmail) {
-                return res.status(409).json({ // 409 xung đột là một mã
-                    err: 1,
-                    msg: 'Email already exists',
-                });
-            } else {
-                next();
-            }
-        } catch (err) {
-            return res.status(500).json({
-                err: 10,
-                msg: err.message,
+    const userId = req.user.id;
+    try {
+        const [existingEmail, existingPhone] = await Promise.all([
+            User.findOne({ where: { email } }),
+            User.findOne({ where: { phone } }),
+        ]);
+
+        if (existingEmail && existingEmail.id != userId) {
+            return res.status(409).json({ // 409 xung đột là một mã
+                err: 1,
+                msg: 'Email already exists',
             });
-        }
-    }
-    else if (phone && !email) {
-        try {
-            const existingPhone = await User.findOne({ where: { phone } });
-            if (existingPhone) {
-                return res.status(409).json({ // 409 xung đột là một mã
-                    err: 2,
-                    msg: 'Phone number already exists',
-                });
-            } else {
-                next();
-            }
-        } catch (err) {
-            return res.status(500).json({
-                err: 10,
-                msg: err.message,
+        } else if (existingPhone && existingPhone.id != userId) {
+            return res.status(409).json({ // 409 xung đột là một mã
+                err: 2,
+                msg: 'Phone number already exists',
             });
+        } else {
+            next();
         }
+    } catch (err) {
+        return res.status(500).json({
+            err: 10,
+            msg: err.message,
+        });
     }
 
 };

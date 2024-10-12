@@ -60,7 +60,9 @@ const createCodeVery = async (req, res, next) => {
 // client nhập code mail để so sanh với code trong db
 const verifiedMail = async (req, res, next) => {
     const { email } = req.body
+    console.log(email)
     const codeMail = req.params.codeMail;
+    console.log(codeMail)
     try {
         const resCode = await VeriMail.findOne({ where: { email } });
         if (codeMail == resCode.code) {

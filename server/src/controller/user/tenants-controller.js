@@ -27,7 +27,7 @@ const changeInfo = async (req, res) => {
         })
     }
 }
-
+// save post
 const savaPost = async (req, res) => {
     const userId = req.user.id
     const postId = req.params.id
@@ -41,7 +41,7 @@ const savaPost = async (req, res) => {
         })
     }
 }
-
+// report post
 const reportPost = async (req, res) => {
     const userId = req.user.id
     const postId = req.params.id
@@ -56,6 +56,53 @@ const reportPost = async (req, res) => {
         })
     }
 }
+// show list post saved
+const listPostSaved = async (req, res) => {
+    const userId = req.user.id
+    try {
+        const response = await tenanstService.listPostSaved(userId)
+        return res.status(200).json(response)
+    } catch (error) {
+        return res.status(500).json({
+            err: -1,
+            msg: 'Fail at auth controller listPostSaved: ' + error
+        })
+    }
+}
+// find post by min price and max price
+const findPostByPrice = async (req, res) => {
+    const minPrice = req.query.minPrice
+    const maxPrice = req.query.maxPrice
+    try {
+        const response = await tenanstService.findPostByPrice(minPrice, maxPrice)
+        return res.status(200).json(response)
+    } catch (error) {
+        return res.status(500).json({
+            err: -1,
+            msg: 'Fail at auth controller findPostByPrice: ' + error
+        })
+    }
+}
+// find post by location
+const findPostByLocation = async (req, res) => {
+    const location = req.query.location
+    try {
+        const response = await tenanstService.findPostByLocation(location)
+        return res.status(200).json(response)
+    } catch (error) {
+        return res.status(500).json({
+            err: -1,
+            msg: 'Fail at auth controller findPostByLocation: ' + error
+        })
+    }
+}
 
-
-module.exports = { showInfoUser, changeInfo, savaPost, reportPost }
+module.exports = {
+    showInfoUser,
+    changeInfo,
+    savaPost,
+    reportPost,
+    listPostSaved,
+    findPostByPrice,
+    findPostByLocation
+}

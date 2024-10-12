@@ -14,7 +14,9 @@ const generateRandomCode = () => {
 
 // CREATE POST
 const createNewPost = async (userId, contentPost, files) => {
-    const { title, address, price, area, description, images, overview, category_id } = contentPost
+    contentPost = JSON.parse(contentPost)
+    const imageUrls = files;
+    const { title, address, price, description, overview, category_id } = contentPost
     const addressData = address
     const overviewData = {
         ...overview,
@@ -28,16 +30,108 @@ const createNewPost = async (userId, contentPost, files) => {
         lat: resCoordinates.lat,
         lon: resCoordinates.lng
     }
-    const imageUrls = await middleware.uploadImagesToCloudinary(files);
+
     try {
+        // diachi
         const resAddress = await Address.create(addressData)
+        // bang overview
         const resOverview = await Overview.create(overviewData)
+        // bang toa do
         const resCoordinates = await Coordinates.create(coordinatesData)
-        const imageEntries = await Promise.all(
-            imageUrls.map(url => Image.create({ url, postId: post.id }, { transaction }))
-        )
+        // bang img cua baiviet
+        const resImage = await Image.create({ img_url_list: JSON.stringify(imageUrls) })
+        console.log(resAddress.id, resOverview.id, resCoordinates.id, resImage.id)
+        // tao bang bai viet
+        const resPost = await Post.create({
+            title,
+            price,
+            description,
+            user_id: userId,
+            address_id: resAddress.id,
+            overview_id: resOverview.id,
+            coordinates_id: resCoordinates.id,
+            category_id: category_id,
+            img_id: resImage.id
+        });
+        return {
+            err: 0,
+            msg: 'Create post success',
+            post: resPost
+        }
     } catch (error) {
-        return error
+        console.log(error)
+        return {
+            err: 1,
+            msg: error
+        }
     }
 }
-module.exports = { createNewPost };
+// UPDATE STATUS POST
+const updateStatusPost = async (postId, status) => {
+    try {
+        const resPost = await Post.update({ status }, {
+            where: {
+                id: postId
+            }
+        })
+        return {
+            err: 0,
+            msg: 'Update status post success',
+            post: resPost
+        }
+    } catch (error) {
+        console.log(error)
+        return {
+            err: 1,
+            msg: error
+        }
+    }
+}
+// UPDATE POST
+const updatePost = async (postId, dataUpdae) => {
+    try {
+        const resPost = await Post.update(dataUpdae, {
+            where: {
+                id: postId
+            }
+        })
+        return {
+            err: 0,
+            msg: 'Update post success',
+            post: resPost
+        }
+    } catch (error) {
+        console.log(error)
+        return {
+            err: 1,
+            msg: error
+        }
+    }
+}
+// DELETE POST
+const deletePost = async (postId) => {
+    try {
+        const resPost = await Post.destroy({
+            where: {
+                id: postId
+            }
+        })
+        return {
+            err: 0,
+            msg: 'Delete post success',
+            post: resPost
+        }
+    } catch (error) {
+        console.log(error)
+        return {
+            err: 1,
+            msg: error
+        }
+    }
+}
+module.exports = {
+    createNewPost,
+    updateStatusPost,
+    updatePost,
+    deletePost
+};

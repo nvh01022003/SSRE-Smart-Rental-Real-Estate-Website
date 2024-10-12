@@ -3,7 +3,7 @@ const gravatar = require("gravatar");
 const jwt = require("jsonwebtoken");
 const authServices = require("../../services/auth/auth");
 const { where } = require("sequelize");
-const { User, Favourite, Report, sequelize } = require("../../models/index");
+const { User, Post, Address, Favourite, Report, sequelize } = require("../../models/index");
 const { response } = require("express");
 require('dotenv').config();
 // CREATE 
@@ -86,4 +86,78 @@ const reportPost = async (userId, postId, desc) => {
         }
     }
 }
-module.exports = { getInfoUser, changeInfoUser, savePost, reportPost };
+// show list post saved
+const listPostSaved = async (userId) => {
+    try {
+        const listPostSaved = await Favourite.findAll({
+            where: {
+                user_id: userId
+            }
+        })
+        return {
+            err: 0,
+            msg: listPostSaved
+        }
+    } catch (err) {
+        return {
+            err: 1,
+            msg: err
+        }
+    }
+}
+// find post by min price and max price
+const findPostByPrice = async (minPrice, maxPrice) => {
+    try {
+        const listPost = await sequelize.query(`SELECT * FROM posts WHERE price BETWEEN ${minPrice} AND ${maxPrice}`, { type: sequelize.QueryTypes.SELECT });
+        return {
+            err: 0,
+            msg: listPost
+        }
+    } catch (err) {
+        return {
+            err: 1,
+            msg: err
+        }
+    }
+}
+// find post by location
+const findPostByLocation = async (location) => {
+    try {
+        const addressResult = await Address.findAll({
+            where: {
+                city: location
+            }
+        })
+        const addressIDs = addressResult.map((address) => address.id);
+        if (addressIDs.length === 0) {
+            return {
+                err: 0,
+                msg: "No post found"
+            }
+        }
+        console.log(addressIDs);
+        const posts = await Post.findAll({
+            where: {
+                address_id: addressIDs
+            }
+        });
+        return {
+            err: 0,
+            msg: posts
+        }
+    } catch (err) {
+        return {
+            err: 1,
+            msg: err
+        }
+    }
+}
+module.exports = {
+    getInfoUser,
+    changeInfoUser,
+    savePost,
+    reportPost,
+    listPostSaved,
+    findPostByPrice,
+    findPostByLocation
+};
