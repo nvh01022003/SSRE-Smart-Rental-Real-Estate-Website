@@ -17,6 +17,9 @@ export const path = {
     CREATE_POST: 'tao-moi-bai-dang',
     PERSONAL_INFO: 'thong-tin-ca-nhan',
     CHANGE_PASS: 'doi-mat-khau',
+    PAYMENT: 'vi-tien',
+    // HISTORY_PAYMENT: 'lich-su-nap-tien',
+    MOMO: 'momo'
 }
 
 export const text = {

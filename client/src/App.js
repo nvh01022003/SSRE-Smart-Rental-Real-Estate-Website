@@ -9,7 +9,11 @@ import Register from './containers/Public/Register'
 import Verify from './containers/Public/Verify'
 import PersonalInfo from './components/PersonalInfo/PersonalInfo'
 import ChangePass from './components/ChangePass/ChangePass'
-
+import Payment from './containers/System/Payment'
+import Chat from './components/Chat/Chat'
+import HistoryPayment from './components/HistoryPayment'
+import DepositHistory from './components/DepositHistory'
+import Momo from './components/Momo'
 
 function App() {
   const dispatch = useDispatch()
@@ -33,6 +37,7 @@ function App() {
   }, [])
 
   return (
+
     <div className="bg-primary">
       <Routes>
         <Route path={path.HOME} element={<Home />}>
@@ -51,10 +56,14 @@ function App() {
         <Route path={path.SYSTEM} element={<System />} >
           <Route path={path.CREATE_POST} element={<CreatePost />} />
           <Route path={path.PERSONAL_INFO} element={<PersonalInfo />} />
+          <Route path={path.PAYMENT} element={<Payment/>} />
           <Route path={path.CHANGE_PASS} element={<ChangePass />} />
         </Route>
-
+        <Route path="/he-thong/lich-su-nap-tien" element={<HistoryPayment />}/>
+        <Route path="/he-thong/lich-su-thanh-toan" element={<DepositHistory/>}/>
+        <Route path={path.MOMO} element={<Momo/>}/>
       </Routes>
+      <Chat/>
     </div>
   );
 }

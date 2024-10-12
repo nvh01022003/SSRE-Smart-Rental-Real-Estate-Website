@@ -5,6 +5,9 @@ module.exports = {
   ],
   theme: {
     extend: {
+      fontSize: {
+        '24px': '24px', // Adding custom 24px font size
+      },
       width: {
         '1100': '1100px'
       },

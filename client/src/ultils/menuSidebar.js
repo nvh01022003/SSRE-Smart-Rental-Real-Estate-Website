@@ -1,6 +1,6 @@
 import icons from './icons'
 
-const { ImPencil2, MdOutlineLibraryBooks, BiUserPin } = icons
+const { ImPencil2, MdOutlineLibraryBooks, BiUserPin, BiMoney} = icons
 
 const memuSidebar = [
     {
@@ -20,6 +20,12 @@ const memuSidebar = [
         text: 'Thông tin cá nhân',
         path: '/he-thong/thong-tin-ca-nhan',
         icon: <BiUserPin />
+    },
+    {
+        id: 6,
+        text: 'Ví tiền tài khoản',
+        path: '/he-thong/vi-tien',
+        icon: <BiMoney/>
     },
     {
         id: 5,
