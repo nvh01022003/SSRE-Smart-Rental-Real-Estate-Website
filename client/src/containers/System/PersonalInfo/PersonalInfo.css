@@ -1,0 +1,144 @@
+.personal-info {
+    display: flex;
+    flex-direction: column;
+    gap: 20px; 
+    max-width: 500px;
+    margin: 0 auto; 
+    padding: 20px;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.avatar {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-top: 30px;
+    margin-bottom: 20px;
+    border: 2px solid #ccc;
+}
+
+.label {
+    font-weight:600;
+    margin-bottom: 1px;
+    display: inline-block;
+}
+
+.input-email
+ {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+    margin-top: 3px;
+    margin-bottom: 5px;
+}
+
+.input-phone
+ {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+    margin-top: 3px;
+    margin-bottom: 5px;
+}
+
+.input-firstName
+ {
+    width: 90%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+    margin-top: 3px;
+    margin-bottom: 5px;
+}
+
+.input-lastName
+ {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+    margin-top: 3px;
+    margin-bottom: 5px;
+}
+
+span p {
+    margin-right: 16px;
+    font-weight: bold;
+}
+
+span input {
+    margin-left: 8px;
+    margin-right: 8px;
+}
+
+.center-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    width: 50%;
+}
+
+.center-content {
+    text-align: center;
+    justify-content: center;
+    align-items: center;
+}
+
+.btn-upload {
+    font-size: 16px;
+    font-weight: bold;
+    color: #333;
+    background-color: #f0f0f0;
+    border: 1px solid #ccc;
+    padding: 8px 36px;
+    cursor: pointer;
+    margin-top: 10px;
+}
+
+.btn-update {
+    font-size: 16px;
+    font-weight: bold;
+    color: #333;
+    background-color: #f0f0f0;
+    border: 1px solid #8b8b8b;
+    padding: 8px 16px;
+    cursor: pointer;
+    border-color: #ccc; /* Add border color */
+    width: 150px; /* Add width */
+    height: 40px; /* Add height */
+    margin-left: 200px;   
+    margin-top: 15px;
+}
+
+.btn-upload:hover {
+    background-color: #e0e0e0;
+}
+button:hover {
+    background-color: #e0e0e0;
+}
+
+input[type="text"]:focus, 
+input[type="email"]:focus {
+    border-color: #007bff;
+    outline: none;
+    box-shadow: 0px 0px 5px rgba(0, 123, 255, 0.5);
+}
+
+.upload-section {
+    display: flex;
+    align-items: center;
+    margin-top: 16px;
+    border-color: #007bff; /* Add border color */
+    width: 150px; /* Add width */
+    height: 40px; /* Add height */
+}

@@ -35,7 +35,7 @@ const List = ({ categoryCode }) => {
                 <Button bgColor='bg-gray-200' text='Mặc định' />
                 <Button bgColor='bg-gray-200' text='Mới nhất' />
             </div>
-            <div className='items'>
+            {/* <div className='items'>
                 {posts?.length > 0 && posts.map(item => {
                     return (
                         <Item
@@ -51,6 +51,9 @@ const List = ({ categoryCode }) => {
                         />
                     )
                 })}
+            </div> */}
+            <div>
+                <Item />
             </div>
         </div>
     )

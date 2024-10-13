@@ -1,21 +1,31 @@
+import supportBg from '../assets/support-bg.jpg'
 export const text = {
-    image: 'https://phongtro123.com/images/support-bg.jpg',
-    content: 'Liên hệ với chúng tôi nếu bạn cần hỗ trợ:',
+    image: supportBg,
+    content: 'Liên hệ ngay cho chúng tôi nếu bạn cần hỗ trợ !',
     contacts: [
         {
             text: 'HỖ TRỢ THANH TOÁN',
-            phone: 'Điện thoại: 0917686101',
-            zalo: 'Zalo: 0917686101'
+            phone: 'Số điện thoại:',
+            number: '0917686101',
+            mail: 'Email:',
+            email: 'payment.support.srre@gmail.com'
+
         },
         {
             text: 'HỖ TRỢ ĐĂNG TIN',
-            phone: 'Điện thoại: 0902657123',
-            zalo: 'Zalo: 0902657123'
+            phone: 'Số điện thoại:',
+            number: '0902657123',
+            mail: 'Email:',
+            email: 'support.posting.srre@gmail.com'
+
         },
         {
             text: 'HOTLINE 24/7',
-            phone: 'Điện thoại: 0917686101',
-            zalo: 'Zalo: 0917686101'
+            phone: 'Số điện thoại:',
+            number: '0917686101',
+            mail: 'Email:',
+            email: 'hotline.srre@gmail.com'
+
         },
     ]
 }

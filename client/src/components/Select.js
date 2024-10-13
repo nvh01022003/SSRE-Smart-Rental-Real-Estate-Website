@@ -12,13 +12,13 @@ const Select = ({ label, options, value, setValue, type, reset, name }) => {
                 className='outline-none border border-gray-300 p-2 rounded-md w-full'
             >
                 <option value="">{`--Chọn ${label}--`}</option>
-                {options?.map(item => {
+                {options?.map((item, index) => {
                     return (
                         <option
-                            key={type === 'province' ? item?.province_id : type === 'district' ? item?.district_id : item?.code}
-                            value={type === 'province' ? item?.province_id : type === 'district' ? item?.district_id : item?.code}
+                            key={type === 'province' ? item?.province_id : type === 'district' ? item?.district_id : type === 'ward' ? item?.ward_id : index}
+                            value={type === 'province' ? item?.province_id : type === 'district' ? item?.district_id : type === 'ward' ? item?.ward_id : ''}
                         >
-                            {type === 'province' ? item?.province_name : type === 'district' ? item?.district_name : item?.value}
+                            {type === 'province' ? item?.province_name : type === 'district' ? item?.district_name : type === 'ward' ? item?.ward_name : ''}
                         </option>
                     )
                 })}

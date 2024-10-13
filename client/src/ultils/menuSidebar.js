@@ -17,14 +17,14 @@ const memuSidebar = [
     },
     {
         id: 4,
-        text: 'Sửa thông tin cá nhân',
-        path: '/he-thong/sua-thong-tin-ca-nhan',
+        text: 'Thông tin cá nhân',
+        path: '/he-thong/thong-tin-ca-nhan',
         icon: <BiUserPin />
     },
     {
         id: 5,
-        text: 'Liên hệ',
-        path: '/he-thong/lien-he',
+        text: 'Đổi mật khẩu',
+        path: '/he-thong/doi-mat-khau',
         icon: <BiUserPin />
     }
 ]
