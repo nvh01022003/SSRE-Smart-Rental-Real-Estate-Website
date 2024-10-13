@@ -1,8 +1,9 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Navigation, Pagination } from 'swiper/modules';
-
+import 'react-image-lightbox/style.css'; // Import CSS cho lightbox
+import Lightbox from 'react-image-lightbox';
 
 // Import Swiper styles
 import 'swiper/css';
@@ -26,6 +27,18 @@ const DetailPost = () => {
     //     return `${baseUrl}?key=${apiKey}&q=${encodedAddress}`;
     // }, [data.address]);
 
+    const [isOpen, setIsOpen] = useState(false);
+    const [currentImage, setCurrentImage] = useState(0);
+
+    const openLightbox = (index) => {
+        setCurrentImage(index);
+        setIsOpen(true);
+    };
+
+    const closeLightbox = () => {
+        setIsOpen(false);
+    };
+
     return (
         <div className="container mx-auto py-4 px-6">
             {/* Slideshow phần hình ảnh */}
@@ -37,11 +50,12 @@ const DetailPost = () => {
                         pagination={{ clickable: true }}
                         spaceBetween={10}
                         slidesPerView={1}
+                        loop={true}  // Bật tính năng loop
                         style={{ height: '100%' }} // Ensure swiper takes the full height
                     >
                         {data.images.length > 0 ? (
                             data.images.map((img, index) => (
-                                <SwiperSlide key={index}>
+                                <SwiperSlide key={index} onClick={() => openLightbox(index)}>
                                     <img
                                         src={img}
                                         alt={`preview-${index}`}
@@ -55,10 +69,24 @@ const DetailPost = () => {
                     </Swiper>
                 </div>
             </div>
+            {isOpen && (
+                <Lightbox
+                    mainSrc={data.images[currentImage]}
+                    nextSrc={data.images[(currentImage + 1) % data.images.length]}
+                    prevSrc={data.images[(currentImage + data.images.length - 1) % data.images.length]}
+                    onCloseRequest={closeLightbox}
+                    onMovePrevRequest={() =>
+                        setCurrentImage((currentImage + data.images.length - 1) % data.images.length)
+                    }
+                    onMoveNextRequest={() =>
+                        setCurrentImage((currentImage + 1) % data.images.length)
+                    }
+                    imageCaption={`Image ${currentImage + 1} of ${data.images.length}`} // Tùy chỉnh chú thích ảnh nếu cần
+                />
+            )}
+
 
             {/* Thông tin bài đăng */}
-
-
             <div className="mb-5">
                 {/* Title with stars */}
                 <h1 className="text-2xl font-bold text-red-600 mb-5">
