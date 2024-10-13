@@ -2,10 +2,40 @@ import React, { useState } from "react"
 import Header from "../containers/System/Header"
 import { Link } from 'react-router-dom'
 
+// Define fake data
+const fakeData = [
+    {
+        time: '2023-10-01 10:00',
+        activityType: 'Deposit',
+        postId: 'POST123456',
+        postType: 'Premium',
+        balance: '1,000,000đ',
+        fee: '50,000đ',
+        remaining: '950,000đ',
+        status: 'Completed'
+    },
+    {
+        time: '2023-10-02 14:30',
+        activityType: 'Withdrawal',
+        postId: 'POST123457',
+        postType: 'Standard',
+        balance: '950,000đ',
+        fee: '20,000đ',
+        remaining: '930,000đ',
+        status: 'Pending'
+    },
+    // Add more fake data as needed
+];
+const formatDate = (dateTimeString) => {
+    const [date, time] = dateTimeString.split(' ');
+    const [year, month, day] = date.split('-');
+    return `${day}-${month}-${year} ${time}`;
+};
+
 const DepositHistory=()=>{
     const [currentPage, setCurrentPage] = useState(1);
     const [itemsPerPage, setItemsPerPage] = useState(10);
-    const totalPages = 2; // Example total pages
+    const totalPages = Math.ceil(fakeData.length / itemsPerPage);
 
     const handlePreviousPage = () => {
         if (currentPage > 1) {
@@ -18,8 +48,14 @@ const DepositHistory=()=>{
             setCurrentPage(currentPage + 1);
         }
     };
-return (
-    <div>
+
+    // Calculate the data to display on the current page
+    const indexOfLastItem = currentPage * itemsPerPage;
+    const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+    const currentItems = fakeData.slice(indexOfFirstItem, indexOfLastItem);
+
+    return (
+        <div>
             <Header />
             <div className='px-6'>
                 <div className='flex items-center py-4 border-b border-gray-200'>
@@ -39,15 +75,26 @@ return (
                                     <th className="border border-gray-200 px-4 py-2">Thời gian</th>
                                     <th className="border border-gray-200 px-4 py-2">Loại hoạt động</th>
                                     <th className="border border-gray-200 px-4 py-2">Mã tin đăng</th>
-                                    <th className="border border-gray-200 px-4 py-2">Loại tin </th>
-                                    <th className="border border-gray-200 px-4 py-2">Số dư </th>
-                                    <th className="border border-gray-200 px-4 py-2">Phí </th>
-                                    <th className="border border-gray-200 px-4 py-2">Còn lại </th>
-                                    <th className="border border-gray-200 px-4 py-2">Trạng thái </th>
+                                    <th className="border border-gray-200 px-4 py-2">Loại tin</th>
+                                    <th className="border border-gray-200 px-4 py-2">Số dư</th>
+                                    <th className="border border-gray-200 px-4 py-2">Phí</th>
+                                    <th className="border border-gray-200 px-4 py-2">Còn lại</th>
+                                    <th className="border border-gray-200 px-4 py-2">Trạng thái</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                {/* Thêm dữ liệu vào đây */}
+                                {currentItems.map((item, index) => (
+                                    <tr key={index}>
+                                        <td className="border border-gray-200 px-4 py-2 text-center">{formatDate(item.time)}</td>
+                                        <td className="border border-gray-200 px-4 py-2 text-center">{item.activityType}</td>
+                                        <td className="border border-gray-200 px-4 py-2 text-center">{item.postId}</td>
+                                        <td className="border border-gray-200 px-4 py-2 text-center">{item.postType}</td>
+                                        <td className="border border-gray-200 px-4 py-2 text-center">{item.balance}</td>
+                                        <td className="border border-gray-200 px-4 py-2 text-center">{item.fee}</td>
+                                        <td className="border border-gray-200 px-4 py-2 text-center">{item.remaining}</td>
+                                        <td className="border border-gray-200 px-4 py-2 text-center">{item.status}</td>
+                                    </tr>
+                                ))}
                             </tbody>
                         </table>
                         <div className="flex justify-between items-center mt-4">
@@ -78,6 +125,6 @@ return (
                 </div>
             </div>
         </div>
-)
+    )
 }
 export default DepositHistory;
