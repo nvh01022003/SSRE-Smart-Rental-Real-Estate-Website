@@ -33,7 +33,7 @@ const Header = () => {
         dispatch(logout());
     };
     return (
-        <div ref={headerRef} className='w-4/5 '>
+        <div ref={headerRef} className='w-4/5 mx-auto container'>
             <div className='w-full flex items-center justify-between'>
                 <Link to={'/'} className='flex items-center'>
                     <img

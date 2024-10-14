@@ -4,16 +4,18 @@ import { Swiper, SwiperSlide } from 'swiper/react';
 import { Navigation, Pagination } from 'swiper/modules';
 import 'react-image-lightbox/style.css'; // Import CSS cho lightbox
 import Lightbox from 'react-image-lightbox';
+import icons from '../../ultils/icons'
 
 // Import Swiper styles
 import 'swiper/css';
 import 'swiper/css/navigation';
 import 'swiper/css/pagination';
 
-import { FaFlag, FaMapMarkerAlt, FaDollarSign, FaRulerCombined, FaClock } from 'react-icons/fa'; // Importing relevant icons
+import { FaFlag, FaMapMarkerAlt, FaDollarSign, FaClock, FaStar } from 'react-icons/fa'; // Importing relevant icons
 
 //import { useMemo } from 'react';
 
+const { RiCrop2Line, GrStar } = icons
 
 const DetailPost = () => {
     const location = useLocation();
@@ -89,15 +91,18 @@ const DetailPost = () => {
             {/* Thông tin bài đăng */}
             <div className="mb-5">
                 {/* Title with stars */}
-                <h1 className="text-2xl font-bold text-red-600 mb-5">
-                    {Array(data.star).fill('⭐').join('')} {data.title}
+                <h1 className="text-2xl font-bold text-red-600 mb-5 flex-wrap">
+                    {Array(data.star).fill().map((_, i) => (
+                        <GrStar key={i} className="inline-block mb-2 text-yellow-500" size={24} /> // Kích thước và màu của sao
+                    ))}
+                    {data.title}
                 </h1>
 
                 {/* Address with icon */}
                 <div className="flex items-center text-gray-500 mb-5">
                     <FaMapMarkerAlt className="mr-2" /> {/* Address icon */}
                     <span className="font-semibold">Địa chỉ : </span> {/* Label */}
-                    <span>{data.address}</span> {/* Address data */}
+                    <span className='ml-1'>{data.address}</span> {/* Address data */}
                 </div>
 
                 {/* Price, Acreage, and Update Info with Icons */}
@@ -110,7 +115,7 @@ const DetailPost = () => {
 
                     {/* Acreage with icon */}
                     <div className="flex items-center pl-20">
-                        <FaRulerCombined className="mr-2 text-gray-500" /> {/* Acreage icon */}
+                        <RiCrop2Line className="mr-2 text-gray-500" /> {/* Acreage icon */}
                         <span>{data.attributes.acreage}</span>
                     </div>
 
