@@ -16,14 +16,23 @@ router.get("/showInfo", authentication.authenticateToken, tenantsController.show
 router.post("/changeInfo", authentication.authenticateToken, validate.validateUpdate, tenantsController.changeInfo)
 // save post
 router.post("/savePost/:id", authentication.authenticateToken, tenantsController.savaPost)
-// report post
-router.post("/reportPost/:id", authentication.authenticateToken, tenantsController.reportPost)
 // show list post saved ( favorite )
 router.get("/listPostSaved", authentication.authenticateToken, tenantsController.listPostSaved)
-// find post by price
-router.get("/findPostByPrice", authentication.authenticateToken, tenantsController.findPostByPrice)
-// find post by location
-router.get("/findPostByLocation", authentication.authenticateToken, tenantsController.findPostByLocation)
+// delete list post saved
+router.delete("/deletePostSaved/:id", authentication.authenticateToken, tenantsController.deletePostSaved)
+// report post
+router.post("/reportPost/:id", authentication.authenticateToken, tenantsController.reportPost)
+// // find post by price
+// router.get("/findPostByPrice", authentication.authenticateToken, tenantsController.findPostByPrice)
+// // find post by location
+// router.get("/findPostByLocation", authentication.authenticateToken, tenantsController.findPostByLocation)
+// // find post by acreage
+// router.get("/findPostByAcreage", authentication.authenticateToken, tenantsController.findPostByAcreage)
+// find post by price and acreage and location and category
+router.get("/findPostByAll", authentication.authenticateToken, tenantsController.findPostByAll)
+// pagination post
+router.get("/paginationPost", authentication.authenticateToken, tenantsController.paginationPost)
+
 
 
 

@@ -152,6 +152,105 @@ const findPostByLocation = async (location) => {
         }
     }
 }
+// DELETE POST SAVED
+const deletePostSaved = async (userId, postId) => {
+    try {
+        await Favourite.destroy({
+            where: {
+                user_id: userId,
+                post_id: postId
+            }
+        })
+        return {
+            err: 0,
+            msg: "Delete post saved success"
+        }
+    } catch (err) {
+        return {
+            err: 1,
+            msg: err
+        }
+    }
+}
+// FIND POST BY ACREAGE
+const findPostByAcreage = async (minAcreage, maxAcreage) => {
+    try {
+        const listPost = await sequelize.query(`SELECT * FROM posts WHERE acreage BETWEEN ${minAcreage} AND ${maxAcreage}`, { type: sequelize.QueryTypes.SELECT });
+        return {
+            err: 0,
+            msg: listPost
+        }
+    } catch (err) {
+        return {
+            err: 1,
+            msg: err
+        }
+    }
+}
+// PAGINATION POST
+const paginationPost = async (page, limit) => {
+    try {
+        const listPost = await Post.findAll({
+            offset: (page - 1) * limit,
+            limit: limit
+        });
+        return {
+            err: 0,
+            msg: listPost
+        }
+    } catch (err) {
+        return {
+            err: 1,
+            msg: err
+        }
+    }
+}
+// FIND POST BY ALL
+const findPostByAll = async (minPrice, maxPrice, minAcreage, maxAcreage, location, category) => {
+    try {
+        whereCondition = {};
+        if (minPrice && maxPrice) {
+            whereCondition.price = {
+                [Op.between]: [minPrice, maxPrice]
+            }
+        }
+        if (minAcreage && maxAcreage) {
+            whereCondition.acreage = {
+                [Op.between]: [minAcreage, maxAcreage]
+            }
+        }
+        if (location) {
+            const addressResult = await Address.findAll({
+                where: {
+                    city: location
+                }
+            })
+            const addressIDs = addressResult.map((address) => address.id);
+            whereCondition.address_id = addressIDs;
+        }
+        if (category) {
+            const categoryResult = await Category.findOne({
+                where: {
+                    name: category
+                }
+            })
+            whereCondition.category_id = categoryResult.id;
+        }
+        const listPost = await Post.findAll({
+            where: whereCondition
+        });
+        return {
+            err: 0,
+            msg: listPost
+        }
+
+    } catch (err) {
+        return {
+            err: 1,
+            msg: err
+        }
+    }
+}
 module.exports = {
     getInfoUser,
     changeInfoUser,
@@ -159,5 +258,9 @@ module.exports = {
     reportPost,
     listPostSaved,
     findPostByPrice,
-    findPostByLocation
+    findPostByLocation,
+    findPostByAcreage,
+    paginationPost,
+    deletePostSaved,
+    findPostByAll
 };

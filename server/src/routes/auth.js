@@ -9,7 +9,9 @@ const img = require("../middleware/upload/uploadImg")
 const multer = require('multer');
 const storage = multer.memoryStorage();
 const upload = multer({ storage });
-const router = express.Router()
+const router = express.Router();
+
+// register
 router.post("/validatemail", validate.validateEmailPhone, validateEmpty.checkEmptyUser, middleware.createCodeVery)
 router.post("/register/:codeMail", middleware.verifiedMail, authController.resgister)
 router.post("/login", authController.login)

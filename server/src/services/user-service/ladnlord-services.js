@@ -32,16 +32,12 @@ const createNewPost = async (userId, contentPost, files) => {
     }
 
     try {
-        // diachi
-        const resAddress = await Address.create(addressData)
-        // bang overview
-        const resOverview = await Overview.create(overviewData)
-        // bang toa do
-        const resCoordinates = await Coordinates.create(coordinatesData)
-        // bang img cua baiviet
-        const resImage = await Image.create({ img_url_list: JSON.stringify(imageUrls) })
-        console.log(resAddress.id, resOverview.id, resCoordinates.id, resImage.id)
-        // tao bang bai viet
+        const [resAddress, resOverview, resCoordinates, resImage] = await Promise.all([
+            Address.create(addressData),
+            Overview.create(overviewData),
+            Coordinates.create(coordinatesData),
+            Image.create({ img_url_list: JSON.stringify(imageUrls) })
+        ]);
         const resPost = await Post.create({
             title,
             price,
