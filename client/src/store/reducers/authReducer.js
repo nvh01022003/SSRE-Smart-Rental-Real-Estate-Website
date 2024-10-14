@@ -1,11 +1,11 @@
 import actionTypes from "../actions/actionTypes";
 
 const initState = {
-    isLoggedIn: false,
+    isLoggedIn: !!localStorage.getItem('token'),
     //JSON.parse(localStorage.getItem('isLoggedIn')) ||
-    token: null,
+    token: localStorage.getItem('token') || null,
     //localStorage.getItem('token') ||
-    user: null,
+    user: JSON.parse(localStorage.getItem('user')) || null,
     //JSON.parse(localStorage.getItem('user')) ||
     error: null,
 }
@@ -56,6 +56,8 @@ const authReducer = (state = initState, action) => {
                 error: action.data,
             }
         case actionTypes.LOGOUT:
+            localStorage.removeItem('user');
+            //localStorage.removeItem('token');
             return {
                 ...state,
                 isLoggedIn: false,

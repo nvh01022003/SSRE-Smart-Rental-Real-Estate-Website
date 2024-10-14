@@ -4,9 +4,11 @@ import * as apis from '../../services'
 
 export const getCurrent = () => async (dispatch) => {
 
-    const persistAuth = localStorage.getItem('persist:auth');
-    const authData = JSON.parse(persistAuth);
-    const token = authData.token.replace(/"/g, ''); // Remove quotes from token
+    // const persistAuth = localStorage.getItem('persist:auth');
+    // const authData = JSON.parse(persistAuth);
+    // const token = authData.token.replace(/"/g, ''); // Remove quotes from token
+
+    const token = localStorage.getItem('token');
 
     try {
         const response = await apis.apiGetCurrent(token)

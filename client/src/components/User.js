@@ -20,39 +20,33 @@
 // export default User
 
 
+
 import React, { useEffect, useState } from 'react';
 import anonAvatar from '../assets/anon-avatar.png';
-import * as apis from '../services';
+import { useSelector } from 'react-redux';
 
 const User = () => {
     const [currentData, setCurrentData] = useState(null);
-    const [loading, setLoading] = useState(true);
+    const isLoggedIn = useSelector((state) => state.auth.isLoggedIn); // Lấy isLoggedIn từ redux store
+
+    console.log(isLoggedIn);
 
     useEffect(() => {
-        const fetchCurrentUser = async () => {
-            const persistAuth = localStorage.getItem('persist:auth');
-            const authData = JSON.parse(persistAuth);
-            const token = authData.token.replace(/"/g, ''); // Remove quotes from token
-
-            try {
-                const response = await apis.apiGetCurrent(token);
-                console.log(response);
-                if (response?.err === 0) {
-                    setCurrentData(response.info_user);
-                } else {
-                    console.error('Error fetching user data:', response.msg);
+        // Chỉ thực hiện khi isLoggedIn = true
+        if (isLoggedIn) {
+            // Trì hoãn 1 giây để đảm bảo dữ liệu đã được lưu vào localStorage
+            const timer = setTimeout(() => {
+                const storedUser = localStorage.getItem('user');
+                if (storedUser) {
+                    setCurrentData(JSON.parse(storedUser)); // Chuyển đổi JSON thành object
                 }
-            } catch (error) {
-                console.error('Error fetching user data:', error);
-            } finally {
-                setLoading(false);
-            }
-        };
+            }, 1); // Trì hoãn 0.001 giây
 
-        fetchCurrentUser();
-    }, []);
+            return () => clearTimeout(timer); // Dọn dẹp timeout khi component unmount hoặc trước khi thực hiện lại
+        }
+    }, [isLoggedIn]); // useEffect phụ thuộc vào isLoggedIn
 
-    if (loading) {
+    if (!currentData) {
         return (
             <div className='flex items-center gap-2'>
                 <img src={anonAvatar} alt="avatar" className='w-10 object-cover rounded-full h-10 border-2 shadow-md border-white' />
@@ -63,26 +57,16 @@ const User = () => {
         );
     }
 
-    if (!currentData) {
-        return (
-            <div className='flex items-center gap-2'>
-                <img src={anonAvatar} alt="avatar" className='w-10 object-cover rounded-full h-10 border-2 shadow-md border-white' />
-                <div className='flex flex-col'>
-                    <span>Error loading user data</span>
-                </div>
-            </div>
-        );
-    }
-
     return (
         <div className='flex items-center gap-2'>
-            <img src={currentData.img_avt || anonAvatar} alt="avatar" className='w-10 object-cover rounded-full h-10 border-2 shadow-md border-white' />
-            <div className='flex flex-col'>
-                <span>Xin chào, <span className='font-semibold'>{`${currentData.firstName} ${currentData.lastName}`}</span></span>
-                {/* <span>Mã tài khoản: <span className='font-medium'>{`${currentData.id.slice(0, 10)}...`}</span></span> */}
+            <img src={currentData.img_avt || anonAvatar} alt="avatar" className='w-12 object-cover rounded-full h-12 border-2 shadow-md border-white' />
+            <div >
+                Xin chào,
+                <div className='font-semibold'>{`${currentData.firstName} ${currentData.lastName}`}</div>
             </div>
         </div>
     );
 };
 
 export default User;
+

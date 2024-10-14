@@ -7,9 +7,9 @@ import { useSelector, useDispatch } from 'react-redux'
 import * as actions from '../../store/actions'
 import menuManage from '../../ultils/menuManage'
 import { logout } from '../../store/actions/auth'
+import { AiOutlineHeart, AiOutlineAppstore } from 'react-icons/ai';
 
-
-const { AiOutlinePlusCircle, AiOutlineLogout, BsChevronDown } = icons
+const { AiOutlinePlusCircle, AiOutlineLogout, BsBookmarkStarFill } = icons
 
 const Header = () => {
     const navigate = useNavigate()
@@ -68,15 +68,19 @@ const Header = () => {
                     </div>}
                     {isLoggedIn && <div className='flex items-center gap-3 relative'>
                         <User />
-                        <Button
-                            text={'Quản lý tài khoản'}
-                            textColor='text-white'
-                            bgColor='bg-blue-700'
-                            px='px-4'
-                            IcAfter={BsChevronDown}
-                            onClick={() => setIsShowMenu(prev => !prev)}
-                        />
-                        {isShowMenu && <div className='absolute min-w-200 top-full bg-white shadow-md rounded-md p-4 right-0 flex flex-col'>
+                        <div className="flex items-center cursor-pointer rounded-md hover:underline">
+                            {/* Thêm sự kiện onclick để thực hiện navigate đến route trang đã lưu bài đăng */}
+                            <BsBookmarkStarFill className="text-red-500 relative mt-1">
+                                {/* <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full px-1">1</span> */}
+                            </BsBookmarkStarFill>
+                            <span className="ml-1 text-black text-normal ">Đã lưu</span>
+                        </div>
+                        <div className="flex items-center mr-4 cursor-pointer rounded-md p-2 hover:underline"
+                            onClick={() => setIsShowMenu(prev => !prev)}>
+                            <AiOutlineAppstore className="text-black mt-1" size={20} />
+                            <span className="ml-1 text-black text-normal">Quản lý tài khoản</span>
+                        </div>
+                        {isShowMenu && <div className='absolute min-w-180 top-full bg-white shadow-md rounded-md p-4 right-0 flex flex-col'>
                             {menuManage.map(item => {
                                 return (
                                     <Link

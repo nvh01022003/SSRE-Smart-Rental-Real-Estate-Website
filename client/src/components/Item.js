@@ -110,7 +110,7 @@ const indexs = [0, 1, 2, 3];
 
 
 
-const { GrStar, RiHeartFill, RiHeartLine, BsBookmarkStarFill } = icons;
+const { GrStar, BsBookmarkStarFill } = icons;
 
 // Dữ liệu giả
 const fakeData = {
@@ -243,13 +243,13 @@ const Item = ({ images, user, title, star, description, attributes, address, id 
                 <p className='text-gray-500 w-full h-[50px] text-ellipsis overflow-hidden'>
                     {description}
                 </p>
-                <div className='flex items-center my-5 justify-between'>
+                <div className='flex items-center my-10 justify-between'>
                     <div className=' flex items-center'>
                         <img src={img5} alt="avatar" className='w-[30px] h-[30px] object-cover rounded-full mr-2' />
-                        <p>{user?.name}</p>
+                        <p className='text-gray-500'>{user?.name}</p>
                     </div>
                     <div className='flex items-center gap-1'>
-                        <p>Liên hệ :</p>
+                        <p className='text-gray-500'>Liên hệ :</p>
                         <button
                             type='button'
                             className='px-1 py--1 rounded-md font-medium border border-blue-500 text-blue-500 bg-red-50 hover:bg-blue-500 hover:text-white h-7'

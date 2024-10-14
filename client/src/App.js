@@ -14,7 +14,7 @@ import ForgotPassword from './containers/Public/ForgotPass/ForgotPass'
 import ChatGPT from './components/Chat/ChatGPT'
 import ValidateCode from './containers/Public/ForgotPass/ValidateCode';
 import ResetPass from './containers/Public/ForgotPass/ResetPass';
-import Item from './components/Item';
+//import Item from './components/Item';
 
 function App() {
   const dispatch = useDispatch()
@@ -23,12 +23,13 @@ function App() {
 
     // Clear localStorage items related to authentication
     localStorage.removeItem('persist:auth');
-    localStorage.removeItem('token');
+
     localStorage.removeItem('persist:root');
 
-    setTimeout(() => {
-      isLoggedIn && dispatch(actions.getCurrent())
-    }, 1000)
+
+    // setTimeout(() => {
+    //   isLoggedIn && dispatch(actions.getCurrent())
+    // }, 1000)
   }, [isLoggedIn, dispatch])
 
   useEffect(() => {

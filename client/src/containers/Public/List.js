@@ -32,8 +32,8 @@ const List = ({ categoryCode }) => {
             </div>
             <div className='flex items-center gap-2 my-2 px-3 mb-5'>
                 <span>Sắp xếp:</span>
-                <button bgColor='bg-gray-200' className="hover:text-blue-500 outline-none rounded-md hover:underline flex items-center justify-center gap-1 bg-gray-200 w-30 h-7 px-1">Mặc định</button>
-                <button bgColor='bg-gray-200' className="hover:text-blue-500 outline-none rounded-md hover:underline flex items-center justify-center gap-1 bg-gray-200 w-30 h-7 px-1">Mới nhất</button>
+                <button className="hover:text-blue-500 outline-none rounded-md hover:underline flex items-center justify-center gap-1 bg-gray-200 w-30 h-7 px-1">Mặc định</button>
+                <button className="hover:text-blue-500 outline-none rounded-md hover:underline flex items-center justify-center gap-1 bg-gray-200 w-30 h-7 px-1">Mới nhất</button>
             </div>
             {/* <div className='items'>
                 {posts?.length > 0 && posts.map(item => {
