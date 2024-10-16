@@ -5,7 +5,7 @@ const initState = {
     //JSON.parse(localStorage.getItem('isLoggedIn')) ||
     token: localStorage.getItem('token') || null,
     //localStorage.getItem('token') ||
-    user: JSON.parse(localStorage.getItem('user')) || null,
+    user: null,
     //JSON.parse(localStorage.getItem('user')) ||
     error: null,
 }
@@ -39,7 +39,7 @@ const authReducer = (state = initState, action) => {
                 ...state,
                 isLoggedIn: true,
                 token: action.data.token,
-                user: action.data.user,
+                //user: action.data.user,
                 error: null,
                 //currentData: action.data.user, // Cập nhật currentData với thông tin từ user
             }
@@ -56,7 +56,7 @@ const authReducer = (state = initState, action) => {
                 error: action.data,
             }
         case actionTypes.LOGOUT:
-            localStorage.removeItem('user');
+            //localStorage.removeItem('user');
             //localStorage.removeItem('token');
             return {
                 ...state,
