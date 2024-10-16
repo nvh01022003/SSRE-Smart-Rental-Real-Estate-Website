@@ -83,6 +83,27 @@ const updateStatusPost = async (postId, status) => {
         }
     }
 }
+// UPDATE STATUS POSTS
+const updateStatusPosts = async (postIds, status) => {
+    try {
+        const resPost = await Post.update({ status }, {
+            where: {
+                id: postIds
+            }
+        })
+        return {
+            err: 0,
+            msg: 'Update status posts success',
+            post: resPost
+        }
+    } catch (error) {
+        console.log(error)
+        return {
+            err: 1,
+            msg: error
+        }
+    }
+}
 // UPDATE POST
 const updatePost = async (postId, dataUpdae) => {
     try {
@@ -125,9 +146,76 @@ const deletePost = async (postId) => {
         }
     }
 }
+// DELETE LIST POST BY LIST ID POST
+const deleteListPost = async (postIds) => {
+    try {
+        const resPost = await Post.destroy({
+            where: {
+                id: postIds
+            }
+        })
+        return {
+            err: 0,
+            msg: 'Delete list post success',
+            post: resPost
+        }
+    } catch (error) {
+        console.log(error)
+        return {
+            err: 1,
+            msg: error
+        }
+    }
+}
+// LIST POST
+const listPost = async (userId) => {
+    try {
+        const resPost = await Post.findAll({
+            where: {
+                user_id: userId
+            }
+        })
+        return {
+            err: 0,
+            msg: resPost
+        }
+    } catch (error) {
+        console.log(error)
+        return {
+            err: 1,
+            msg: error
+        }
+    }
+}
+// LIST POST BY PAGE PAGINATION
+const listPostByPageAtHome = async (page, limit) => {
+    try {
+        const resPost = await Post.findAll({
+            where: {
+                user_id: userId
+            },
+            limit: limit,
+            offset: (page - 1) * limit
+        })
+        return {
+            err: 0,
+            msg: resPost
+        }
+    } catch (error) {
+        console.log(error)
+        return {
+            err: 1,
+            msg: error
+        }
+    }
+}
 module.exports = {
     createNewPost,
     updateStatusPost,
     updatePost,
-    deletePost
+    deletePost,
+    deleteListPost,
+    listPost,
+    updateStatusPosts,
+    listPostByPageAtHome
 };

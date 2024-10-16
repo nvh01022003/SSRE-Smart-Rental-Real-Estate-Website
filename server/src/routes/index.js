@@ -1,11 +1,13 @@
 const authRouter = require("./auth")
-const userRouter = require("./user-routes")
+const tenantsRouter = require("./tenants-routes")
+const ladnlordRouter = require("./ladnlord-routes")
 // client
 const initRoutes = (app) => {
     app.use("/api/v1/auth", authRouter)
-    app.use("/api/v1/user", userRouter)
+    app.use("/api/v1/user/tenants", tenantsRouter)
+    app.use("/api/v1/user/ladnlord", ladnlordRouter)
     return app.use("/", (req, res) => {
-        res.send("oke server on!")
+        res.send("Running on localhost 5000")
     })
 }
 // admin

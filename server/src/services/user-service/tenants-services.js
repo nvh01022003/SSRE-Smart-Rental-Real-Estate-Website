@@ -1,6 +1,7 @@
 const bcryptjs = require("bcryptjs");
 const gravatar = require("gravatar");
 const jwt = require("jsonwebtoken");
+const paginationHelper = require("../../helper/pagination");
 const authServices = require("../../services/auth/auth");
 const { where } = require("sequelize");
 const { User, Post, Address, Favourite, Report, sequelize } = require("../../models/index");
@@ -86,64 +87,38 @@ const reportPost = async (userId, postId, desc) => {
         }
     }
 }
-// show list post saved
+// show list post saved sử dung pagination
 const listPostSaved = async (userId) => {
     try {
-        const listPostSaved = await Favourite.findAll({
+        const totalData = await Favourite.count({
             where: {
                 user_id: userId
             }
-        })
-        return {
-            err: 0,
-            msg: listPostSaved
-        }
-    } catch (err) {
-        return {
-            err: 1,
-            msg: err
-        }
-    }
-}
-// find post by min price and max price
-const findPostByPrice = async (minPrice, maxPrice) => {
-    try {
-        const listPost = await sequelize.query(`SELECT * FROM posts WHERE price BETWEEN ${minPrice} AND ${maxPrice}`, { type: sequelize.QueryTypes.SELECT });
-        return {
-            err: 0,
-            msg: listPost
-        }
-    } catch (err) {
-        return {
-            err: 1,
-            msg: err
-        }
-    }
-}
-// find post by location
-const findPostByLocation = async (location) => {
-    try {
-        const addressResult = await Address.findAll({
+        });
+        let objectPagination = paginationHelper.pagination(
+            {
+                currentPage: 1,
+                limitPage: 5
+            },
+            req.query,
+            totalData
+        )
+
+        // các bài viết theo trang
+        const posts = await Favourite.findAll({
             where: {
-                city: location
-            }
-        })
-        const addressIDs = addressResult.map((address) => address.id);
-        if (addressIDs.length === 0) {
-            return {
-                err: 0,
-                msg: "No post found"
-            }
-        }
-        console.log(addressIDs);
-        const posts = await Post.findAll({
-            where: {
-                address_id: addressIDs
-            }
+                user_id: userId
+            },
+            limit: objectPagination.limitPage,
+            offset: objectPagination.skip,
+            order: [['createdAt', 'DESC']]
         });
         return {
             err: 0,
-            msg: posts
+            msg: {
+                listPost: posts,
+                objectPagination
+            }
         }
     } catch (err) {
         return {
@@ -164,39 +139,6 @@ const deletePostSaved = async (userId, postId) => {
         return {
             err: 0,
             msg: "Delete post saved success"
-        }
-    } catch (err) {
-        return {
-            err: 1,
-            msg: err
-        }
-    }
-}
-// FIND POST BY ACREAGE
-const findPostByAcreage = async (minAcreage, maxAcreage) => {
-    try {
-        const listPost = await sequelize.query(`SELECT * FROM posts WHERE acreage BETWEEN ${minAcreage} AND ${maxAcreage}`, { type: sequelize.QueryTypes.SELECT });
-        return {
-            err: 0,
-            msg: listPost
-        }
-    } catch (err) {
-        return {
-            err: 1,
-            msg: err
-        }
-    }
-}
-// PAGINATION POST
-const paginationPost = async (page, limit) => {
-    try {
-        const listPost = await Post.findAll({
-            offset: (page - 1) * limit,
-            limit: limit
-        });
-        return {
-            err: 0,
-            msg: listPost
         }
     } catch (err) {
         return {
@@ -231,19 +173,90 @@ const findPostByAll = async (minPrice, maxPrice, minAcreage, maxAcreage, locatio
         if (category) {
             const categoryResult = await Category.findOne({
                 where: {
-                    name: category
+                    category_name: category
                 }
             })
             whereCondition.category_id = categoryResult.id;
         }
-        const listPost = await Post.findAll({
-            where: whereCondition
+        console.log(whereCondition.address_id);
+        const totalData = await Post.count({ where: whereCondition });
+        let objectPagination = paginationHelper.pagination(
+            {
+                currentPage: 1,
+                limitPage: 4
+            },
+            req.query,
+            totalData
+        )
+        const posts = await Post.findAll({
+            where: whereCondition,
+            limit: objectPagination.limitPage,
+            offset: objectPagination.skip,
+            order: [['createdAt', 'DESC']]
         });
+        return {
+            err: 0,
+            msg: {
+                listPost: posts,
+                objectPagination
+            }
+        }
+
+    } catch (err) {
+        return {
+            err: 1,
+            msg: err
+        }
+    }
+}
+// show list post by page pagination
+const listPostByPage = async (page) => {
+    try {
+        const limit = 5;
+        const offset = (page - 1) * limit;
+        const listPost = await Post.findAll({
+            limit: limit,
+            offset: offset
+        })
         return {
             err: 0,
             msg: listPost
         }
-
+    } catch (err) {
+        return {
+            err: 1,
+            msg: err
+        }
+    }
+}
+// totalPage
+const totalPage = async () => {
+    try {
+        const totalPost = await Post.count();
+        const totalPage = Math.ceil(totalPost / 5);
+        return {
+            err: 0,
+            msg: totalPage
+        }
+    } catch (err) {
+        return {
+            err: 1,
+            msg: err
+        }
+    }
+}
+// show detail post
+const showDetailPost = async (postId) => {
+    try {
+        const post = await Post.findOne({
+            where: {
+                id: postId
+            }
+        })
+        return {
+            err: 0,
+            msg: post
+        }
     } catch (err) {
         return {
             err: 1,
@@ -257,10 +270,8 @@ module.exports = {
     savePost,
     reportPost,
     listPostSaved,
-    findPostByPrice,
-    findPostByLocation,
-    findPostByAcreage,
-    paginationPost,
     deletePostSaved,
-    findPostByAll
+    findPostByAll,
+    listPostByPage,
+    showDetailPost
 };

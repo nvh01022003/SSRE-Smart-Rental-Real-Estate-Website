@@ -70,33 +70,6 @@ const listPostSaved = async (req, res) => {
         })
     }
 }
-// find post by min price and max price
-const findPostByPrice = async (req, res) => {
-    const minPrice = req.query.minPrice
-    const maxPrice = req.query.maxPrice
-    try {
-        const response = await tenanstService.findPostByPrice(minPrice, maxPrice)
-        return res.status(200).json(response)
-    } catch (error) {
-        return res.status(500).json({
-            err: -1,
-            msg: 'Fail at auth controller findPostByPrice: ' + error
-        })
-    }
-}
-// find post by location
-const findPostByLocation = async (req, res) => {
-    const location = req.query.location
-    try {
-        const response = await tenanstService.findPostByLocation(location)
-        return res.status(200).json(response)
-    } catch (error) {
-        return res.status(500).json({
-            err: -1,
-            msg: 'Fail at auth controller findPostByLocation: ' + error
-        })
-    }
-}
 // delete post saved
 const deletePostSaved = async (req, res) => {
     const userId = req.user.id
@@ -111,35 +84,7 @@ const deletePostSaved = async (req, res) => {
         })
     }
 }
-// find post by acreage
-const findPostByAcreage = async (req, res) => {
-    const minAcreage = req.query.minAcreage
-    const maxAcreage = req.query.maxAcreage
-    try {
-        const response = await tenanstService.findPostByAcreage(minAcreage, maxAcreage)
-        return res.status(200).json(response)
-    } catch (error) {
-        return res.status(500).json({
-            err: -1,
-            msg: 'Fail at auth controller findPostByAcreage: ' + error
-        })
-    }
-}
-// pagination post
-const paginationPost = async (req, res) => {
-    const page = req.query.page
-    const limit = req.query.limit
-    try {
-        const response = await tenanstService.paginationPost(page, limit)
-        return res.status(200).json(response)
-    } catch (error) {
-        return res.status(500).json({
-            err: -1,
-            msg: 'Fail at auth controller paginationPost: ' + error
-        })
-    }
-}
-// find post by all
+// find post by all condition
 const findPostByAll = async (req, res) => {
     const minPrice = req.query.minPrice
     const maxPrice = req.query.maxPrice
@@ -157,17 +102,53 @@ const findPostByAll = async (req, res) => {
         })
     }
 }
+// show list post by page pagination
+const listPostByPage = async (req, res) => {
+    const page = req.params.page
+    try {
+        const response = await tenanstService.listPostByPage(page)
+        return res.status(200).json(response)
+    } catch (error) {
+        return res.status(500).json({
+            err: -1,
+            msg: 'Fail at auth controller listPostByPage: ' + error
+        })
+    }
+}
+// total Page
+const totalPage = async (req, res) => {
+    try {
+        const response = await tenanstService.totalPage()
+        return res.status(200).json(response)
+    } catch (error) {
+        return res.status(500).json({
+            err: -1,
+            msg: 'Fail at auth controller totalPage: ' + error
+        })
+    }
+}
+// show dateil post
+const showDetailPost = async (req, res) => {
+    const postId = req.params.id
+    try {
+        const response = await tenanstService.showDetailPost(postId)
+        return res.status(200).json(response)
+    } catch (error) {
+        return res.status(500).json({
+            err: -1,
+            msg: 'Fail at auth controller showDetailPost: ' + error
+        })
+    }
+}
 module.exports = {
     showInfoUser,
     changeInfo,
     savaPost,
     reportPost,
     listPostSaved,
-    findPostByPrice,
-    findPostByLocation,
     deletePostSaved,
-    findPostByAcreage,
-    paginationPost,
-    findPostByAll
-
+    findPostByAll,
+    listPostByPage,
+    totalPage,
+    showDetailPost
 }
