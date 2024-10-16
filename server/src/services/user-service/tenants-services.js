@@ -36,16 +36,9 @@ const changeInfoUser = async (userId, userUpdate) => {
     }
     try {
         await User.update(userUpdate, { where: { id: userId } })
-        const user = await User.findOne({
-            where: {
-                id: userId,
-            },
-            attributes: ['id', 'firstName', 'lastName', 'email', 'phone', 'img_avt']
-        })
         return {
             err: 0,
             msg: "Update success",
-            'user': user,
         }
     } catch (err) {
         return {

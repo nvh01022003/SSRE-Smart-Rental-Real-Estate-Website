@@ -56,14 +56,11 @@ const loginService = async ({ email, password }) => {
         const checkPass = bcryptjs.compareSync(password, user.pass);
         const token = checkPass ? jwt.sign({ id: user.id, email: user.email }, process.env.JWT_SECRET, { expiresIn: '5d' }) : null;
 
-        // console.log("Token generated:", token);  // Log token để kiểm tra
-
         if (checkPass) {
             return {
                 err: 0,
                 msg: 'Login success',
                 access_token: token,
-                user: user // Trả về thông tin người dùng nếu đăng nhập thành công
             };
         } else {
             return {
