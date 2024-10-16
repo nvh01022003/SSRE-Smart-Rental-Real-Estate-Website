@@ -41,7 +41,7 @@ const authReducer = (state = initState, action) => {
                 token: action.data.token,
                 user: action.data.user,
                 error: null,
-                currentData: action.data.user, // Cập nhật currentData với thông tin từ user
+                //currentData: action.data.user, // Cập nhật currentData với thông tin từ user
             }
         case actionTypes.REGISTER_FAIL:
         case actionTypes.LOGIN_FAIL:

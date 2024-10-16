@@ -1,34 +1,30 @@
 import actionTypes from './actionTypes'
-import * as apis from '../../services'
+//import * as apis from '../../services'
 
 
 export const getCurrent = () => async (dispatch) => {
-
-    // const persistAuth = localStorage.getItem('persist:auth');
-    // const authData = JSON.parse(persistAuth);
-    // const token = authData.token.replace(/"/g, ''); // Remove quotes from token
-
-    const token = localStorage.getItem('token');
-
     try {
-        const response = await apis.apiGetCurrent(token)
-        if (response?.err === 0) {
+        const user = localStorage.getItem('user');
+        console.log(user);
+
+        if (user) {
             dispatch({
                 type: actionTypes.GET_CURRENT,
-                currentData: response.response
-            })
+                currentData: user
+            });
+            //console.log(user);
         } else {
             dispatch({
                 type: actionTypes.GET_CURRENT,
-                msg: response.msg,
+                msg: 'No user found',
                 currentData: null
-            })
+            });
         }
     } catch (error) {
         dispatch({
             type: actionTypes.GET_CURRENT,
             currentData: null,
-            msg: error,
-        })
+            msg: error.message,
+        });
     }
 }

@@ -1,5 +1,5 @@
 import React, { useEffect, useContext, useState, useRef } from 'react';
-import { getPersonalInfo } from '../../../services/userService';
+//import { getPersonalInfo } from '../../../services/userService';
 import axios from 'axios';
 import './PersonalInfo.css';
 import Swal from 'sweetalert2';
@@ -23,36 +23,69 @@ const PersonalInfo = () => {
 
     const initialFormData = useRef(formData);
 
-    useEffect(() => {
-        const fetchPersonalInfo = async () => {
-            try {
-                console.log('Token on fetch:', token); // Debug log
+    // useEffect(() => {
+    //     const fetchPersonalInfo = async () => {
+    //         try {
+    //             console.log('Token on fetch:', token); // Debug log
 
-                const data = await getPersonalInfo(token);
-                if (data.err === 0) {
-                    setPersonalInfo(data.info_user);
-                    initialFormData.current = {
-                        id: data.info_user.id,
-                        firstName: data.info_user.firstName,
-                        lastName: data.info_user.lastName,
-                        email: data.info_user.email,
-                        phone: data.info_user.phone,
-                        img_avt: data.info_user.img_avt
-                    };
-                    setFormData(initialFormData.current);
-                    console.log('Personal information:', data.info_user);
-                } else {
-                    console.error('Error fetching personal information:', data.msg);
-                    Swal.fire('Error', data.msg || 'Error fetching personal information', 'error');
-                }
-            } catch (error) {
-                console.error('Error fetching personal information:', error);
-                Swal.fire('Error', 'Error fetching personal information', 'error');
+    //             const data = await getPersonalInfo(token);
+    //             if (data.err === 0) {
+    //                 setPersonalInfo(data.info_user);
+    //                 initialFormData.current = {
+    //                     id: data.info_user.id,
+    //                     firstName: data.info_user.firstName,
+    //                     lastName: data.info_user.lastName,
+    //                     email: data.info_user.email,
+    //                     phone: data.info_user.phone,
+    //                     img_avt: data.info_user.img_avt
+    //                 };
+    //                 setFormData(initialFormData.current);
+    //                 console.log('Personal information:', data.info_user);
+    //             } else {
+    //                 console.error('Error fetching personal information:', data.msg);
+    //                 Swal.fire('Error', data.msg || 'Error fetching personal information', 'error');
+    //             }
+    //         } catch (error) {
+    //             console.error('Error fetching personal information:', error);
+    //             Swal.fire('Error', 'Error fetching personal information', 'error');
+    //         }
+    //     };
+
+    //     if (token) {
+    //         const timer = setTimeout(() => {
+    //             fetchPersonalInfo();
+    //         }, 1); // Delay 0.001 giây
+
+    //         return () => clearTimeout(timer); // Dọn dẹp bộ đếm thời gian khi component unmount hoặc trước khi chạy lại useEffect
+    //     }
+    // }, [token]);
+
+    useEffect(() => {
+        const loadPersonalInfoFromLocalStorage = () => {
+            // Lấy dữ liệu user từ localStorage
+            const userFromLocalStorage = JSON.parse(localStorage.getItem('user'));
+
+            if (userFromLocalStorage) {
+                setPersonalInfo(userFromLocalStorage);
+                initialFormData.current = {
+                    id: userFromLocalStorage.id,
+                    firstName: userFromLocalStorage.firstName,
+                    lastName: userFromLocalStorage.lastName,
+                    email: userFromLocalStorage.email,
+                    phone: userFromLocalStorage.phone,
+                    img_avt: userFromLocalStorage.img_avt
+                };
+                setFormData(initialFormData.current);
+                console.log('User loaded from localStorage:', userFromLocalStorage);
+            } else {
+                console.error('No user found in localStorage');
+                Swal.fire('Error', 'Không tìm thấy thông tin người dùng trong localStorage', 'error');
             }
         };
 
-        if (token) { // Ensure token is available
-            fetchPersonalInfo();
+        if (token) {
+            // Gọi hàm để lấy thông tin từ localStorage
+            loadPersonalInfoFromLocalStorage();
         }
     }, [token]);
 
@@ -118,6 +151,10 @@ const PersonalInfo = () => {
 
             if (response.data.err === 0) {
                 Swal.fire('Success', 'Cập nhật thành công!', 'success');
+
+                // Cập nhật lại giá trị user trong localStorage
+                localStorage.setItem('user', JSON.stringify(response.data.user));
+
                 // Optionally, refetch personal info to ensure data consistency
                 // fetchPersonalInfo();
             }
@@ -175,6 +212,10 @@ const PersonalInfo = () => {
                     ...prevFormData,
                     img_avt: finalImgUrl
                 }));
+
+                // Cập nhật lại giá trị user trong localStorage
+                localStorage.setItem('user', JSON.stringify(response.data.user));
+
             } else {
                 Swal.fire('Error', response.data.msg || 'Failed to upload image', 'error');
             }
@@ -185,7 +226,7 @@ const PersonalInfo = () => {
     };
 
     if (!personalInfo) {
-        return <div>Loading...</div>;
+        return <div>Đang tải...</div>;
     }
 
     return (

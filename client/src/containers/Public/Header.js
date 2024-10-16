@@ -8,6 +8,7 @@ import * as actions from '../../store/actions'
 import menuManage from '../../ultils/menuManage'
 import { logout } from '../../store/actions/auth'
 import { AiOutlineHeart, AiOutlineAppstore } from 'react-icons/ai';
+import { path } from '../../ultils/constant';
 
 const { AiOutlinePlusCircle, AiOutlineLogout, BsBookmarkStarFill } = icons
 
@@ -32,6 +33,11 @@ const Header = () => {
     const handleLogout = () => {
         dispatch(logout());
     };
+
+    const handleCreatePostClick = () => {
+        navigate('/he-thong/tao-moi-bai-dang');
+    };
+
     return (
         <div ref={headerRef} className='w-4/5 mx-auto container'>
             <div className='w-full flex items-center justify-between'>
@@ -111,6 +117,7 @@ const Header = () => {
                         textColor='text-white'
                         bgColor='bg-secondary2'
                         IcAfter={AiOutlinePlusCircle}
+                        onClick={handleCreatePostClick}
                     />
                 </div>
             </div>
