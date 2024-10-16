@@ -2,12 +2,10 @@ const nodemailer = require("nodemailer")
 const validator = require('validator');
 const { where } = require("sequelize");
 const readline = require('readline');
-
 const cookieParser = require('cookie-parser');
 const { VeriMail, User, sequelize } = require("../../models/index");
 const { request } = require("http");
 // gui code den email nguoi dung
-
 const createCodeVery = async (req, res, next) => {
     const { email } = req.body
     if (!validator.isEmail(email)) {
@@ -58,23 +56,15 @@ const createCodeVery = async (req, res, next) => {
             });
         }
     }
-
 }
 // client nhập code mail để so sanh với code trong db
 const verifiedMail = async (req, res, next) => {
-
     const { email } = req.body
+    console.log(email)
     const codeMail = req.params.codeMail;
-    console.log('Email:', email);
-    console.log('CodeMail:', codeMail);
-    console.log('Type of codeMail:', typeof email);
-    console.log('Type of codeMail:', typeof codeMail);
-
-
+    console.log(codeMail)
     try {
         const resCode = await VeriMail.findOne({ where: { email } });
-        console.log(resCode);
-        console.log('Type of resCode.code:', typeof resCode.code);
         if (codeMail == resCode.code) {
             next();
         }

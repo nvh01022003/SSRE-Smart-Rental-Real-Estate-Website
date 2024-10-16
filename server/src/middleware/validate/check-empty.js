@@ -7,13 +7,5 @@ const checkEmptyUser = async (req, res, next) => {
         next();
     }
 }
-const checkEmptyEmail = async (req, res, next) => {
-    const { email } = req.body
-    if (!email) {
-        res.status(400).send("Enter email!")
-    }
-    else {
-        next();
-    }
-}
-module.exports = { checkEmptyUser, checkEmptyEmail }
+
+module.exports = { checkEmptyUser }

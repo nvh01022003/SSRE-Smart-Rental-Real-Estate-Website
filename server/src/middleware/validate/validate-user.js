@@ -35,8 +35,8 @@ const validateEmailPhone = async (req, res, next) => {
 // check email va sdt da ton tai ch khi reset pass
 const validateEmailPhoneReset = async (req, res, next) => {
     const { email } = req.body;
-    const recCheck = await User.findOne({ where: { email } });
-    if (recCheck) {
+    const resCheck = await User.findOne({ where: { email } });
+    if (resCheck) {
         next();
     } else {
         return res.status(404).json({
@@ -45,43 +45,36 @@ const validateEmailPhoneReset = async (req, res, next) => {
         });
     }
 }
-
-const { Op } = require('sequelize'); //Operators trong sequelize, thêm toán tử logic và so sánh id user
-
 const validateUpdate = async (req, res, next) => {
-    const { id, email, phone } = req.body;
-
+    const { email, phone } = req.body;
+    const userId = req.user.id;
     try {
-        // Check if email is duplicate for other users
-        const existingEmail = await User.findOne({ where: { email, id: { [Op.ne]: id } } }); // Loại trừ ID của user hiện tại bằng Op.ne
-        if (existingEmail) {
-            return res.status(409).json({
+        const [existingEmail, existingPhone] = await Promise.all([
+            User.findOne({ where: { email } }),
+            User.findOne({ where: { phone } }),
+        ]);
+
+        if (existingEmail && existingEmail.id != userId) {
+            return res.status(409).json({ // 409 xung đột là một mã
                 err: 1,
                 msg: 'Email already exists',
             });
-        }
-
-        // Check if phone is duplicate for other users
-        const existingPhone = await User.findOne({ where: { phone, id: { [Op.ne]: id } } }); // Loại trừ ID của user hiện tại bằng Op.ne
-        if (existingPhone) {
-            return res.status(409).json({
+        } else if (existingPhone && existingPhone.id != userId) {
+            return res.status(409).json({ // 409 xung đột là một mã
                 err: 2,
                 msg: 'Phone number already exists',
             });
+        } else {
+            next();
         }
-
-        // If no conflicts, proceed to the next middleware
-        next();
     } catch (err) {
         return res.status(500).json({
             err: 10,
             msg: err.message,
         });
     }
+
 };
-
-module.exports = validateUpdate;
-
 const validatePass = async (req, res, next) => {
     const { oldPass, newPass } = req.body;
     const userId = req.user.id

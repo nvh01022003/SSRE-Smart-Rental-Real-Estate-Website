@@ -12,8 +12,9 @@ cloudinary.config({
 // check file
 const checkFileType = (req, res, next) => {
     const file = req.file;
+    // console.log(file)
     if (!file) {
-        return res.status(400).json({ err: 1, msg: 'No file uploaded' });
+        return res.status(400).json({ err: 1, msg: 'No file uploaded!' });
     }
 
     // Kiểm tra loại tệp
@@ -27,13 +28,31 @@ const checkFileType = (req, res, next) => {
         return res.status(400).json({ err: 1, msg: 'Only image files are allowed' });
     }
 };
+// check list file
+const checkFileTypePost = (req, res, next) => {
+    const files = req.files;
+    // console.log(files)
+    if (!files || files.length === 0) {
+        return res.status(400).json({ err: 1, msg: 'No file uploaded' });
+    }
+
+    // Kiểm tra loại tệp cho từng file
+    const filetypes = /jpeg|jpg|png|gif/;
+    for (let file of files) {
+        const mimetype = filetypes.test(file.mimetype);
+        const extname = filetypes.test(file.originalname.split('.').pop().toLowerCase());
+
+        if (!mimetype || !extname) {
+            return res.status(400).json({ err: 1, msg: 'Only image files are allowed' });
+        }
+    }
+
+    return next();
+};
 // UPDATE IMG
 const updateImg = async (req, res, next) => {
     try {
         const file = req.file;
-
-        console.log('File:', file);
-
         // Upload ảnh lên Cloudinary
         const result = await new Promise((resolve, reject) => {
             cloudinary.uploader.upload_stream({ resource_type: 'image' }, (error, result) => {
@@ -54,20 +73,32 @@ const updateImg = async (req, res, next) => {
         res.status(500).json({ err: 1, msg: 'Failed to upload avatar' });
     }
 };
-// upload nhiều ảnh
-const uploadImagesToCloudinary = async (files) => {
-    const uploadPromises = files.map(file => {
-        return new Promise((resolve, reject) => {
-            cloudinary.uploader.upload_stream({ resource_type: 'image' }, (error, result) => {
-                if (error) {
-                    reject(error);
-                } else {
-                    resolve(result.secure_url);
-                }
-            }).end(file.buffer);
-        });
-    });
+// UPDATE IMG POST
+const updateImgs = async (req, res, next) => {
+    try {
+        const files = req.files;
+        if (!files || files.length === 0) {
+            return res.status(400).json({ err: 1, msg: 'No file uploaded!' });
+        }
 
-    return Promise.all(uploadPromises);
+        const uploadPromises = files.map(file => {
+            return new Promise((resolve, reject) => {
+                cloudinary.uploader.upload_stream({ resource_type: 'image' }, (error, result) => {
+                    if (error) {
+                        reject(error);
+                    } else {
+                        resolve(result.secure_url);
+                    }
+                }).end(file.buffer);
+            });
+        });
+
+        const imageUrls = await Promise.all(uploadPromises);
+        req.body.imageUrls = imageUrls;
+        next();
+    } catch (error) {
+        console.error('Error uploading images:', error);
+        res.status(500).json({ err: 1, msg: 'Failed to upload images' });
+    }
 };
-module.exports = { updateImg, upload, checkFileType, uploadImagesToCloudinary };
+module.exports = { updateImg, upload, checkFileType, checkFileTypePost, updateImg, updateImgs };

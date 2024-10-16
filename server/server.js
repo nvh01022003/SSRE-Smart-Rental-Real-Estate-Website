@@ -8,7 +8,7 @@ dotenv.config()
 const app = express()
 app.use(cors({
     origin: process.env.CLIENT_URL,
-    methods: ["POST", "GET", "PUT", "DELETE"],
+    method: ["POST", "GET", "PUT", "DELETE"],
     credentials: true
 }))
 app.use(cookieParser());
