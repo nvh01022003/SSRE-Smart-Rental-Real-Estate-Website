@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { InputForm, Button } from '../../components';
 import { useNavigate, Route, Routes } from 'react-router-dom';
 import * as actions from '../../store/actions';
@@ -6,8 +6,12 @@ import { useDispatch, useSelector } from 'react-redux';
 import Swal from 'sweetalert2';
 import { path } from '../../ultils/constant';
 import ForgotPassword from './ForgotPass/ForgotPass';
+import { AuthContext } from '../../../src/Context/AuthContext';
 
 const Login = () => {
+
+    const { login } = useContext(AuthContext);
+
     const dispatch = useDispatch();
     const navigate = useNavigate();
     const { isLoggedIn, msg, update } = useSelector(state => state.auth);
@@ -67,6 +71,7 @@ const Login = () => {
             const response = await dispatch(actions.login(payload)); // Gọi hàm login từ redux action
             console.log(response); // Log response để kiểm tra
             if (response?.access_token) {
+                login(response?.access_token); // Update token in context
                 //localStorage.setItem('token', response.access_token);
                 //localStorage.setItem('user', JSON.stringify(response.user));
                 Swal.fire('Success', 'Đăng nhập thành công !', 'success').then(() => {
@@ -76,8 +81,7 @@ const Login = () => {
                 Swal.fire('Oops !', response?.payload?.msg || 'No response data', 'error');
             }
         } catch (error) {
-            // Bắt và xử lý lỗi từ backend, ví dụ lỗi "Email does not exist"
-            Swal.fire('Oops!', error.msg || 'Something went wrong', 'error');  // Hiển thị lỗi từ server
+            Swal.fire('Oops !', 'Tài khoản hoặc mật khẩu không đúng !', 'error');
         }
     };
 

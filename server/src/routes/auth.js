@@ -17,6 +17,7 @@ router.post("/login", authController.login)
 router.post("/changePass", authentication.authenticateToken, validate.validatePass, authController.changePass)
 // reset password
 router.post("/codeChangePass", validate.validateEmailPhoneReset, middleware.createCodeVery)
-router.post("/resetPass/:codeMail", middleware.verifiedMail, authController.resetPass)
+router.post("/verifiedMail/:codeMail", middleware.verifiedMail)
+router.post("/resetPass", authController.resetPass)
 router.post('/upload', authentication.authenticateToken, upload.single('avatar'), img.checkFileType, img.updateImg, tenantsController.changeInfo);
 module.exports = router

@@ -23,8 +23,12 @@ const PersonalInfo = () => {
 
     const initialFormData = useRef(formData);
 
+    //const token = localStorage.getItem('token');
+
     useEffect(() => {
+
         const fetchPersonalInfo = async () => {
+
             try {
                 console.log('Token on fetch:', token); // Debug log
 

@@ -77,10 +77,14 @@ const User = () => {
             }
         };
 
-        if (isLoggedIn) {
-            fetchPersonalInfo();
+        if (isLoggedIn && token) {
+            const timer = setTimeout(() => {
+                fetchPersonalInfo();
+            }, 1); // Delay 1 second
+
+            return () => clearTimeout(timer); // Cleanup the timer on component unmount or before re-running useEffect
         }
-    }, [isLoggedIn]);
+    }, [isLoggedIn, token]);
 
     if (!currentData) {
         return (
