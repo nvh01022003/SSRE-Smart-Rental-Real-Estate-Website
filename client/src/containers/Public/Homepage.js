@@ -21,18 +21,21 @@ const Homepage = () => {
                 <Province />
             </div>
 
-            <Search />
 
-            <div className='w-full flex gap-4'>
-                <div className='w-[70%]'>
-                    <List />
-                    <Pagination />
-                </div>
-                <div className='w-[30%] flex flex-col gap-4'>
-                    <ItemSidebar title='Danh sách cho thuê' items={categories} />
-                    <ItemSidebar title='Xem theo giá' items={prices} />
-                    <ItemSidebar title='Xem theo diện tích' items={areas} />
-                    <RelatedPost />
+
+            <div>
+                <Search />
+                <div className='w-full flex gap-4'>
+                    <div className='w-[70%]'>
+                        <List />
+                        <Pagination />
+                    </div>
+                    <div className='w-[30%] flex flex-col gap-4 mt-3'>
+                        <ItemSidebar title='Danh sách cho thuê' items={categories} />
+                        <ItemSidebar title='Xem theo giá' items={prices} />
+                        <ItemSidebar title='Xem theo diện tích' items={areas} />
+                        <RelatedPost />
+                    </div>
                 </div>
             </div>
         </div>

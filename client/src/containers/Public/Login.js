@@ -68,7 +68,7 @@ const Login = () => {
             console.log(response); // Log response để kiểm tra
             if (response?.access_token) {
                 //localStorage.setItem('token', response.access_token);
-
+                //localStorage.setItem('user', JSON.stringify(response.user));
                 Swal.fire('Success', 'Đăng nhập thành công !', 'success').then(() => {
                     navigate('/');
                 });

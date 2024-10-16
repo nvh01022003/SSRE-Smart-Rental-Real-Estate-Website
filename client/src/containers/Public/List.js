@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react'
-import { Button, Item } from '../../components'
+import { Item } from '../../components'
 import { getPosts, getPostsLimit } from '../../store/actions/post'
 import { useDispatch, useSelector } from 'react-redux'
 import { useSearchParams } from 'react-router-dom'
@@ -26,14 +26,14 @@ const List = ({ categoryCode }) => {
         dispatch(getPostsLimit(searchParamsObject))
     }, [searchParams, categoryCode])
     return (
-        <div className='w-full p-2 bg-white shadow-md rounded-md px-6'>
+        <div className='w-full  bg-white shadow-md rounded-md '>
             <div className='flex items-center justify-between my-3'>
-                <h4 className='text-xl font-semibold'>Danh sách tin đăng</h4>
+                <h4 className='text-xl font-semibold px-3 pl-3 pt-3'>Danh sách tin đăng</h4>
             </div>
-            <div className='flex items-center gap-2 my-2'>
+            <div className='flex items-center gap-2 my-2 px-3 mb-5'>
                 <span>Sắp xếp:</span>
-                <Button bgColor='bg-gray-200' text='Mặc định' />
-                <Button bgColor='bg-gray-200' text='Mới nhất' />
+                <button className="hover:text-blue-500 outline-none rounded-md hover:underline flex items-center justify-center gap-1 bg-gray-200 w-30 h-7 px-1">Mặc định</button>
+                <button className="hover:text-blue-500 outline-none rounded-md hover:underline flex items-center justify-center gap-1 bg-gray-200 w-30 h-7 px-1">Mới nhất</button>
             </div>
             {/* <div className='items'>
                 {posts?.length > 0 && posts.map(item => {

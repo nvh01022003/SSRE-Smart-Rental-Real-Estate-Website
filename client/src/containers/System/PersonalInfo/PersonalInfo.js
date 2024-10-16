@@ -51,8 +51,12 @@ const PersonalInfo = () => {
             }
         };
 
-        if (token) { // Ensure token is available
-            fetchPersonalInfo();
+        if (token) {
+            const timer = setTimeout(() => {
+                fetchPersonalInfo();
+            }, 1); // Delay 0.001 giây
+
+            return () => clearTimeout(timer); // Dọn dẹp bộ đếm thời gian khi component unmount hoặc trước khi chạy lại useEffect
         }
     }, [token]);
 
@@ -118,6 +122,10 @@ const PersonalInfo = () => {
 
             if (response.data.err === 0) {
                 Swal.fire('Success', 'Cập nhật thành công!', 'success');
+
+                // Cập nhật lại giá trị user trong localStorage
+                //localStorage.setItem('user', JSON.stringify(response.data.user));
+
                 // Optionally, refetch personal info to ensure data consistency
                 // fetchPersonalInfo();
             }
@@ -175,6 +183,10 @@ const PersonalInfo = () => {
                     ...prevFormData,
                     img_avt: finalImgUrl
                 }));
+
+                // Cập nhật lại giá trị user trong localStorage
+                //localStorage.setItem('user', JSON.stringify(response.data.user));
+
             } else {
                 Swal.fire('Error', response.data.msg || 'Failed to upload image', 'error');
             }
@@ -185,7 +197,7 @@ const PersonalInfo = () => {
     };
 
     if (!personalInfo) {
-        return <div>Loading...</div>;
+        return <div>Đang tải...</div>;
     }
 
     return (

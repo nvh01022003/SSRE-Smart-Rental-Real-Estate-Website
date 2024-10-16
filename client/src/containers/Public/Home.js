@@ -20,8 +20,8 @@ const Home = () => {
             </div>
             <Contact />
             <br />
-            <hr className='w-4/5 h-[2px] bg-gray-300' />
-            <div >
+            <hr className='w-4/5 h-[2px] bg-gray-300 container mx-auto' />
+            <div className='w-3/5 container '>
                 <Footer />
             </div>
         </div>
