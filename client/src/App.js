@@ -1,3 +1,4 @@
+import React from 'react';
 import { Routes, Route } from 'react-router-dom'
 import { Home, Login, Rental, Homepage, DetailPost, SearchDetail } from './containers/Public'
 import { path } from './ultils/constant'
@@ -14,6 +15,13 @@ import Chat from './components/Chat/Chat'
 import HistoryPayment from './components/HistoryPayment'
 import DepositHistory from './components/DepositHistory'
 import Momo from './components/Momo'
+import PersonalInfo from './containers/System/PersonalInfo/PersonalInfo'
+import ChangePass from './containers/System/ChangePass'
+import ForgotPassword from './containers/Public/ForgotPass/ForgotPass'
+import ChatGPT from './components/Chat/ChatGPT'
+import ValidateCode from './containers/Public/ForgotPass/ValidateCode';
+import ResetPass from './containers/Public/ForgotPass/ResetPass';
+//import Item from './components/Item';
 
 function App() {
   const dispatch = useDispatch()
@@ -22,27 +30,35 @@ function App() {
 
     // Clear localStorage items related to authentication
     localStorage.removeItem('persist:auth');
-    localStorage.removeItem('token');
+
     localStorage.removeItem('persist:root');
 
-    setTimeout(() => {
-      isLoggedIn && dispatch(actions.getCurrent())
-    }, 1000)
-  }, [isLoggedIn])
+
+    // setTimeout(() => {
+    //   isLoggedIn && dispatch(actions.getCurrent())
+    // }, 1000)
+  }, [isLoggedIn, dispatch])
 
   useEffect(() => {
     dispatch(actions.getPrices())
     dispatch(actions.getAreas())
     dispatch(actions.getProvinces())
-  }, [])
+  }, [dispatch])
 
   return (
+
 
     <div className="bg-primary">
       <Routes>
         <Route path={path.HOME} element={<Home />}>
           <Route path='*' element={<Homepage />} />
-          <Route path={path.LOGIN} element={<Login />} />
+          <Route path={path.LOGIN} element={<Login />} >
+            <Route path={path.FORGOT_PASS} element={<ForgotPassword />} >
+              <Route path={path.VALIDATE_CODE} element={<ValidateCode />} >
+                <Route path={path.RESET_PASS} element={<ResetPass />} />
+              </Route>
+            </Route>
+          </Route>
           <Route path={path.REGISTER} element={<Register />} />
           <Route path="register/verify" element={<Verify />} />
           <Route path={path.CHO_THUE_CAN_HO} element={<Rental />} />
@@ -52,6 +68,7 @@ function App() {
           <Route path={path.SEARCH} element={<SearchDetail />} />
           <Route path={path.DETAL_POST__TITLE__POSTID} element={<DetailPost />} />
           <Route path={'chi-tiet/*'} element={<DetailPost />} />
+
         </Route>
         <Route path={path.SYSTEM} element={<System />} >
           <Route path={path.CREATE_POST} element={<CreatePost />} />
@@ -64,7 +81,14 @@ function App() {
         <Route path={path.MOMO} element={<Momo/>}/>
       </Routes>
       <Chat/>
+      <ChatGPT />
+
     </div>
+
+
+    // <div>
+    //   <Item />
+    // </div>
   );
 }
 

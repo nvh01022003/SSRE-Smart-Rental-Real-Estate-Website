@@ -1,9 +1,12 @@
 import actionTypes from "../actions/actionTypes";
 
 const initState = {
-    isLoggedIn: JSON.parse(localStorage.getItem('isLoggedIn')) || false,
+    isLoggedIn: !!localStorage.getItem('token'),
+    //JSON.parse(localStorage.getItem('isLoggedIn')) ||
     token: localStorage.getItem('token') || null,
-    user: JSON.parse(localStorage.getItem('user')) || null,
+    //localStorage.getItem('token') ||
+    user: null,
+    //JSON.parse(localStorage.getItem('user')) ||
     error: null,
 }
 
@@ -36,9 +39,9 @@ const authReducer = (state = initState, action) => {
                 ...state,
                 isLoggedIn: true,
                 token: action.data.token,
-                user: action.data.user,
+                //user: action.data.user,
                 error: null,
-                currentData: action.data.user, // Cập nhật currentData với thông tin từ user
+                //currentData: action.data.user, // Cập nhật currentData với thông tin từ user
             }
         case actionTypes.REGISTER_FAIL:
         case actionTypes.LOGIN_FAIL:
@@ -53,6 +56,8 @@ const authReducer = (state = initState, action) => {
                 error: action.data,
             }
         case actionTypes.LOGOUT:
+            //localStorage.removeItem('user');
+            //localStorage.removeItem('token');
             return {
                 ...state,
                 isLoggedIn: false,

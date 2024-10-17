@@ -9,7 +9,7 @@ const userReducer = (state = initState, action) => {
         case actionTypes.GET_CURRENT:
             return {
                 ...state,
-                currentData: action.currentData || {}
+                currentData: action.currentData
             }
         case actionTypes.LOGOUT:
             return {

@@ -26,9 +26,11 @@ module.exports = (sequelize, DataTypes) => {
     category_id: DataTypes.INTEGER,
     address_id: DataTypes.INTEGER,
     user_id: DataTypes.INTEGER,
-    status: DataTypes.INTEGER,
+    status: {
+      type: DataTypes.INTEGER,
+      defaultValue: 0
+    },
     overview_id: DataTypes.INTEGER,
-    attributes_id: DataTypes.INTEGER,
     img_id: DataTypes.STRING,
     coordinates_id: DataTypes.INTEGER,
     price: DataTypes.DECIMAL(10, 2),
