@@ -23,9 +23,11 @@ export const path = {
     CREATE_POST: 'tao-moi-bai-dang',
     PERSONAL_INFO: 'thong-tin-ca-nhan',
     CHANGE_PASS: 'doi-mat-khau',
-    PAYMENT: 'vi-tien',
-    // HISTORY_PAYMENT: 'lich-su-nap-tien',
-    MOMO: 'momo'
+    PAYMENT:'nap-tien/*',
+    HISTORY_PAYMENT: 'lich-su-thanh-toan',
+    DEPOSITE_HISTORY: 'lich-su-nap-tien',
+    MOMO:'momo',
+    SAVE_POST:'tin-da-luu',
 }
 
 export const text = {

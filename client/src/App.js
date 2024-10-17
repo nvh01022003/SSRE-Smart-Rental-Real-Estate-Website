@@ -8,35 +8,26 @@ import { useDispatch, useSelector } from 'react-redux'
 import { useEffect } from 'react'
 import Register from './containers/Public/Register'
 import Verify from './containers/Public/Verify'
-import PersonalInfo from './components/PersonalInfo/PersonalInfo'
-import ChangePass from './components/ChangePass/ChangePass'
-import Payment from './containers/System/Payment'
-import Chat from './components/Chat/Chat'
-import HistoryPayment from './components/HistoryPayment'
-import DepositHistory from './components/DepositHistory'
-import Momo from './components/Momo'
 import PersonalInfo from './containers/System/PersonalInfo/PersonalInfo'
 import ChangePass from './containers/System/ChangePass'
 import ForgotPassword from './containers/Public/ForgotPass/ForgotPass'
 import ChatGPT from './components/Chat/ChatGPT'
 import ValidateCode from './containers/Public/ForgotPass/ValidateCode';
 import ResetPass from './containers/Public/ForgotPass/ResetPass';
+import HistoryPayment from './components/HistoryPayment';
+import DepositeHistory from './components/DepositeHistory';
+import Payment from './containers/System/Payment';
+import Momo from './components/Momo';
+import SavePost from './containers/Public/SavePost';
 //import Item from './components/Item';
 
 function App() {
   const dispatch = useDispatch()
   const { isLoggedIn } = useSelector(state => state.auth)
   useEffect(() => {
-
     // Clear localStorage items related to authentication
     localStorage.removeItem('persist:auth');
-
     localStorage.removeItem('persist:root');
-
-
-    // setTimeout(() => {
-    //   isLoggedIn && dispatch(actions.getCurrent())
-    // }, 1000)
   }, [isLoggedIn, dispatch])
 
   useEffect(() => {
@@ -46,8 +37,6 @@ function App() {
   }, [dispatch])
 
   return (
-
-
     <div className="bg-primary">
       <Routes>
         <Route path={path.HOME} element={<Home />}>
@@ -68,27 +57,21 @@ function App() {
           <Route path={path.SEARCH} element={<SearchDetail />} />
           <Route path={path.DETAL_POST__TITLE__POSTID} element={<DetailPost />} />
           <Route path={'chi-tiet/*'} element={<DetailPost />} />
-
         </Route>
         <Route path={path.SYSTEM} element={<System />} >
           <Route path={path.CREATE_POST} element={<CreatePost />} />
           <Route path={path.PERSONAL_INFO} element={<PersonalInfo />} />
-          <Route path={path.PAYMENT} element={<Payment/>} />
           <Route path={path.CHANGE_PASS} element={<ChangePass />} />
+          <Route path={path.PAYMENT} element={<Payment />} >
+          <Route path={path.DEPOSITE_HISTORY} element={<DepositeHistory />} />
+          <Route path={path.HISTORY_PAYMENT} element={<HistoryPayment />} />
+          <Route path={path.MOMO} element={<Momo/>} />
+          </Route>
         </Route>
-        <Route path="/he-thong/lich-su-nap-tien" element={<HistoryPayment />}/>
-        <Route path="/he-thong/lich-su-thanh-toan" element={<DepositHistory/>}/>
-        <Route path={path.MOMO} element={<Momo/>}/>
+        <Route path={path.SAVE_POST} element={<SavePost/>} ></Route>
       </Routes>
-      <Chat/>
       <ChatGPT />
-
     </div>
-
-
-    // <div>
-    //   <Item />
-    // </div>
   );
 }
 

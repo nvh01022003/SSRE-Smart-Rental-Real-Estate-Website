@@ -8,8 +8,8 @@ import { MdOutlineHouseSiding, MdOutlineLibraryBooks } from 'react-icons/md'
 import { FiSearch } from 'react-icons/fi'
 import { ImPencil2, ImBin } from 'react-icons/im'
 import { BiUserPin } from 'react-icons/bi'
-import { BiMoney} from 'react-icons/bi'
-
+import { BiMoney } from 'react-icons/bi'
+import { FcLike } from "react-icons/fc";
 const icons = {
     AiOutlinePlusCircle,
     GrNext,
@@ -32,8 +32,8 @@ const icons = {
     BsChevronDown,
     ImBin,
     BsCameraFill,
-    BiMoney
+    BiMoney,
+    FcLike,
 }
-
 
 export default icons

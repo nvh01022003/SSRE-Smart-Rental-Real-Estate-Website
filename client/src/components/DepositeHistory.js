@@ -5,34 +5,29 @@ import { Link } from 'react-router-dom'
 // Define fake data
 const fakeData = [
     {
-        time: '2023-10-01 10:00',
-        activityType: 'Deposit',
-        postId: 'POST123456',
-        postType: 'Premium',
-        balance: '1,000,000đ',
-        fee: '50,000đ',
-        remaining: '950,000đ',
-        status: 'Completed'
+        date: '2023-10-01',
+        transactionId: 'TXN123456',
+        method: 'MOMO',
+        amount: '500,000đ',
+        promotion: '10%',
+        received: '550,000đ',
+        status: 'Completed',
+        note: 'Nạp thành công'
     },
     {
-        time: '2023-10-02 14:30',
-        activityType: 'Withdrawal',
-        postId: 'POST123457',
-        postType: 'Standard',
-        balance: '950,000đ',
-        fee: '20,000đ',
-        remaining: '930,000đ',
-        status: 'Pending'
+        date: '2023-10-02',
+        transactionId: 'TXN123457',
+        method: 'Bank Transfer',
+        amount: '1,000,000đ',
+        promotion: '20%',
+        received: '1,200,000đ',
+        status: 'Pending',
+        note: 'Đang xử lý'
     },
     // Add more fake data as needed
 ];
-const formatDate = (dateTimeString) => {
-    const [date, time] = dateTimeString.split(' ');
-    const [year, month, day] = date.split('-');
-    return `${day}-${month}-${year} ${time}`;
-};
 
-const DepositHistory=()=>{
+const DepositeHistory = () => {
     const [currentPage, setCurrentPage] = useState(1);
     const [itemsPerPage, setItemsPerPage] = useState(10);
     const totalPages = Math.ceil(fakeData.length / itemsPerPage);
@@ -54,17 +49,18 @@ const DepositHistory=()=>{
     const indexOfFirstItem = indexOfLastItem - itemsPerPage;
     const currentItems = fakeData.slice(indexOfFirstItem, indexOfLastItem);
 
+    // Function to format date
+    const formatDate = (dateString) => {
+        const [year, month, day] = dateString.split('-');
+        return `${day}-${month}-${year}`;
+    };
+
     return (
         <div>
-            <Header />
             <div className='px-6'>
                 <div className='flex items-center py-4 border-b border-gray-200'>
-                    <Link to="/he-thong/vi-tien" className='text-3xl font-medium ml-4 hover:text-blue-700'>
-                        Ví tiền tài khoản
-                    </Link>
-                    <span className=' text-3xl font-medium mx-2'>/</span>
                     <h1 className='text-3xl font-medium '>
-                        Lịch sử thanh toán
+                        Lịch sử nạp tiền
                     </h1>
                 </div>
                 <div className='flex gap-4'>
@@ -72,27 +68,28 @@ const DepositHistory=()=>{
                         <table className="min-w-full border-collapse border border-gray-200">
                             <thead>
                                 <tr>
-                                    <th className="border border-gray-200 px-4 py-2">Thời gian</th>
-                                    <th className="border border-gray-200 px-4 py-2">Loại hoạt động</th>
-                                    <th className="border border-gray-200 px-4 py-2">Mã tin đăng</th>
-                                    <th className="border border-gray-200 px-4 py-2">Loại tin</th>
-                                    <th className="border border-gray-200 px-4 py-2">Số dư</th>
-                                    <th className="border border-gray-200 px-4 py-2">Phí</th>
-                                    <th className="border border-gray-200 px-4 py-2">Còn lại</th>
+                                    <th className="border border-gray-200 px-4 py-2">Ngày nạp</th>
+                                    <th className="border border-gray-200 px-4 py-2">Mã giao dịch</th>
+                                    <th className="border border-gray-200 px-4 py-2">Phương thức</th>
+                                    <th className="border border-gray-200 px-4 py-2">Số tiền</th>
+                                    <th className="border border-gray-200 px-4 py-2">Khuyến mãi</th>
+                                    <th className="border border-gray-200 px-4 py-2">Thực nhận</th>
                                     <th className="border border-gray-200 px-4 py-2">Trạng thái</th>
+                                    <th className="border border-gray-200 px-4 py-2">Ghi chú</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 {currentItems.map((item, index) => (
                                     <tr key={index}>
-                                        <td className="border border-gray-200 px-4 py-2 text-center">{formatDate(item.time)}</td>
-                                        <td className="border border-gray-200 px-4 py-2 text-center">{item.activityType}</td>
-                                        <td className="border border-gray-200 px-4 py-2 text-center">{item.postId}</td>
-                                        <td className="border border-gray-200 px-4 py-2 text-center">{item.postType}</td>
-                                        <td className="border border-gray-200 px-4 py-2 text-center">{item.balance}</td>
-                                        <td className="border border-gray-200 px-4 py-2 text-center">{item.fee}</td>
-                                        <td className="border border-gray-200 px-4 py-2 text-center">{item.remaining}</td>
-                                        <td className="border border-gray-200 px-4 py-2 text-center">{item.status}</td>
+                                        <td className="border border-gray-200 px-4 py-2 text-center align-middle">{formatDate(item.date)}</td>
+                                        <td className="border border-gray-200 px-4 py-2 text-center align-middle">{item.transactionId}</td>
+                                        <td className="border border-gray-200 px-4 py-2 text-center align-middle">{item.method}</td>
+                                        <td className="border border-gray-200 px-4 py-2 text-center align-middle">{item.amount}</td>
+                                        <td className="border border-gray-200 px-4 py-2 text-center align-middle">{item.promotion}</td>
+                                        <td className="border border-gray-200 px-4 py-2 text-center align-middle">{item.received}</td>
+                                        <td className="border border-gray-200 px-4 py-2 text-center align-middle">{item.status}</td>
+                                        <td className="border border-gray-200 px-4 py-2 text-center align-middle">{item.note}</td>
+
                                     </tr>
                                 ))}
                             </tbody>
@@ -125,6 +122,6 @@ const DepositHistory=()=>{
                 </div>
             </div>
         </div>
-    )
+    );
 }
-export default DepositHistory;
+export default DepositeHistory;

@@ -37,6 +37,9 @@ const Header = () => {
     const handleCreatePostClick = () => {
         navigate('/he-thong/tao-moi-bai-dang');
     };
+    const handleSavePost = () => {
+        navigate('tin-da-luu');
+    };
 
     return (
         <div ref={headerRef} className='w-4/5 mx-auto container'>
@@ -74,7 +77,7 @@ const Header = () => {
                     </div>}
                     {isLoggedIn && <div className='flex items-center gap-3 relative'>
                         <User />
-                        <div className="flex items-center cursor-pointer rounded-md hover:underline">
+                        <div className="flex items-center cursor-pointer rounded-md hover:underline" onClick={handleSavePost}>
                             {/* Thêm sự kiện onclick để thực hiện navigate đến route trang đã lưu bài đăng */}
                             <BsBookmarkStarFill className="text-red-500 relative mt-1">
                                 {/* <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full px-1">1</span> */}
