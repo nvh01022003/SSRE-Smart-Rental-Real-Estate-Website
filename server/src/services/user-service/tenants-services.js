@@ -4,7 +4,8 @@ const jwt = require("jsonwebtoken");
 const paginationHelper = require("../../helper/pagination");
 const authServices = require("../../services/auth/auth");
 const { where } = require("sequelize");
-const { User, Post, Address, Favourite, Report, sequelize } = require("../../models/index");
+const { Op } = require('sequelize');
+const { User, Post, Address, Favourite, Report, Category, sequelize } = require("../../models/index");
 const { response } = require("express");
 require('dotenv').config();
 // CREATE 
@@ -88,22 +89,21 @@ const reportPost = async (userId, postId, desc) => {
     }
 }
 // show list post saved sử dung pagination
-const listPostSaved = async (userId) => {
+const listPostSaved = async (userId, page) => {
     try {
         const totalData = await Favourite.count({
             where: {
                 user_id: userId
             }
         });
-        let objectPagination = paginationHelper.pagination(
+        let objectPagination = await paginationHelper.pagination(
             {
                 currentPage: 1,
-                limitPage: 5
+                limitPage: 2
             },
-            req.query,
+            page,
             totalData
         )
-
         // các bài viết theo trang
         const posts = await Favourite.findAll({
             where: {
@@ -148,9 +148,9 @@ const deletePostSaved = async (userId, postId) => {
     }
 }
 // FIND POST BY ALL
-const findPostByAll = async (minPrice, maxPrice, minAcreage, maxAcreage, location, category) => {
+const findPostByAll = async (minPrice, maxPrice, location, minAcreage, maxAcreage, categoryCode, page) => {
     try {
-        whereCondition = {};
+        let whereCondition = {};
         if (minPrice && maxPrice) {
             whereCondition.price = {
                 [Op.between]: [minPrice, maxPrice]
@@ -170,22 +170,17 @@ const findPostByAll = async (minPrice, maxPrice, minAcreage, maxAcreage, locatio
             const addressIDs = addressResult.map((address) => address.id);
             whereCondition.address_id = addressIDs;
         }
-        if (category) {
-            const categoryResult = await Category.findOne({
-                where: {
-                    category_name: category
-                }
-            })
-            whereCondition.category_id = categoryResult.id;
+
+        if (categoryCode) {
+            whereCondition.category_id = categoryCode;
         }
-        console.log(whereCondition.address_id);
         const totalData = await Post.count({ where: whereCondition });
-        let objectPagination = paginationHelper.pagination(
+        let objectPagination = await paginationHelper.pagination(
             {
                 currentPage: 1,
                 limitPage: 4
             },
-            req.query,
+            page,
             totalData
         )
         const posts = await Post.findAll({
@@ -194,6 +189,7 @@ const findPostByAll = async (minPrice, maxPrice, minAcreage, maxAcreage, locatio
             offset: objectPagination.skip,
             order: [['createdAt', 'DESC']]
         });
+        // console.log(posts);
         return {
             err: 0,
             msg: {
@@ -221,22 +217,6 @@ const listPostByPage = async (page) => {
         return {
             err: 0,
             msg: listPost
-        }
-    } catch (err) {
-        return {
-            err: 1,
-            msg: err
-        }
-    }
-}
-// totalPage
-const totalPage = async () => {
-    try {
-        const totalPost = await Post.count();
-        const totalPage = Math.ceil(totalPost / 5);
-        return {
-            err: 0,
-            msg: totalPage
         }
     } catch (err) {
         return {

@@ -2,8 +2,9 @@ import React from 'react'
 import Header from './Header'
 import { Outlet } from 'react-router-dom'
 import { Navigation, Search } from './index'
-import { Intro, Contact } from '../../components'
+import { Contact } from '../../components'
 import { useDispatch, useSelector } from 'react-redux'
+import Footer from './Footer'
 
 
 const Home = () => {
@@ -13,14 +14,15 @@ const Home = () => {
         <div className='w-full flex gap-6 flex-col items-center h-full'>
             <Header />
             <Navigation />
-            {isLoggedIn && <Search />}
-            <div className='w-4/5 lg:w-3/5 flex flex-col items-start justify-start mt-3'>
+            {/* {isLoggedIn && <Search />} */}
+            <div className='w-4/5 lg:w-4/5 flex flex-col items-start justify-start mt-3'>
                 <Outlet />
             </div>
-            <Intro />
             <Contact />
-            <div className='h-[500px]'>
-
+            <br />
+            <hr className='w-4/5 h-[2px] bg-gray-300 container mx-auto' />
+            <div className='w-3/5 container '>
+                <Footer />
             </div>
         </div>
     )

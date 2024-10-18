@@ -29,4 +29,5 @@ router.get("/findPostByAll", tenantsController.findPostByAll)
 router.get("/showDetailPost/:id", authentication.authenticateToken, tenantsController.showDetailPost)
 
 
+
 module.exports = router

@@ -1,14 +1,19 @@
-import axios from '../axiosConfig'
+import axios from 'axios';
 
-export const apiGetCurrent = () => new Promise(async (resolve, reject) => {
+export const apiGetCurrent = async () => {
+    //const token = localStorage.getItem('token');
+    const persistAuth = localStorage.getItem('persist:auth');
+    const authData = JSON.parse(persistAuth);
+    const token = authData.token.replace(/"/g, ''); // Remove quotes from token
     try {
-        const response = await axios({
-            method: 'get',
-            url: '/api/v1/user/get-current',
-        })
-        resolve(response)
+        const response = await axios.get('http://localhost:5000/api/v1/user/showInfo', {
+            headers: {
+                'token': `${token}` // Include token in headers
+            }
+        });
+        return response.data;
 
     } catch (error) {
-        reject(error)
+        console.error('API GetCurrent Error:', error); // Ghi log lỗi chi tiết
     }
-})
+}

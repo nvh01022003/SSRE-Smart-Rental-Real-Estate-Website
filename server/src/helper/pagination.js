@@ -1,5 +1,5 @@
-const pagination = (objectPagination, query, totalData) => {
-    const numberPage = parseInt(query.page);
+const pagination = async (objectPagination, numberPage, totalData) => {
+    console.log(totalData)
     if (isNaN(numberPage) == false) {
         objectPagination.currentPage = numberPage;
     }

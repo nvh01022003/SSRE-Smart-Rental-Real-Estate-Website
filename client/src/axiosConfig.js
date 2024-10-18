@@ -4,11 +4,21 @@ const instance = axios.create({
     baseURL: process.env.REACT_APP_SERVER_URL
 })
 
+const getTokenFromPersistAuth = () => {
+    const persistAuth = localStorage.getItem('persist:auth');
+    if (persistAuth) {
+        const authState = JSON.parse(persistAuth);
+        const token = authState?.token?.slice(1, -1); // Xóa dấu ngoặc kép khỏi chuỗi mã thông báo
+        return token;
+    }
+    return null;
+};
+
 // Add a request interceptor
 instance.interceptors.request.use(function (config) {
     // Do something before request is sent
-    // gắn token vào header
-    let token = window.localStorage.getItem('persist:auth') && JSON.parse(window.localStorage.getItem('persist:auth'))?.token?.slice(1, -1)
+    const token = getTokenFromPersistAuth();
+    //let token = window.localStorage.getItem('persist:auth') && JSON.parse(window.localStorage.getItem('persist:auth'))?.token?.slice(1, -1)
     config.headers = {
         authorization: token ? `Bearer ${token}` : null
     }

@@ -60,8 +60,9 @@ const reportPost = async (req, res) => {
 // show list post saved
 const listPostSaved = async (req, res) => {
     const userId = req.user.id
+    const page = parseInt(req.query.page)
     try {
-        const response = await tenanstService.listPostSaved(userId)
+        const response = await tenanstService.listPostSaved(userId, page)
         return res.status(200).json(response)
     } catch (error) {
         return res.status(500).json({
@@ -86,14 +87,15 @@ const deletePostSaved = async (req, res) => {
 }
 // find post by all condition
 const findPostByAll = async (req, res) => {
-    const minPrice = req.query.minPrice
-    const maxPrice = req.query.maxPrice
-    const location = req.query.location
-    const minAcreage = req.query.minAcreage
-    const maxAcreage = req.query.maxAcreage
-    const category = req.query.category
+    const minPrice = req.body.minPrice
+    const maxPrice = req.body.maxPrice
+    const location = req.body.location
+    const minAcreage = req.body.minAcreage
+    const maxAcreage = req.body.maxAcreage
+    const categoryCode = req.body.category
+    const page = parseInt(req.query.page)
     try {
-        const response = await tenanstService.findPostByAll(minPrice, maxPrice, location, minAcreage, maxAcreage, category)
+        const response = await tenanstService.findPostByAll(minPrice, maxPrice, location, minAcreage, maxAcreage, categoryCode, page)
         return res.status(200).json(response)
     } catch (error) {
         return res.status(500).json({
