@@ -244,6 +244,21 @@ const showDetailPost = async (postId) => {
         }
     }
 }
+// show category
+const showCategory = async () => {
+    try {
+        const category = await Category.findAll();
+        return {
+            err: 0,
+            msg: category
+        }
+    } catch (err) {
+        return {
+            err: 1,
+            msg: err
+        }
+    }
+}
 module.exports = {
     getInfoUser,
     changeInfoUser,
@@ -253,5 +268,6 @@ module.exports = {
     deletePostSaved,
     findPostByAll,
     listPostByPage,
-    showDetailPost
+    showDetailPost,
+    showCategory
 };

@@ -142,6 +142,18 @@ const showDetailPost = async (req, res) => {
         })
     }
 }
+// show category
+const showCategory = async (req, res) => {
+    try {
+        const response = await tenanstService.showCategory()
+        return res.status(200).json(response)
+    } catch (error) {
+        return res.status(500).json({
+            err: -1,
+            msg: 'Fail at auth controller showCategory: ' + error
+        })
+    }
+}
 module.exports = {
     showInfoUser,
     changeInfo,
@@ -152,5 +164,6 @@ module.exports = {
     findPostByAll,
     listPostByPage,
     totalPage,
-    showDetailPost
+    showDetailPost,
+    showCategory
 }

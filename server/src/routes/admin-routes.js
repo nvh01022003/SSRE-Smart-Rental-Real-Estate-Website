@@ -17,35 +17,43 @@ const router = express.Router()
 
 // MANAGE USER
 // show all user
-router.get("/showAllUser", managerUserController.showAllUser)
+router.get("/showAllUser", authentication.authenticateToken, authorization.checkRoleAdmin, managerUserController.showAllUser)
 // delete user by select list id ( sử dụng cho phần chọn nhiều id sau đó xóa)
-router.delete("/deleteUsers", managerUserController.deleteUsers)
+router.delete("/deleteUsers", authentication.authenticateToken, authorization.checkRoleAdmin, managerUserController.deleteUsers)
 // show detail user by id
-router.get("/showDetailUser/:userId", managerUserController.showDetailUser)
+router.get("/showDetailUser/:userId", authentication.authenticateToken, authorization.checkRoleAdmin, managerUserController.showDetailUser)
 // update user by id
-router.put("/updateUser/:userId", managerUserController.updateUser)
+router.put("/updateUser/:userId", authentication.authenticateToken, authorization.checkRoleAdmin, managerUserController.updateUser)
 // change role user by id
-router.put("/changeRoleUser/:userId", managerUserController.changeRoleUser)
+router.put("/changeRoleUser/:userId", authentication.authenticateToken, authorization.checkRoleAdmin, managerUserController.changeRoleUser)
 // delete user by id
-router.delete("/deleteUser/:userId", managerUserController.deleteUser)
+router.delete("/deleteUser/:userId", authentication.authenticateToken, authorization.checkRoleAdmin, managerUserController.deleteUser)
 // find user by name
-router.get("/findUserByName", managerUserController.findUserByEmail)
+router.get("/findUserByName", authentication.authenticateToken, authorization.checkRoleAdmin, managerUserController.findUserByEmail)
 // find user by role
-router.get("/findUserByRole", managerUserController.findUserByRole)
+router.get("/findUserByRole", authentication.authenticateToken, authorization.checkRoleAdmin, managerUserController.findUserByRole)
+
 
 
 
 // MANAGE CATEGORY
 // show all category
-router.get("/showAllCategory", managerCategoryController.showAllCategory)
+router.get("/showAllCategory", authentication.authenticateToken, authorization.checkRoleAdmin, managerCategoryController.showAllCategory)
 // create category
-router.post("/createCategory", validateCategory.checkCategoryExits, managerCategoryController.createCategory)
+router.post("/createCategory", authentication.authenticateToken, authorization.checkRoleAdmin, validateCategory.checkCategoryExits, managerCategoryController.createCategory)
 // update category by id
-router.put("/updateCategory/:categoryId", validateCategory.checkCategoryExits, managerCategoryController.updateCategory)
+router.put("/updateCategory/:categoryId", authentication.authenticateToken, authorization.checkRoleAdmin, validateCategory.checkCategoryExits, managerCategoryController.updateCategory)
 // delete category by id
-router.delete("/deleteCategory/:categoryId", managerCategoryController.deleteCategory)
+router.delete("/deleteCategory/:categoryId", authentication.authenticateToken, authorization.checkRoleAdmin, managerCategoryController.deleteCategory)
+
 
 // MANAGE POST
 // show all post in system
-router.get("/showAllPost", managerPostController.showAllPost)
+router.get("/showAllPost", authentication.authenticateToken, authorization.checkRoleAdmin, managerPostController.showAllPost)
+// delete post by select list id ( sử dụng cho phần chọn nhiều id sau đó xóa)
+router.delete("/deletePosts", authentication.authenticateToken, authorization.checkRoleAdmin, managerPostController.deletePosts)
+// show detail post by id
+router.get("/showDetailPost/:postId", authentication.authenticateToken, authorization.checkRoleAdmin, managerPostController.showDetailPost)
+// delete post by id
+router.delete("/deletePost/:postId", authentication.authenticateToken, authorization.checkRoleAdmin, managerPostController.deletePost)
 module.exports = router
