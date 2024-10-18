@@ -19,6 +19,7 @@ import DepositeHistory from './components/DepositeHistory';
 import Payment from './containers/System/Payment';
 import Momo from './components/Momo';
 import SavePost from './containers/Public/SavePost';
+import BankTransfer from './components/BankTransfer';
 //import Item from './components/Item';
 
 function App() {
@@ -66,6 +67,7 @@ function App() {
           <Route path={path.DEPOSITE_HISTORY} element={<DepositeHistory />} />
           <Route path={path.HISTORY_PAYMENT} element={<HistoryPayment />} />
           <Route path={path.MOMO} element={<Momo/>} />
+          <Route path={path.BANK_TRANSFER} element={<BankTransfer/>} />
           </Route>
         </Route>
         <Route path={path.SAVE_POST} element={<SavePost/>} ></Route>

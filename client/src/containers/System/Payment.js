@@ -7,6 +7,7 @@ import { useNavigate, Route, Routes } from 'react-router-dom';
 import DepositeHistory from '../../components/DepositeHistory';
 import HistoryPayment from '../../components/HistoryPayment';
 import Momo from '../../components/Momo';
+import BankTransfer from '../../components/BankTransfer';
 const Payment = () => {
     const navigate = useNavigate();
     const [showMomoModal, setShowMomoModal] = useState(false);
@@ -20,6 +21,7 @@ const Payment = () => {
             <Route path={path.DEPOSITE_HISTORY} element={<DepositeHistory />} />
             <Route path={path.HISTORY_PAYMENT} element={<HistoryPayment />} />
             <Route path={path.MOMO} element={<Momo />} />
+            <Route path={path.BANK_TRANSFER} element={<BankTransfer />} />
             <Route path="*" element={
                 <div>
                     <h1 className='text-3xl font-medium py-4 border-b border-gray-200'>
@@ -39,7 +41,7 @@ const Payment = () => {
                                     </h2>
                                     <div className="flex space-x-4">
                                         <div className="bg-gray-100 p-4 rounded-lg shadow text-center flex-1 hover:ring-2 hover:ring-blue-500 cursor-pointer hover:shadow-lg transition-shadow duration-200">
-                                            <button className="flex flex-col items-center w-full">
+                                            <button onClick={() => navigate(path.BANK_TRANSFER)} className="flex flex-col items-center w-full">
                                                 <img
                                                     alt="Bank Transfer Icon"
                                                     className="mx-auto"

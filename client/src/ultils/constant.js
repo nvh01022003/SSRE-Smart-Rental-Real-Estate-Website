@@ -28,6 +28,7 @@ export const path = {
     DEPOSITE_HISTORY: 'lich-su-nap-tien',
     MOMO:'momo',
     SAVE_POST:'tin-da-luu',
+    BANK_TRANSFER:'thong-tin-chuyen-khoan',
 }
 
 export const text = {
