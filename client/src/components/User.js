@@ -69,6 +69,7 @@ const User = () => {
                 });
                 if (response.data.err === 0) {
                     setCurrentData(response.data.info_user);
+                    localStorage.setItem('user', JSON.stringify(response.data.info_user));
                 } else {
                     console.error('Error fetching personal information:', response.data.msg);
                 }

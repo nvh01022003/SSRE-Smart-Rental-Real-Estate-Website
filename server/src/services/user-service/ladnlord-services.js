@@ -16,6 +16,7 @@ const generateRandomCode = () => {
 const createNewPost = async (userId, contentPost, files) => {
     contentPost = JSON.parse(contentPost)
     const imageUrls = files;
+    console.log(imageUrls)
     const { title, address, price, description, overview, category_id } = contentPost
     const addressData = address
     const overviewData = {

@@ -29,7 +29,9 @@ router.get("/findPostByLocation", authentication.authenticateToken, tenantsContr
 
 // LADNLORD
 // create post
-router.post("/createPost", authentication.authenticateToken, authorization.checkRoleUser, upload.array('imgPost', 10), img.checkFileTypePost, img.updateImgs, ladnlordController.createPost)
+router.post("/createPost", authentication.authenticateToken, authorization.checkRoleUser, upload.array('imgPost', 10), ladnlordController.createPost)
+//img.checkFileTypePost, img.updateImgs,
+
 // change status post
 router.post("/changestatus/:id", authentication.authenticateToken, authorization.checkRoleUser, ladnlordController.updateStatusPost)
 // update post
