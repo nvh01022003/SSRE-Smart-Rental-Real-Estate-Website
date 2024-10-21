@@ -2,7 +2,8 @@ import React from 'react';
 import { Routes, Route } from 'react-router-dom'
 import { Home, Login, Rental, Homepage, DetailPost, SearchDetail } from './containers/Public'
 import { path } from './ultils/constant'
-import { System, CreatePost } from './containers/System'
+import { CreatePost } from '../src/containers/System'
+import { System } from '../src/containers/System'
 import * as actions from './store/actions'
 import { useDispatch, useSelector } from 'react-redux'
 import { useEffect } from 'react'
@@ -14,6 +15,7 @@ import ForgotPassword from './containers/Public/ForgotPass/ForgotPass'
 import ChatGPT from './components/Chat/ChatGPT'
 import ValidateCode from './containers/Public/ForgotPass/ValidateCode';
 import ResetPass from './containers/Public/ForgotPass/ResetPass';
+
 //import Item from './components/Item';
 
 function App() {
@@ -32,11 +34,11 @@ function App() {
     // }, 1000)
   }, [isLoggedIn, dispatch])
 
-  useEffect(() => {
-    dispatch(actions.getPrices())
-    dispatch(actions.getAreas())
-    dispatch(actions.getProvinces())
-  }, [dispatch])
+  // useEffect(() => {
+  //   dispatch(actions.getPrices())
+  //   dispatch(actions.getAreas())
+  //   dispatch(actions.getProvinces())
+  // }, [dispatch])
 
   return (
 
@@ -44,6 +46,7 @@ function App() {
       <Routes>
         <Route path={path.HOME} element={<Home />}>
           <Route path='*' element={<Homepage />} />
+
           <Route path={path.LOGIN} element={<Login />} >
             <Route path={path.FORGOT_PASS} element={<ForgotPassword />} >
               <Route path={path.VALIDATE_CODE} element={<ValidateCode />} >
@@ -51,6 +54,7 @@ function App() {
               </Route>
             </Route>
           </Route>
+
           <Route path={path.REGISTER} element={<Register />} />
           <Route path="register/verify" element={<Verify />} />
           <Route path={path.CHO_THUE_CAN_HO} element={<Rental />} />
@@ -60,14 +64,17 @@ function App() {
           <Route path={path.SEARCH} element={<SearchDetail />} />
           <Route path={path.DETAL_POST__TITLE__POSTID} element={<DetailPost />} />
           <Route path={'chi-tiet/*'} element={<DetailPost />} />
-
         </Route>
+
         <Route path={path.SYSTEM} element={<System />} >
           <Route path={path.CREATE_POST} element={<CreatePost />} />
           <Route path={path.PERSONAL_INFO} element={<PersonalInfo />} />
           <Route path={path.CHANGE_PASS} element={<ChangePass />} />
         </Route>
 
+        {/* <Route path={path.HOME_ADMIN} element={<HomeAdmin />} >
+
+        </Route> */}
       </Routes>
       <ChatGPT />
 

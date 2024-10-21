@@ -2,45 +2,45 @@
 
 // import React, { memo, useEffect, useState } from 'react'
 // import { Select, InputReadOnly } from '../components'
-// import { apiGetPublicProvinces, apiGetPublicDistrict, apiGetPublicWard } from '../services'
+// import { apiGetPubliccitys, apiGetPublicDistrict, apiGetPublicWard } from '../services'
 // import InputFormNumberHouse from './InputFormNumberHouse'
 
 // const Address = ({ setPayload, handleInputChange, errorMessages }) => {
 
-//     const [provinces, setProvinces] = useState([])
+//     const [citys, setcitys] = useState([])
 //     const [districts, setDistricts] = useState([])
 //     const [wards, setWards] = useState([])
 
-//     const [province, setProvince] = useState('')
+//     const [city, setcity] = useState('')
 //     const [district, setDistrict] = useState('')
 //     const [ward, setWard] = useState('')
-//     const [houseNumber, setHouseNumber] = useState('')
+//     const [detail_address, setdetail_address] = useState('')
 
 //     const [resetDistrict, setResetDistrict] = useState(false)
 //     const [resetWard, setResetWard] = useState(false)
 
 //     useEffect(() => {
-//         const fetchPublicProvince = async () => {
-//             const response = await apiGetPublicProvinces()
+//         const fetchPubliccity = async () => {
+//             const response = await apiGetPubliccitys()
 //             if (response.status === 200) {
-//                 setProvinces(response?.data.results)
+//                 setcitys(response?.data.results)
 //             }
 //         }
-//         fetchPublicProvince()
+//         fetchPubliccity()
 //     }, [])
 
 //     // useEffect(() => {
 //     //     setDistrict(null)
 //     //     const fetchPublicDistrict = async () => {
-//     //         const response = await apiGetPublicDistrict(province)
+//     //         const response = await apiGetPublicDistrict(city)
 //     //         if (response.status === 200) {
 //     //             setDistricts(response.data?.results)
 //     //         }
 //     //     }
-//     //     province && fetchPublicDistrict()
-//     //     !province ? setResetDistrict(true) : setResetDistrict(false)
-//     //     !province && setDistricts([])
-//     // }, [province])
+//     //     city && fetchPublicDistrict()
+//     //     !city ? setResetDistrict(true) : setResetDistrict(false)
+//     //     !city && setDistricts([])
+//     // }, [city])
 
 //     // useEffect(() => {
 //     //     setWard(null)
@@ -58,18 +58,18 @@
 
 //     useEffect(() => {
 //         const fetchPublicDistrict = async () => {
-//             if (!province) {
+//             if (!city) {
 //                 setDistrict(''); // Đặt lại huyện khi không có tỉnh
 //                 setDistricts([]); // Xóa danh sách huyện
 //                 return;
 //             }
-//             const response = await apiGetPublicDistrict(province);
+//             const response = await apiGetPublicDistrict(city);
 //             if (response.status === 200) {
 //                 setDistricts(response.data?.results);
 //             }
 //         };
 //         fetchPublicDistrict();
-//     }, [province]);
+//     }, [city]);
 
 //     useEffect(() => {
 //         const fetchPublicWard = async () => {
@@ -89,10 +89,10 @@
 //     useEffect(() => {
 //         setPayload(prev => ({
 //             ...prev,
-//             address: `${houseNumber ? `${houseNumber}, ` : ''}${ward ? `${wards?.find(item => item.ward_id === ward)?.ward_name}, ` : ''}${district ? `${districts?.find(item => item.district_id === district)?.district_name}, ` : ''}${province ? provinces?.find(item => item.province_id === province)?.province_name : ''}`,
-//             province: province ? provinces?.find(item => item.province_id === province)?.province_name : ''
+//             address: `${detail_address ? `${detail_address}, ` : ''}${ward ? `${wards?.find(item => item.ward_id === ward)?.ward_name}, ` : ''}${district ? `${districts?.find(item => item.district_id === district)?.district_name}, ` : ''}${city ? citys?.find(item => item.city_id === city)?.city_name : ''}`,
+//             city: city ? citys?.find(item => item.city_id === city)?.city_name : ''
 //         }))
-//     }, [province, district, ward, houseNumber])
+//     }, [city, district, ward, detail_address])
 
 //     return (
 //         <div>
@@ -101,19 +101,19 @@
 //                 <div className='flex items-center gap-4'>
 //                     <div className='w-[28%] relative'> {/* Add relative positioning */}
 //                         <Select
-//                             type='province'
-//                             value={province || ''}
-//                             setValue={setProvince}
-//                             options={provinces}
+//                             type='city'
+//                             value={city || ''}
+//                             setValue={setcity}
+//                             options={citys}
 //                             label='Tỉnh/Thành phố'
 //                             onChange={(value) => {
-//                                 setProvince(value);
-//                                 handleInputChange('province', value);
+//                                 setcity(value);
+//                                 handleInputChange('city', value);
 //                             }}
 //                         />
-//                         {errorMessages.province && (
+//                         {errorMessages.city && (
 //                             <p className='text-red-500 absolute -bottom-6 text-sm'>
-//                                 {errorMessages.province}
+//                                 {errorMessages.city}
 //                             </p>
 //                         )} {/* Position the error message absolutely */}
 //                     </div>
@@ -160,19 +160,19 @@
 //                 <div className='w-[28%] pt-5'>
 //                     <InputFormNumberHouse
 //                         label={<span className="text-base font-medium text-gray-800">Số nhà, tên đường</span>}
-//                         value={houseNumber}
-//                         setValue={setHouseNumber}
+//                         value={detail_address}
+//                         setValue={setdetail_address}
 //                         onChange={(e) => {
-//                             setHouseNumber(e.target.value);
-//                             handleInputChange('houseNumber', e.target.value);
+//                             setdetail_address(e.target.value);
+//                             handleInputChange('detail_address', e.target.value);
 //                         }}
 //                     />
-//                     {errorMessages.houseNumber && <p className='text-red-500 text-sm'>{errorMessages.houseNumber}</p>}
+//                     {errorMessages.detail_address && <p className='text-red-500 text-sm'>{errorMessages.detail_address}</p>}
 //                 </div>
 
 //                 <InputReadOnly
 //                     label='Địa chỉ chính xác'
-//                     value={`${houseNumber ? `${houseNumber}, ` : ''}${ward ? `${wards?.find(item => item.ward_id === ward)?.ward_name}, ` : ''}${district ? `${districts?.find(item => item.district_id === district)?.district_name}, ` : ''}${province ? provinces?.find(item => item.province_id === province)?.province_name : ''}`}
+//                     value={`${detail_address ? `${detail_address}, ` : ''}${ward ? `${wards?.find(item => item.ward_id === ward)?.ward_name}, ` : ''}${district ? `${districts?.find(item => item.district_id === district)?.district_name}, ` : ''}${city ? citys?.find(item => item.city_id === city)?.city_name : ''}`}
 //                 />
 //             </div>
 //         </div>
@@ -185,52 +185,54 @@
 
 import React, { memo, useEffect, useState, useImperativeHandle, forwardRef } from 'react';
 import { Select, InputReadOnly } from '../components';
-import { apiGetPublicProvinces, apiGetPublicDistrict, apiGetPublicWard } from '../services';
+import { apiGetPubliccitys, apiGetPublicDistrict, apiGetPublicWard } from '../services';
 import InputFormNumberHouse from './InputFormNumberHouse';
 
-const Address = forwardRef(({ setPayload, handleInputChange }, ref) => {
-    const [provinces, setProvinces] = useState([]);
+const Address = forwardRef(({ setPayload, handleInputChange, resetForm }, ref) => {
+    const [citys, setcitys] = useState([]);
     const [districts, setDistricts] = useState([]);
     const [wards, setWards] = useState([]);
 
-    const [province, setProvince] = useState('');
+    const [city, setcity] = useState('');
     const [district, setDistrict] = useState('');
     const [ward, setWard] = useState('');
-    const [houseNumber, setHouseNumber] = useState('');
+    const [detail_address, setdetail_address] = useState('');
 
     const [resetDistrict, setResetDistrict] = useState(false);
     const [resetWard, setResetWard] = useState(false);
 
     // State quản lý lỗi
-    const [provinceError, setProvinceError] = useState('');
+    const [cityError, setcityError] = useState('');
     const [districtError, setDistrictError] = useState('');
     const [wardError, setWardError] = useState('');
-    const [houseNumberError, setHouseNumberError] = useState('');
+    const [detail_addressError, setdetail_addressError] = useState('');
+
+
 
     useEffect(() => {
-        const fetchPublicProvince = async () => {
-            const response = await apiGetPublicProvinces();
+        const fetchPubliccity = async () => {
+            const response = await apiGetPubliccitys();
             if (response.status === 200) {
-                setProvinces(response?.data.results);
+                setcitys(response?.data.results);
             }
         };
-        fetchPublicProvince();
+        fetchPubliccity();
     }, []);
 
     useEffect(() => {
         const fetchPublicDistrict = async () => {
-            if (!province) {
+            if (!city) {
                 setDistrict(''); // Đặt lại huyện khi không có tỉnh
                 setDistricts([]); // Xóa danh sách huyện
                 return;
             }
-            const response = await apiGetPublicDistrict(province);
+            const response = await apiGetPublicDistrict(city);
             if (response.status === 200) {
                 setDistricts(response.data?.results);
             }
         };
         fetchPublicDistrict();
-    }, [province]);
+    }, [city]);
 
     useEffect(() => {
         const fetchPublicWard = async () => {
@@ -247,28 +249,55 @@ const Address = forwardRef(({ setPayload, handleInputChange }, ref) => {
         fetchPublicWard();
     }, [district]);
 
+    // useEffect(() => {
+    //     setPayload(prev => ({
+    //         ...prev,
+    //         address: `${detail_address ? `${detail_address}, ` : ''}${ward ? `${wards?.find(item => item.ward_id === ward)?.ward_name}, ` : ''}${district ? `${districts?.find(item => item.district_id === district)?.district_name}, ` : ''}${city ? citys?.find(item => item.province_id === city)?.province_name : ''}`,
+    //         city: city ? citys?.find(item => item.province_id === city)?.province_name : ''
+    //     }));
+    // }, [city, district, ward, detail_address]);
+
     useEffect(() => {
         setPayload(prev => ({
             ...prev,
-            address: `${houseNumber ? `${houseNumber}, ` : ''}${ward ? `${wards?.find(item => item.ward_id === ward)?.ward_name}, ` : ''}${district ? `${districts?.find(item => item.district_id === district)?.district_name}, ` : ''}${province ? provinces?.find(item => item.province_id === province)?.province_name : ''}`,
-            province: province ? provinces?.find(item => item.province_id === province)?.province_name : ''
+            address: {
+                detail_address: detail_address, // Thêm detail_address vào đây
+                district: district, // Thêm district vào đây
+                city: city, // Thêm city vào đây
+                ward: ward // Thêm ward vào đây
+            },
+            city: city ? citys?.find(item => item.province_id === city)?.province_name : '',
+            district: district ? districts?.find(item => item.district_id === district)?.district_name : '',
+            ward: ward ? wards?.find(item => item.ward_id === ward)?.ward_name : '',
+
         }));
-    }, [province, district, ward, houseNumber]);
+    }, [city, district, ward, detail_address, setPayload, citys, districts, wards]);
+
 
     // Hàm kiểm tra và cập nhật lỗi
     const validateFields = () => {
-        setProvinceError(!province ? 'Vui lòng chọn tỉnh/thành phố' : '');
+        setcityError(!city ? 'Vui lòng chọn tỉnh/thành phố' : '');
         setDistrictError(!district ? 'Vui lòng chọn quận/huyện' : '');
         setWardError(!ward ? 'Vui lòng chọn phường/xã' : '');
-        setHouseNumberError(!houseNumber ? 'Vui lòng nhập số nhà, tên đường' : '');
+        setdetail_addressError(!detail_address ? 'Vui lòng nhập số nhà, tên đường' : '');
 
-        return !provinceError && !districtError && !wardError && !houseNumberError;
+        return !cityError && !districtError && !wardError && !detail_addressError;
     };
 
     // Expose validateFields function to parent component
     useImperativeHandle(ref, () => ({
         validateFields
     }));
+
+    // Reset the address fields when resetForm changes
+    useEffect(() => {
+        if (resetForm) {
+            setcity('');
+            setDistrict('');
+            setWard('');
+            setdetail_address('');
+        }
+    }, [resetForm]);
 
     return (
         <div>
@@ -277,19 +306,23 @@ const Address = forwardRef(({ setPayload, handleInputChange }, ref) => {
                 <div className='flex items-center gap-6'>
                     <div className='w-[28%] relative'>
                         <Select
-                            type='province'
-                            value={province || ''}
+                            type='city'
+                            value={city || ''}
                             setValue={(value) => {
-                                setProvince(value);
-                                handleInputChange('province', value);
-                                setProvinceError(''); // Xóa lỗi khi người dùng chọn giá trị hợp lệ
+                                setcity(value);
+                                handleInputChange('city', value);
+                                setcityError(''); // Xóa lỗi khi người dùng chọn giá trị hợp lệ
                             }}
-                            options={provinces}
+
+                            options={citys.map(city => ({
+                                code: city.province_id, // ID của chuyên mục
+                                value: city.province_name // Tên hiển thị của chuyên mục
+                            }))}
                             label='Tỉnh/Thành phố'
                         />
-                        {provinceError && (
+                        {cityError && (
                             <p className='text-red-500 absolute -bottom-6 text-sm'>
-                                {provinceError}
+                                {cityError}
                             </p>
                         )}
                     </div>
@@ -303,7 +336,10 @@ const Address = forwardRef(({ setPayload, handleInputChange }, ref) => {
                                 handleInputChange('district', value);
                                 setDistrictError(''); // Xóa lỗi khi người dùng chọn giá trị hợp lệ
                             }}
-                            options={districts}
+                            options={districts.map(district => ({
+                                code: district.district_id, // ID của chuyên mục
+                                value: district.district_name // Tên hiển thị của chuyên mục
+                            }))}
                             label='Quận/Huyện'
                         />
                         {districtError && (
@@ -322,7 +358,10 @@ const Address = forwardRef(({ setPayload, handleInputChange }, ref) => {
                                 handleInputChange('ward', value);
                                 setWardError(''); // Xóa lỗi khi người dùng chọn giá trị hợp lệ
                             }}
-                            options={wards}
+                            options={wards.map(ward => ({
+                                code: ward.ward_id, // ID của chuyên mục
+                                value: ward.ward_name // Tên hiển thị của chuyên mục
+                            }))}
                             label='Phường/Xã'
                         />
                         {wardError && (
@@ -336,19 +375,19 @@ const Address = forwardRef(({ setPayload, handleInputChange }, ref) => {
                 <div className='w-[28%] pt-5'>
                     <InputFormNumberHouse
                         label={<span className="text-base font-medium text-gray-800">Số nhà, tên đường</span>}
-                        value={houseNumber}
+                        value={detail_address || ''}
                         setValue={(e) => {
-                            setHouseNumber(e.target.value);
-                            handleInputChange('houseNumber', e.target.value);
-                            setHouseNumberError(''); // Xóa lỗi khi người dùng nhập giá trị hợp lệ
+                            setdetail_address(e.target.value);
+                            handleInputChange('detail_address', e.target.value);
+                            setdetail_addressError(''); // Xóa lỗi khi người dùng nhập giá trị hợp lệ
                         }}
                     />
-                    {houseNumberError && <p className='text-red-500 text-sm'>{houseNumberError}</p>}
+                    {detail_addressError && <p className='text-red-500 text-sm'>{detail_addressError}</p>}
                 </div>
 
                 <InputReadOnly
                     label='Địa chỉ chính xác'
-                    value={`${houseNumber ? `${houseNumber}, ` : ''}${ward ? `${wards?.find(item => item.ward_id === ward)?.ward_name}, ` : ''}${district ? `${districts?.find(item => item.district_id === district)?.district_name}, ` : ''}${province ? provinces?.find(item => item.province_id === province)?.province_name : ''}`}
+                    value={`${detail_address ? `${detail_address}, ` : ''}${ward ? `${wards?.find(item => item.ward_id === ward)?.ward_name}, ` : ''}${district ? `${districts?.find(item => item.district_id === district)?.district_name}, ` : ''}${city ? citys?.find(item => item.province_id === city)?.province_name : ''}`}
                 />
             </div>
         </div>

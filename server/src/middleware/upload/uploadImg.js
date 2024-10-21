@@ -31,6 +31,7 @@ const checkFileType = (req, res, next) => {
 // check list file
 const checkFileTypePost = (req, res, next) => {
     const files = req.files;
+
     console.log(files)
     if (!files || files.length === 0) {
         return res.status(400).json({ err: 1, msg: 'No file uploaded' });
@@ -77,6 +78,7 @@ const updateImg = async (req, res, next) => {
 const updateImgs = async (req, res, next) => {
     try {
         const files = req.files;
+        console.log('Uploading images:', files);
         if (!files || files.length === 0) {
             return res.status(400).json({ err: 1, msg: 'No file uploaded!' });
         }

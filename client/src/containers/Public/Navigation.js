@@ -14,7 +14,7 @@ const Navigation = ({ isAdmin }) => {
     const { categories } = useSelector(state => state.app)
     useEffect(() => {
         dispatch(actions.getCategories())
-    }, [])
+    }, [dispatch])
     return (
         <div className={`w-full flex ${isAdmin ? 'justify-start' : 'justify-center'} items-center h-[40px] bg-secondary1 text-white mx-auto container`}>
             <div className='w-3/5 flex h-full items-center text-sm font-medium'>
@@ -25,13 +25,14 @@ const Navigation = ({ isAdmin }) => {
                     Trang chủ
                 </NavLink>
                 {categories?.length > 0 && categories.map(item => {
+                    //console.log(categories)
                     return (
-                        <div key={item.code} className='h-full flex justify-center items-center' >
+                        <div key={item.id} className='h-full flex justify-center items-center' >
                             <NavLink
-                                to={`/${formatVietnameseToString(item.value)}`}
+                                to={`/${formatVietnameseToString(item.category_name)}`}
                                 className={({ isActive }) => isActive ? active : notActive}
                             >
-                                {item.value}
+                                {item.category_name}
                             </NavLink>
                         </div>
                     )

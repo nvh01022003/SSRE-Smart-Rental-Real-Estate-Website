@@ -1,10 +1,17 @@
-import React, { memo } from 'react'
+import React, { memo } from 'react';
 
-const Select = ({ label, options, value, setValue, type, reset, name }) => {
+const SelectCategory = ({ label, options, value, setValue, type, reset, name }) => {
 
     return (
         <div className='flex flex-col gap-2 flex-1'>
             <label className='font-medium align-center' htmlFor="select-address">{label}</label>
+            {/* <select
+                value={reset ? '' : value || ''}  // Ensure value is not undefined/null
+                onChange={(e) => !name ? setValue(e.target.value) : setValue(prev => ({ ...prev, [name]: e.target.value }))}
+                id="select-address"
+                className='outline-none border border-gray-300 p-2 rounded-md w-full'
+            > */}
+
             <select
                 value={reset ? '' : String(value || '')}  // Đảm bảo giá trị là một chuỗi
                 onChange={(e) => {
@@ -15,16 +22,6 @@ const Select = ({ label, options, value, setValue, type, reset, name }) => {
                 className='outline-none border border-gray-300 p-2 rounded-md w-full'
             >
                 <option value="">{`--Chọn ${label}--`}</option>
-                {/* {options?.map((item, index) => {
-                    return (
-                        <option
-                            key={type === 'city' ? item?.city_id : type === 'district' ? item?.district_id : type === 'ward' ? item?.ward_id : index}
-                            value={type === 'city' ? item?.city_id : type === 'district' ? item?.district_id : type === 'ward' ? item?.ward_id : ''}
-                        >
-                            {type === 'city' ? item?.city_name : type === 'district' ? item?.district_name : type === 'ward' ? item?.ward_name : ''}
-                        </option>
-                    )
-                })} */}
                 {options?.map((item, index) => {
                     const optionValue = String(item.code || ''); // Đảm bảo optionValue là một chuỗi
 
@@ -39,7 +36,7 @@ const Select = ({ label, options, value, setValue, type, reset, name }) => {
                 })}
             </select>
         </div>
-    )
+    );
 }
 
-export default memo(Select)
+export default memo(SelectCategory);
