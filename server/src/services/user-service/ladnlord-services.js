@@ -14,7 +14,7 @@ const generateRandomCode = () => {
 
 // CREATE POST
 const createNewPost = async (userId, contentPost, files) => {
-    contentPost = JSON.parse(contentPost)
+    contentPost = JSON.parse(contentPost)  //ép kiểu qua kiểu json vì bên client gửi lên dạng string
     const imageUrls = files;
     const { title, address, price, description, overview, category_id } = contentPost
     const addressData = address

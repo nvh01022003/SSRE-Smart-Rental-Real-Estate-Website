@@ -26,7 +26,7 @@ router.post("/reportPost/:id", authentication.authenticateToken, tenantsControll
 // find post by price and acreage and location and category 
 router.get("/findPostByAll", tenantsController.findPostByAll)
 // show detail post
-router.get("/showDetailPost/:id", authentication.authenticateToken, tenantsController.showDetailPost)
+router.get("/showDetailPost/:id", tenantsController.showDetailPost)
 
 
 
