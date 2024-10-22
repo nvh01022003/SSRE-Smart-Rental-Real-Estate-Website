@@ -75,6 +75,9 @@ module.exports = {
         onUpdate: 'CASCADE',
         onDelete: 'CASCADE'
       },
+      acreage: {
+        type: Sequelize.DECIMAL(10, 2)
+      },
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE

@@ -9,26 +9,10 @@ const multer = require('multer');
 const storage = multer.memoryStorage();
 const upload = multer({ storage });
 const router = express.Router()
-// TENANTS
-// show info user
-router.get("/showInfo", authentication.authenticateToken, tenantsController.showInfoUser)
-// change info user
-router.post("/changeInfo", authentication.authenticateToken, validate.validateUpdate, tenantsController.changeInfo)
-// save post
-router.post("/savePost/:id", authentication.authenticateToken, tenantsController.savaPost)
-// report post
-router.post("/reportPost/:id", authentication.authenticateToken, tenantsController.reportPost)
-// show list post saved ( favorite )
-router.get("/listPostSaved", authentication.authenticateToken, tenantsController.listPostSaved)
-// find post by price
-router.get("/findPostByPrice", authentication.authenticateToken, tenantsController.findPostByPrice)
-// find post by location
-router.get("/findPostByLocation", authentication.authenticateToken, tenantsController.findPostByLocation)
 
 
-
-// LADNLORD
 // create post
+// 
 router.post("/createPost", authentication.authenticateToken, authorization.checkRoleUser, upload.array('imgPost', 10), img.checkFileTypePost, img.updateImgs, ladnlordController.createPost)
 // change status post
 router.post("/changestatus/:id", authentication.authenticateToken, authorization.checkRoleUser, ladnlordController.updateStatusPost)
@@ -36,4 +20,12 @@ router.post("/changestatus/:id", authentication.authenticateToken, authorization
 router.get("/updatePost/:id", authentication.authenticateToken, authorization.checkRoleUser, ladnlordController.updatePost)
 // delete post
 router.delete("/deletePost/:id", authentication.authenticateToken, authorization.checkRoleUser, ladnlordController.deletePost)
+// show list post
+router.get("/listPost", authentication.authenticateToken, authorization.checkRoleUser, ladnlordController.listPost)
+// show list post by page pagination
+router.get("/listPostByPage", authentication.authenticateToken, authorization.checkRoleUser, ladnlordController.listPostByPage)
+// change status posts 
+router.post("/changestatus", authentication.authenticateToken, authorization.checkRoleUser, ladnlordController.updateStatusPosts)
+// delete list post
+router.delete("/deleteListPost", authentication.authenticateToken, authorization.checkRoleUser, ladnlordController.deleteListPost)
 module.exports = router

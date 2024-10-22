@@ -16,6 +16,8 @@ const generateRandomCode = () => {
 const createNewPost = async (userId, contentPost, files) => {
     contentPost = JSON.parse(contentPost)
     const imageUrls = files;
+    console.log('imageUrls', imageUrls)
+
     const { title, address, price, description, overview, category_id } = contentPost
     const addressData = address
     const overviewData = {
@@ -32,16 +34,12 @@ const createNewPost = async (userId, contentPost, files) => {
     }
 
     try {
-        // diachi
-        const resAddress = await Address.create(addressData)
-        // bang overview
-        const resOverview = await Overview.create(overviewData)
-        // bang toa do
-        const resCoordinates = await Coordinates.create(coordinatesData)
-        // bang img cua baiviet
-        const resImage = await Image.create({ img_url_list: JSON.stringify(imageUrls) })
-        console.log(resAddress.id, resOverview.id, resCoordinates.id, resImage.id)
-        // tao bang bai viet
+        const [resAddress, resOverview, resCoordinates, resImage] = await Promise.all([
+            Address.create(addressData),
+            Overview.create(overviewData),
+            Coordinates.create(coordinatesData),
+            Image.create({ img_url_list: JSON.stringify(imageUrls) })
+        ]);
         const resPost = await Post.create({
             title,
             price,
@@ -87,6 +85,29 @@ const updateStatusPost = async (postId, status) => {
         }
     }
 }
+
+// UPDATE STATUS POSTS
+const updateStatusPosts = async (postIds, status) => {
+    try {
+        const resPost = await Post.update({ status }, {
+            where: {
+                id: postIds
+            }
+        })
+        return {
+            err: 0,
+            msg: 'Update status posts success',
+            post: resPost
+        }
+    } catch (error) {
+        console.log(error)
+        return {
+            err: 1,
+            msg: error
+        }
+    }
+}
+
 // UPDATE POST
 const updatePost = async (postId, dataUpdae) => {
     try {
@@ -129,9 +150,78 @@ const deletePost = async (postId) => {
         }
     }
 }
+
+// DELETE LIST POST BY LIST ID POST
+const deleteListPost = async (postIds) => {
+    try {
+        const resPost = await Post.destroy({
+            where: {
+                id: postIds
+            }
+        })
+        return {
+            err: 0,
+            msg: 'Delete list post success',
+            post: resPost
+        }
+    } catch (error) {
+        console.log(error)
+        return {
+            err: 1,
+            msg: error
+        }
+    }
+}
+// LIST POST
+const listPost = async (userId) => {
+    try {
+        const resPost = await Post.findAll({
+            where: {
+                user_id: userId
+            }
+        })
+        return {
+            err: 0,
+            msg: resPost
+        }
+    } catch (error) {
+        console.log(error)
+        return {
+            err: 1,
+            msg: error
+        }
+    }
+}
+// LIST POST BY PAGE PAGINATION
+const listPostByPageAtHome = async (page, limit) => {
+    try {
+        const resPost = await Post.findAll({
+            where: {
+                user_id: userId
+            },
+            limit: limit,
+            offset: (page - 1) * limit
+        })
+        return {
+            err: 0,
+            msg: resPost
+        }
+    } catch (error) {
+        console.log(error)
+        return {
+            err: 1,
+            msg: error
+        }
+    }
+}
+
 module.exports = {
     createNewPost,
     updateStatusPost,
     updatePost,
-    deletePost
+    deletePost,
+    deleteListPost,
+    listPost,
+    updateStatusPosts,
+    listPostByPageAtHome
 };
