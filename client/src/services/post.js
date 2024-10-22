@@ -51,3 +51,25 @@ export const apiUploadImages = (images) => new Promise(async (resolve, reject) =
         reject(error)
     }
 })
+export const apiSavePost = async (postId, token) => {
+    try {
+        // Gửi yêu cầu POST tới BE với `postId` và thêm `token` vào header để xác thực
+        const response = await axiosConfig.post(`/api/v1/user/savePost/${postId}`, {}, {
+            headers: {
+                token: token // Token để xác thực
+            }
+        });
+        
+        // Kiểm tra phản hồi từ BE
+        console.log('API Save Post Response:', response);
+        return response.data;  // Trả về dữ liệu từ BE (nếu thành công)
+    } catch (error) {
+        // Nếu BE trả về lỗi
+        if (error.response) {
+            console.error('API Save Post Error:', error.response.data);
+            throw error.response.data;  // Trả lỗi ra FE để xử lý
+        } else {
+            throw new Error('Something went wrong while saving the post');
+        }
+    }
+}

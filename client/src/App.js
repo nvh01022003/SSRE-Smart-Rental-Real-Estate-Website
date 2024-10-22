@@ -18,7 +18,7 @@ import HistoryPayment from './components/HistoryPayment';
 import DepositeHistory from './components/DepositeHistory';
 import Payment from './containers/System/Payment';
 import Momo from './components/Momo';
-import SavePost from './containers/Public/SavePost';
+import ListPostSave from './containers/Public/ListPostSave';
 import BankTransfer from './components/BankTransfer';
 //import Item from './components/Item';
 
@@ -70,7 +70,7 @@ function App() {
           <Route path={path.BANK_TRANSFER} element={<BankTransfer/>} />
           </Route>
         </Route>
-        <Route path={path.SAVE_POST} element={<SavePost/>} ></Route>
+        <Route path={path.SAVE_POST} element={<ListPostSave/>} ></Route>
       </Routes>
       <ChatGPT />
     </div>
