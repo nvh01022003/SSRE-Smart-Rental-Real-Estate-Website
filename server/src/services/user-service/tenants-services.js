@@ -90,7 +90,6 @@ const reportPost = async (userId, postId, desc) => {
         }
     }
 }
-
 // show list post saved sử dung pagination
 const listPostSaved = async (userId, page) => {
     try {
@@ -130,7 +129,6 @@ const listPostSaved = async (userId, page) => {
         }
     }
 }
-
 // DELETE POST SAVED
 const deletePostSaved = async (userId, postId) => {
     try {
@@ -229,7 +227,6 @@ const listPostByPage = async (page) => {
         }
     }
 }
-
 // show detail post
 const showDetailPost = async (postId) => {
     try {
@@ -238,6 +235,50 @@ const showDetailPost = async (postId) => {
                 id: postId
             }
         })
+        // tim chi tiet cac bang khac : category, address, user, overviews dùng promise.all
+        const [category, address, user, overviews, map] = await Promise.all([
+            Category.findOne({
+                where: {
+                    id: post.category_id
+                },
+                attributes: ['category_name']
+            }),
+            Address.findOne({
+                where: {
+                    id: post.address_id
+                },
+                attributes: ['city', 'district', 'detail_address']
+            }),
+            User.findOne({
+                where: {
+                    id: post.user_id
+                },
+                attributes: ['firstName', 'lastName', 'email', 'phone', 'img_avt']
+            }),
+            Overview.findOne({
+                where: {
+                    id: post.overview_id
+                },
+                attributes: ['code', 'area', 'type', 'target', 'expire']
+            }),
+            Coordinates.findOne({
+                where: {
+                    id: post.coordinates_id
+                },
+                attributes: ['lat', 'lon']
+            })
+
+        ])
+        console.log(map);
+        post.dataValues.map = `<iframe src="https://www.google.com/maps/embed?pb=!1m10!1m8!1m3!1d7668.902703874087!2d${map.dataValues.lon}!3d${map.dataValues.lat}!3m2!1i1024!2i768!4f13.1!5e0!3m2!1svi!2s!4v1729530897356!5m2!1svi!2s" width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>`;
+        post.dataValues.category = category;
+        post.dataValues.address = address;
+        post.dataValues.user = user;
+        post.dataValues.overviews = overviews;
+
+
+        console.log(post)
+
         return {
             err: 0,
             msg: post

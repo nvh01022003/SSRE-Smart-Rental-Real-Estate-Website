@@ -28,7 +28,8 @@ const CreatePost = () => {
         city: '',
         district: '',
         ward: '',
-        detail_address: ''
+        detail_address: '',
+        expire: '',
     });
     const [imagesPreview, setImagesPreview] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
@@ -41,6 +42,7 @@ const CreatePost = () => {
         areaNumber: '',
         target: '',
         images: '',
+        expire: '',
     });
 
     const addressRef = useRef();
@@ -195,7 +197,8 @@ const CreatePost = () => {
                         city: '',
                         district: '',
                         ward: '',
-                        detail_address: ''
+                        detail_address: '',
+                        expire: '',
                     });
                     // Trigger the address reset
                     setPayloadResetFlag(true);  // This will reset the Address component fields
@@ -210,6 +213,7 @@ const CreatePost = () => {
                         areaNumber: '',
                         target: '',
                         images: '',
+                        expire: '',
                     });
                 }
                 else {

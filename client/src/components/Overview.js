@@ -5,6 +5,9 @@ import { useSelector, useDispatch } from 'react-redux';
 import { getPersonalInfo } from '../services/userService';
 import { getCategories } from '../store/actions/app.js';
 
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
+
 const targets = [
     { code: '0', value: 'Tất cả' },
     { code: '1', value: 'Nam' },
@@ -31,7 +34,24 @@ const Overview = forwardRef(({ payload, setPayload, handleInputChange }, ref) =>
         areaNumber: '',
         target: '',
         category_id: '',
+        expire: '',
     });
+
+    const [selectedDate, setSelectedDate] = useState(null);
+
+    // Hàm xử lý khi người dùng chọn ngày hết hạn
+    const handleDateChange = (date) => {
+        setSelectedDate(date);
+        const formattedDate = date ? date.toISOString() : '';
+        setPayload((prev) => ({ ...prev, expire: formattedDate }));
+        handleInputChange('expire', formattedDate);
+
+        // Validate ngày hết hạn
+        setErrorMessages((prev) => ({
+            ...prev,
+            expire: date ? '' : 'Chưa chọn ngày hết hạn bài đăng',
+        }));
+    };
 
     useEffect(() => {
         const fetchPersonalInfo = async () => {
@@ -136,6 +156,12 @@ const Overview = forwardRef(({ payload, setPayload, handleInputChange }, ref) =>
                     target: value ? '' : 'Chưa chọn đối tượng cho thuê'
                 }));
                 break;
+            case 'expire':
+                setErrorMessages(prev => ({
+                    ...prev,
+                    expire: value ? '' : 'Chưa chọn ngày hết hạn bài đăng'
+                }));
+                break;
             default:
                 break;
         }
@@ -151,6 +177,7 @@ const Overview = forwardRef(({ payload, setPayload, handleInputChange }, ref) =>
             price: payload.price > 0 ? '' : 'Giá cho thuê không được để trống và phải lớn hơn 0',
             areaNumber: payload.areaNumber > 0 ? '' : 'Diện tích không được để trống và phải lớn hơn 0',
             target: payload.target ? '' : 'Chưa chọn đối tượng cho thuê',
+            expire: payload.expire ? '' : 'Chưa chọn ngày hết hạn bài đăng',
         }));
 
         return (
@@ -159,7 +186,8 @@ const Overview = forwardRef(({ payload, setPayload, handleInputChange }, ref) =>
             payload.description.length >= 100 &&
             payload.price > 0 &&
             payload.areaNumber > 0 &&
-            payload.target
+            payload.target &&
+            payload.expire
         );
     };
 
@@ -168,7 +196,7 @@ const Overview = forwardRef(({ payload, setPayload, handleInputChange }, ref) =>
         validateFields
     }));
 
-    console.log(payload);
+    //console.log(payload);
 
     return (
         <div>
@@ -280,6 +308,27 @@ const Overview = forwardRef(({ payload, setPayload, handleInputChange }, ref) =>
                         {errorMessages.target && (
                             <p className='text-red-500 absolute -bottom-6 text-sm'>
                                 {errorMessages.target}
+                            </p>
+                        )}
+                    </div>
+
+                    <div className='relative mt-5'>
+                        <div className='flex-col'>
+                            <label htmlFor="expire" className='font-medium align-center block mb-2' >Ngày hết hạn bài đăng</label>
+                            <DatePicker
+                                selected={selectedDate}
+                                onChange={handleDateChange}
+                                showTimeSelect
+                                timeFormat="HH:mm"
+                                timeIntervals={15}
+                                dateFormat="Pp"
+                                className='w-[85%] rounded-md outline-none border border-gray-300 p-2 cursor-pointer'
+                                placeholderText="Chọn ngày và giờ"
+                            />
+                        </div>
+                        {errorMessages.expire && (
+                            <p className='text-red-500 absolute -bottom-6 text-sm'>
+                                {errorMessages.expire}
                             </p>
                         )}
                     </div>

@@ -18,13 +18,15 @@ const createNewPost = async (userId, contentPost, files) => {
     const imageUrls = files;
     console.log('imageUrls', imageUrls)
 
-    const { title, address, price, description, overview, category_id } = contentPost
+    const { title, address, price, description, overview, category_id, target, expire } = contentPost
     const addressData = address
     const overviewData = {
         ...overview,
         code: generateRandomCode(),
         area: address.city,
-        type: category_id
+        type: category_id,
+        target: target,
+        expire: expire
     }
     let addressStr = addressData.detail_address + ", " + addressData.district + ", " + addressData.city
     const resCoordinates = await helper.getGeocodingData(addressStr)
@@ -64,28 +66,6 @@ const createNewPost = async (userId, contentPost, files) => {
         }
     }
 }
-// UPDATE STATUS POST
-const updateStatusPost = async (postId, status) => {
-    try {
-        const resPost = await Post.update({ status }, {
-            where: {
-                id: postId
-            }
-        })
-        return {
-            err: 0,
-            msg: 'Update status post success',
-            post: resPost
-        }
-    } catch (error) {
-        console.log(error)
-        return {
-            err: 1,
-            msg: error
-        }
-    }
-}
-
 // UPDATE STATUS POSTS
 const updateStatusPosts = async (postIds, status) => {
     try {
@@ -107,7 +87,6 @@ const updateStatusPosts = async (postIds, status) => {
         }
     }
 }
-
 // UPDATE POST
 const updatePost = async (postId, dataUpdae) => {
     try {
@@ -150,7 +129,6 @@ const deletePost = async (postId) => {
         }
     }
 }
-
 // DELETE LIST POST BY LIST ID POST
 const deleteListPost = async (postIds) => {
     try {
@@ -214,10 +192,8 @@ const listPostByPageAtHome = async (page, limit) => {
         }
     }
 }
-
 module.exports = {
     createNewPost,
-    updateStatusPost,
     updatePost,
     deletePost,
     deleteListPost,

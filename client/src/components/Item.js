@@ -180,6 +180,7 @@ const Item = ({ images, user, title, star, description, attributes, address, id 
             <div
                 className='w-2/5 flex flex-wrap gap-[2px] items-center relative cursor-pointer'
                 onClick={() => navigate(`/chi-tiet/${formatVietnameseToString(title)}/${id}`, { state: { fakeData } })}
+
             >
                 {images.length > 0 && images.filter((i, index) => indexs.some(i => i === index))?.map((i, index) => {
                     return (
