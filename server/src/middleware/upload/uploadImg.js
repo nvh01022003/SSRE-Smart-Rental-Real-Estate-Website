@@ -94,7 +94,6 @@ const updateImgs = async (req, res, next) => {
                 }).end(file.buffer);
             });
         });
-
         const imageUrls = await Promise.all(uploadPromises);
         req.body.imageUrls = imageUrls;
         next();

@@ -31,7 +31,7 @@ const Overview = forwardRef(({ payload, setPayload, handleInputChange }, ref) =>
         title: '',
         description: '',
         price: '',
-        areaNumber: '',
+        acreage: '',
         target: '',
         category_id: '',
         expire: '',
@@ -89,9 +89,9 @@ const Overview = forwardRef(({ payload, setPayload, handleInputChange }, ref) =>
     const handleAreaInput = (value) => {
         // Loại bỏ các ký tự không phải số
         const numericValue = value.replace(/\D/g, '');
-        setPayload(prev => ({ ...prev, areaNumber: numericValue }));
+        setPayload(prev => ({ ...prev, acreage: numericValue }));
 
-        handleInputChange('areaNumber', numericValue);
+        handleInputChange('acreage', numericValue);
 
         // Thêm dấu phẩy sau mỗi 3 chữ số
         return formatNumberWithCommas(numericValue);
@@ -144,10 +144,10 @@ const Overview = forwardRef(({ payload, setPayload, handleInputChange }, ref) =>
                     price: value > 0 ? '' : 'Giá cho thuê không được để trống và phải lớn hơn 0'
                 }));
                 break;
-            case 'areaNumber':
+            case 'acreage':
                 setErrorMessages(prev => ({
                     ...prev,
-                    areaNumber: value > 0 ? '' : 'Diện tích không được để trống và phải lớn hơn 0'
+                    acreage: value > 0 ? '' : 'Diện tích không được để trống và phải lớn hơn 0'
                 }));
                 break;
             case 'target':
@@ -175,7 +175,7 @@ const Overview = forwardRef(({ payload, setPayload, handleInputChange }, ref) =>
             title: payload.title.length >= 20 ? '' : 'Tiêu đề yêu cầu ít nhất 20 ký tự',
             description: payload.description.length >= 100 ? '' : 'Mô tả yêu cầu ít nhất 100 ký tự',
             price: payload.price > 0 ? '' : 'Giá cho thuê không được để trống và phải lớn hơn 0',
-            areaNumber: payload.areaNumber > 0 ? '' : 'Diện tích không được để trống và phải lớn hơn 0',
+            acreage: payload.acreage > 0 ? '' : 'Diện tích không được để trống và phải lớn hơn 0',
             target: payload.target ? '' : 'Chưa chọn đối tượng cho thuê',
             expire: payload.expire ? '' : 'Chưa chọn ngày hết hạn bài đăng',
         }));
@@ -185,7 +185,7 @@ const Overview = forwardRef(({ payload, setPayload, handleInputChange }, ref) =>
             payload.title.length >= 20 &&
             payload.description.length >= 100 &&
             payload.price > 0 &&
-            payload.areaNumber > 0 &&
+            payload.acreage > 0 &&
             payload.target &&
             payload.expire
         );
@@ -273,15 +273,15 @@ const Overview = forwardRef(({ payload, setPayload, handleInputChange }, ref) =>
                     {/* Diện tích */}
                     <div className='relative mt-5'>
                         <InputFormV2
-                            value={formatNumberWithCommas(payload.areaNumber)}
+                            value={formatNumberWithCommas(payload.acreage)}
                             setValue={(value) => handleAreaInput(value)} // Gọi hàm xử lý diện tích
-                            name='areaNumber'
+                            name='acreage'
                             label='Diện tích'
-                            unit='m2'
+                            unit='m²'
                         />
-                        {errorMessages.areaNumber && (
+                        {errorMessages.acreage && (
                             <p className='text-red-500 absolute -bottom-6 text-sm'>
-                                {errorMessages.areaNumber}
+                                {errorMessages.acreage}
                             </p>
                         )}
                     </div>
@@ -322,7 +322,7 @@ const Overview = forwardRef(({ payload, setPayload, handleInputChange }, ref) =>
                                 timeFormat="HH:mm"
                                 timeIntervals={15}
                                 dateFormat="Pp"
-                                className='w-[85%] rounded-md outline-none border border-gray-300 p-2 cursor-pointer'
+                                className='w-[87%] rounded-md outline-none border border-gray-300 p-2 cursor-pointer'
                                 placeholderText="Chọn ngày và giờ"
                             />
                         </div>

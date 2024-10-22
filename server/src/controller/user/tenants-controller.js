@@ -147,7 +147,6 @@ const totalPage = async (req, res) => {
 // show dateil post
 const showDetailPost = async (req, res) => {
     const postId = req.params.id
-    console.log('post ID: ', postId)
     try {
         const response = await tenanstService.showDetailPost(postId)
         return res.status(200).json(response)

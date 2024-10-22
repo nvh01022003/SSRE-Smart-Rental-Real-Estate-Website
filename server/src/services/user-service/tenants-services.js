@@ -5,7 +5,8 @@ const paginationHelper = require("../../helper/pagination");
 const authServices = require("../../services/auth/auth");
 const { where } = require("sequelize");
 const { Op } = require('sequelize');
-const { User, Post, Address, Favourite, Report, Category, sequelize } = require("../../models/index");
+
+const { User, Post, Address, Favourite, Report, Category, Overview, Coordinates, Image, sequelize } = require("../../models/index");
 
 const { response } = require("express");
 require('dotenv').config();
@@ -236,7 +237,7 @@ const showDetailPost = async (postId) => {
             }
         })
         // tim chi tiet cac bang khac : category, address, user, overviews dùng promise.all
-        const [category, address, user, overviews, map] = await Promise.all([
+        const [category, address, user, overviews, map, image] = await Promise.all([
             Category.findOne({
                 where: {
                     id: post.category_id
@@ -266,18 +267,26 @@ const showDetailPost = async (postId) => {
                     id: post.coordinates_id
                 },
                 attributes: ['lat', 'lon']
-            })
+            }),
+            Image.findOne({
+                where: {
+                    id: post.img_id
+                },
+                attributes: ['img_url_list']
+            }),
 
         ])
+
+        // Parse img_url_list into an array
+        const imgUrlList = JSON.parse(image.dataValues.img_url_list);
+
         console.log(map);
         post.dataValues.map = `<iframe src="https://www.google.com/maps/embed?pb=!1m10!1m8!1m3!1d7668.902703874087!2d${map.dataValues.lon}!3d${map.dataValues.lat}!3m2!1i1024!2i768!4f13.1!5e0!3m2!1svi!2s!4v1729530897356!5m2!1svi!2s" width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>`;
         post.dataValues.category = category;
         post.dataValues.address = address;
         post.dataValues.user = user;
         post.dataValues.overviews = overviews;
-
-
-        console.log(post)
+        post.dataValues.image = imgUrlList; // Assign the parsed array
 
         return {
             err: 0,

@@ -13,7 +13,7 @@ const CreatePost = () => {
         category_id: '',
         title: '',
         price: 0,
-        areaNumber: 0,
+        acreage: 0,
         images: [],
         address: {
             detail_address: '',
@@ -39,7 +39,7 @@ const CreatePost = () => {
         title: '',
         description: '',
         price: '',
-        areaNumber: '',
+        acreage: '',
         target: '',
         images: '',
         expire: '',
@@ -182,7 +182,7 @@ const CreatePost = () => {
                         category_id: '',
                         title: '',
                         price: 0,
-                        areaNumber: 0,
+                        acreage: 0,
                         images: [],
                         address: {
                             detail_address: '',
@@ -210,7 +210,7 @@ const CreatePost = () => {
                         title: '',
                         description: '',
                         price: '',
-                        areaNumber: '',
+                        acreage: '',
                         target: '',
                         images: '',
                         expire: '',
@@ -253,8 +253,9 @@ const CreatePost = () => {
             fetchUserRole();
         }
 
-
     }, [isLoggedIn, token]);
+
+    console.log(payload)
 
     return (
         <div>
