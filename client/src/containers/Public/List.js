@@ -8,6 +8,7 @@ const List = ({ categoryCode }) => {
     const dispatch = useDispatch()
     const [searchParams] = useSearchParams()
     const { posts } = useSelector(state => state.post)
+    console.log(posts)
 
     useEffect(() => {
         let params = []
@@ -24,7 +25,7 @@ const List = ({ categoryCode }) => {
         })
         if (categoryCode) searchParamsObject.categoryCode = categoryCode
         dispatch(getPostsLimit(searchParamsObject))
-    }, [searchParams, categoryCode])
+    }, [searchParams, categoryCode, dispatch])
     return (
         <div className='w-full  bg-white shadow-md rounded-md '>
             <div className='flex items-center justify-between my-3'>
@@ -35,26 +36,31 @@ const List = ({ categoryCode }) => {
                 <button className="hover:text-blue-500 outline-none rounded-md hover:underline flex items-center justify-center gap-1 bg-gray-200 w-30 h-7 px-1">Mặc định</button>
                 <button className="hover:text-blue-500 outline-none rounded-md hover:underline flex items-center justify-center gap-1 bg-gray-200 w-30 h-7 px-1">Mới nhất</button>
             </div>
-            {/* <div className='items'>
-                {posts?.length > 0 && posts.map(item => {
-                    return (
-                        <Item
-                            key={item?.id}
-                            address={item?.address}
-                            attributes={item?.attributes}
-                            description={JSON.parse(item?.description)}
-                            images={JSON.parse(item?.images?.image)}
-                            star={+item?.star}
-                            title={item?.title}
-                            user={item?.user}
-                            id={item?.id}
-                        />
-                    )
-                })}
-            </div> */}
-            <div>
-                <Item />
+
+            <div className='items'>
+                {posts?.length > 0 && posts.map(item => (
+                    <Item
+                        key={item?.id}
+                        address={`${item?.Address?.detail_address}, ${item?.Address?.district}, ${item?.Address?.city}`}
+                        attributes={{
+                            price: item?.price,
+                            acreage: item?.acreage
+                        }}
+                        description={item?.description}
+                        images={item?.images}
+                        //star={item?.star}
+                        title={item?.title}
+                        user={{
+                            name: `${item?.user?.firstName} ${item?.user?.lastName}`,
+                            phone: item?.user?.phone
+                        }}
+                        id={item?.id}
+                    />
+                ))}
             </div>
+            {/* <div>
+                <Item />
+            </div> */}
         </div>
     )
 }

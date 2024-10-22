@@ -150,6 +150,65 @@ const deletePostSaved = async (userId, postId) => {
         }
     }
 }
+// // FIND POST BY ALL
+// const findPostByAll = async (minPrice, maxPrice, location, minAcreage, maxAcreage, categoryCode, page) => {
+//     try {
+//         let whereCondition = {};
+//         if (minPrice && maxPrice) {
+//             whereCondition.price = {
+//                 [Op.between]: [minPrice, maxPrice]
+//             }
+//         }
+//         if (minAcreage && maxAcreage) {
+//             whereCondition.acreage = {
+//                 [Op.between]: [minAcreage, maxAcreage]
+//             }
+//         }
+//         if (location) {
+//             const addressResult = await Address.findAll({
+//                 where: {
+//                     city: location
+//                 }
+//             })
+//             const addressIDs = addressResult.map((address) => address.id);
+//             whereCondition.address_id = addressIDs;
+//         }
+
+//         if (categoryCode) {
+//             whereCondition.category_id = categoryCode;
+//         }
+//         const totalData = await Post.count({ where: whereCondition });
+//         let objectPagination = await paginationHelper.pagination(
+//             {
+//                 currentPage: 1,
+//                 limitPage: 4
+//             },
+//             page,
+//             totalData
+//         )
+//         const posts = await Post.findAll({
+//             where: whereCondition,
+//             limit: objectPagination.limitPage,
+//             offset: objectPagination.skip,
+//             order: [['createdAt', 'DESC']]
+//         });
+//         // console.log(posts);
+//         return {
+//             err: 0,
+//             msg: {
+//                 listPost: posts,
+//                 objectPagination
+//             }
+//         }
+
+//     } catch (err) {
+//         return {
+//             err: 1,
+//             msg: err
+//         }
+//     }
+// }
+
 // FIND POST BY ALL
 const findPostByAll = async (minPrice, maxPrice, location, minAcreage, maxAcreage, categoryCode, page) => {
     try {
@@ -157,57 +216,105 @@ const findPostByAll = async (minPrice, maxPrice, location, minAcreage, maxAcreag
         if (minPrice && maxPrice) {
             whereCondition.price = {
                 [Op.between]: [minPrice, maxPrice]
-            }
+            };
         }
         if (minAcreage && maxAcreage) {
             whereCondition.acreage = {
                 [Op.between]: [minAcreage, maxAcreage]
-            }
+            };
         }
         if (location) {
             const addressResult = await Address.findAll({
-                where: {
-                    city: location
-                }
-            })
+                where: { city: location }
+            });
             const addressIDs = addressResult.map((address) => address.id);
-            whereCondition.address_id = addressIDs;
+            whereCondition.address_id = { [Op.in]: addressIDs };
         }
 
         if (categoryCode) {
             whereCondition.category_id = categoryCode;
         }
+
         const totalData = await Post.count({ where: whereCondition });
         let objectPagination = await paginationHelper.pagination(
-            {
-                currentPage: 1,
-                limitPage: 4
-            },
+            { currentPage: 1, limitPage: 4 },
             page,
             totalData
-        )
+        );
+
         const posts = await Post.findAll({
             where: whereCondition,
             limit: objectPagination.limitPage,
             offset: objectPagination.skip,
-            order: [['createdAt', 'DESC']]
+            order: [['createdAt', 'DESC']],
+            include: [
+                {
+                    model: Address,
+                    attributes: ['city', 'district', 'detail_address']
+                },
+                {
+                    model: Overview,
+                    attributes: ['code', 'area', 'type', 'target', 'expire']
+                },
+                {
+                    model: Coordinates,
+                    attributes: ['lat', 'lon']
+                },
+                {
+                    model: Image,
+                    attributes: ['img_url_list']
+                }
+            ]
         });
-        // console.log(posts);
+
+        // Fetch Category and User separately based on category_id and user_id
+        const postsWithAdditionalData = await Promise.all(posts.map(async (post) => {
+            // Fetch Category
+            let category = null;
+            if (post.category_id) {
+                category = await Category.findOne({
+                    where: { id: post.category_id },
+                    attributes: ['category_name']
+                });
+            }
+
+            // Fetch User
+            let user = null;
+            if (post.user_id) {
+                user = await User.findOne({
+                    where: { id: post.user_id },
+                    attributes: ['firstName', 'lastName', 'email', 'phone', 'img_avt']
+                });
+            }
+
+            // Parse Image URLs
+            const imgUrlList = JSON.parse(post.Image.img_url_list);
+
+            return {
+                ...post.dataValues,
+                category: category ? category.dataValues : null,
+                user: user ? user.dataValues : null,
+                images: imgUrlList
+            };
+        }));
+
         return {
             err: 0,
             msg: {
-                listPost: posts,
+                listPost: postsWithAdditionalData,
                 objectPagination
             }
-        }
+        };
 
     } catch (err) {
         return {
             err: 1,
             msg: err
-        }
+        };
     }
-}
+};
+
+
 // show list post by page pagination
 const listPostByPage = async (page) => {
     try {
