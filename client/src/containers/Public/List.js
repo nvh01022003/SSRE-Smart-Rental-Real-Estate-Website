@@ -52,7 +52,8 @@ const List = ({ categoryCode }) => {
                         title={item?.title}
                         user={{
                             name: `${item?.user?.firstName} ${item?.user?.lastName}`,
-                            phone: item?.user?.phone
+                            phone: item?.user?.phone,
+                            img_avt: item?.user?.img_avt
                         }}
                         id={item?.id}
                     />

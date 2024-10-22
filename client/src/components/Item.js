@@ -2,17 +2,13 @@ import React, { memo, useState } from 'react';
 import icons from '../ultils/icons';
 import { useNavigate } from 'react-router-dom';
 import { formatVietnameseToString } from '../ultils/Common/formatVietnameseToString';
-import img5 from '../assets/anon-avatar.png';
 import { FaMapMarkerAlt, FaDollarSign } from 'react-icons/fa';
 
 const { RiCrop2Line } = icons
 
-const indexs = [0, 1, 2, 3];
-
 const { GrStar, BsBookmarkStarFill } = icons;
 
 const Item = ({ images, user, title, star, description, attributes, address, id }) => {
-    const [isHoverHeart, setIsHoverHeart] = useState(false);
 
     const handleStar = (star) => {
         let stars = [];
@@ -119,7 +115,7 @@ const Item = ({ images, user, title, star, description, attributes, address, id 
                 </p>
                 <div className='flex items-center mt-5 justify-between'>
                     <div className=' flex items-center'>
-                        <img src={img5} alt="avatar" className='w-[30px] h-[30px] object-cover rounded-full mr-2' />
+                        <img src={user?.img_avt} alt="avatar" className='w-[30px] h-[30px] object-cover rounded-full mr-2' />
                         <p className='text-gray-500'>{user?.name}</p>
                     </div>
                     <div className='flex items-center gap-1'>

@@ -15,6 +15,7 @@ import ForgotPassword from './containers/Public/ForgotPass/ForgotPass'
 import ChatGPT from './components/Chat/ChatGPT'
 import ValidateCode from './containers/Public/ForgotPass/ValidateCode';
 import ResetPass from './containers/Public/ForgotPass/ResetPass';
+import ListPostsSaved from './containers/Public/ListPostsSaved';
 
 //import Item from './components/Item';
 
@@ -55,6 +56,8 @@ function App() {
             </Route>
           </Route>
 
+
+
           <Route path={path.REGISTER} element={<Register />} />
           <Route path="register/verify" element={<Verify />} />
           <Route path={path.CHO_THUE_CAN_HO} element={<Rental />} />
@@ -72,6 +75,7 @@ function App() {
           <Route path={path.CHANGE_PASS} element={<ChangePass />} />
         </Route>
 
+        <Route path={'tin-da-luu'} element={<ListPostsSaved />} />
         {/* <Route path={path.HOME_ADMIN} element={<HomeAdmin />} >
 
         </Route> */}

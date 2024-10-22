@@ -91,14 +91,102 @@ const reportPost = async (userId, postId, desc) => {
         }
     }
 }
-// show list post saved sử dung pagination
+//show list post saved sử dung pagination
+// const listPostSaved = async (userId, page) => {
+//     try {
+//         // Tính tổng số bài viết đã lưu cho pagination
+//         const totalData = await Favourite.count({
+//             where: {
+//                 user_id: userId
+//             }
+//         });
+
+//         // Tạo đối tượng phân trang
+//         let objectPagination = await paginationHelper.pagination(
+//             {
+//                 currentPage: 1,
+//                 limitPage: 2
+//             },
+//             page,
+//             totalData
+//         )
+
+//         // Lấy danh sách các post_id từ bảng Favourite theo trang
+//         const favourites = await Favourite.findAll({
+//             where: { user_id: userId },
+//             limit: objectPagination.limitPage,
+//             offset: objectPagination.skip,
+//             order: [['createdAt', 'DESC']],
+//             attributes: ['post_id']
+//         });
+
+//         const postIds = favourites.map(fav => fav.post_id); // Lấy các post_id từ Favourite
+
+//         //console
+
+//         // Lấy chi tiết bài viết từ bảng Post và các bảng liên quan
+//         const posts = await Post.findAll({
+//             where: { id: postIds },
+//             include: [
+//                 {
+//                     model: Address, // Join bảng Address
+//                     attributes: ['detail_address', 'district', 'city']
+//                 },
+//                 {
+//                     model: Image, // Join bảng Image
+//                     attributes: ['img_url_list'],
+//                     // Parse img_url_list thành mảng JSON
+//                     required: true // Đảm bảo có hình ảnh
+//                 },
+//                 {
+//                     model: User, // Join bảng User
+//                     as: 'User',  // Phải khớp với tên alias khi định nghĩa relationship
+//                     attributes: ['firstName', 'lastName', 'phone', 'img_avt']
+//                 }
+//             ]
+//         });
+
+//         // Parse danh sách hình ảnh cho từng post
+//         const postsWithImages = posts.map(post => {
+//             const parsedImages = JSON.parse(post.Image.img_url_list);
+//             return {
+//                 id: post.id,
+//                 title: post.title,
+//                 price: post.price,
+//                 acreage: post.acreage,
+//                 description: post.description,
+//                 Address: post.Address, // Địa chỉ
+//                 images: parsedImages,  // Danh sách hình ảnh
+//                 user: post.User,       // Thông tin người dùng
+//                 createdAt: post.createdAt,
+//             };
+//         });
+
+//         return {
+//             err: 0,
+//             msg: {
+//                 listPost: postsWithImages,
+//                 objectPagination
+//             }
+//         }
+//     } catch (err) {
+//         return {
+//             err: 1,
+//             msg: err
+//         }
+//     }
+// }
+
 const listPostSaved = async (userId, page) => {
     try {
+        // Tính tổng số bài viết đã lưu cho pagination
         const totalData = await Favourite.count({
             where: {
                 user_id: userId
             }
         });
+
+        // Tạo đối tượng phân trang
         let objectPagination = await paginationHelper.pagination(
             {
                 currentPage: 1,
@@ -106,30 +194,77 @@ const listPostSaved = async (userId, page) => {
             },
             page,
             totalData
-        )
-        // các bài viết theo trang
-        const posts = await Favourite.findAll({
-            where: {
-                user_id: userId
-            },
+        );
+
+        // Lấy danh sách các post_id từ bảng Favourite theo trang
+        const favourites = await Favourite.findAll({
+            where: { user_id: userId },
             limit: objectPagination.limitPage,
             offset: objectPagination.skip,
-            order: [['createdAt', 'DESC']]
+            order: [['createdAt', 'DESC']],
+            attributes: ['post_id']
         });
+
+        const postIds = favourites.map(fav => fav.post_id); // Lấy các post_id từ Favourite
+
+        // Lấy chi tiết bài viết từ bảng Post và các bảng liên quan
+        const posts = await Post.findAll({
+            where: { id: postIds },
+            include: [
+                {
+                    model: Address, // Join bảng Address
+                    attributes: ['detail_address', 'district', 'city']
+                },
+                {
+                    model: Image, // Join bảng Image
+                    attributes: ['img_url_list'],
+                    // Parse img_url_list thành mảng JSON
+                    required: true // Đảm bảo có hình ảnh
+                }
+            ]
+        });
+
+        // Lấy thông tin User và các dữ liệu khác từ bảng User và Category
+        const postsWithUser = await Promise.all(posts.map(async (post) => {
+            // Fetch User bằng user_id từ bảng Post
+            const user = await User.findOne({
+                where: { id: post.user_id },
+                attributes: ['firstName', 'lastName', 'phone', 'img_avt']
+            });
+
+            // Parse danh sách hình ảnh
+            const parsedImages = JSON.parse(post.Image.img_url_list);
+
+            return {
+                id: post.id,
+                title: post.title,
+                price: post.price,
+                acreage: post.acreage,
+                description: post.description,
+                Address: post.Address,    // Địa chỉ
+                images: parsedImages,     // Danh sách hình ảnh
+                user: user ? user.dataValues : null,  // Thông tin người dùng
+                createdAt: post.createdAt
+            };
+        }));
+
         return {
             err: 0,
             msg: {
-                listPost: posts,
+                listPost: postsWithUser,
                 objectPagination
             }
-        }
+        };
     } catch (err) {
         return {
             err: 1,
-            msg: err
-        }
+            msg: err.message
+        };
     }
-}
+};
+
+
+
 // DELETE POST SAVED
 const deletePostSaved = async (userId, postId) => {
     try {

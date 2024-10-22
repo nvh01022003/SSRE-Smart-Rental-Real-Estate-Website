@@ -23,6 +23,7 @@ export const path = {
     CREATE_POST: 'tao-moi-bai-dang',
     PERSONAL_INFO: 'thong-tin-ca-nhan',
     CHANGE_PASS: 'doi-mat-khau',
+    LIST_POSTS_SAVED: 'tin-da-luu',
 
 
 }
