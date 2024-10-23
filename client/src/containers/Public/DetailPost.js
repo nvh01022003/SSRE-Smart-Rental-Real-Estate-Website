@@ -30,6 +30,7 @@ const DetailPost = () => {
         const fetchData = async () => {
             try {
                 const response = await axios.get(`http://localhost:5000/api/v1/user/tenants/showDetailPost/${id}`);
+                console.log(response)
                 setData(response.data.msg);
             } catch (error) {
                 console.error('Error fetching user role:', error);

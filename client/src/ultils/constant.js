@@ -24,6 +24,7 @@ export const path = {
     PERSONAL_INFO: 'thong-tin-ca-nhan',
     CHANGE_PASS: 'doi-mat-khau',
     LIST_POSTS_SAVED: 'tin-da-luu',
+    UPGRADE_ACCOUNT: 'nang-cap-tai-khoan',
 
 
 }

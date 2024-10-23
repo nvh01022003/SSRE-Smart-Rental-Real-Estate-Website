@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useContext } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import menuSidebar from '../../ultils/menuSidebar'
 import { NavLink } from 'react-router-dom'
@@ -6,7 +6,6 @@ import * as actions from '../../store/actions'
 import { AiOutlineLogout } from 'react-icons/ai'
 import { logout } from '../../store/actions/auth'
 import { getPersonalInfo } from '../../services/userService'
-import { AuthContext } from '../../Context/AuthContext';
 import logo from '../../assets/logo.png'
 import { Link } from 'react-router-dom'
 
@@ -18,7 +17,7 @@ const Sidebar = () => {
     const dispatch = useDispatch()
     const [personalInfo, setPersonalInfo] = useState(null);
 
-    const { token } = useContext(AuthContext);
+    const { token, role } = useSelector(state => state.auth);
 
     useEffect(() => {
         const fetchPersonalInfo = async () => {
@@ -33,7 +32,14 @@ const Sidebar = () => {
         fetchPersonalInfo();
     }, []);
 
-    //const fullName = personalInfo ? `${personalInfo.firstName} ${personalInfo.lastName}`.trim() : '';
+    // Filter menu items based on role
+    const filteredMenu = menuSidebar.filter(item => {
+        if (role === 'ladnlord') {
+            return [1, 2, 3, 4, 5].includes(item.id);  // For landlord
+        } else {
+            return [3, 4, 5, 6].includes(item.id);  // For tenants
+        }
+    });
 
     const handleLogout = () => {
         dispatch(logout());
@@ -63,7 +69,7 @@ const Sidebar = () => {
                 </Link>
             </div>
             <div>
-                {menuSidebar.map(item => {
+                {filteredMenu.map(item => {
                     return (
                         <NavLink
                             className={({ isActive }) => isActive ? activeStyle : notActiceStyle}

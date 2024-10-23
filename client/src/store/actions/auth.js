@@ -1,7 +1,8 @@
 import actionTypes from './actionTypes';
-import { apiRegister, apiLogin } from '../../services/auth';
+import { apiRegister, apiLogin, apiRole } from '../../services/auth';
 import { persistStore } from 'redux-persist';
 import ClearPersistedState from './ClearPersistedState';
+
 
 // Action for user registration
 export const register = (payload) => async (dispatch) => {
@@ -80,4 +81,22 @@ export const logout = () => {
         const persistor = persistStore(ClearPersistedState);
         persistor.purge(); // Clear persisted state
     };
+};
+
+export const Role = (token) => async (dispatch) => {
+    try {
+        const response = await apiRole(token);
+
+        // Kiểm tra 
+        if (response?.err === 0) {
+            dispatch({
+                type: actionTypes.SET_USER_ROLE,
+                data: { msg: response.msg }
+            });
+            return response;  // Trả về response cho FE
+        }
+
+    } catch (error) {
+        console.error('Role Action Error:', error); // Log detailed error
+    }
 };

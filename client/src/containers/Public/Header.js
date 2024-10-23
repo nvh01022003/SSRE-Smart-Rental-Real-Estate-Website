@@ -7,8 +7,7 @@ import { useSelector, useDispatch } from 'react-redux'
 import * as actions from '../../store/actions'
 import menuManage from '../../ultils/menuManage'
 import { logout } from '../../store/actions/auth'
-import { AiOutlineHeart, AiOutlineAppstore } from 'react-icons/ai';
-import { path } from '../../ultils/constant';
+import { AiOutlineAppstore } from 'react-icons/ai';
 
 const { AiOutlinePlusCircle, AiOutlineLogout, BsBookmarkStarFill } = icons
 
@@ -19,6 +18,8 @@ const Header = () => {
     const headerRef = useRef()
     const { isLoggedIn } = useSelector(state => state.auth)
     const [isShowMenu, setIsShowMenu] = useState(false)
+    const { role } = useSelector(state => state.auth);
+
     const navigateTo = useCallback((path) => {
         navigate(path);
     }, [navigate]);
@@ -29,6 +30,15 @@ const Header = () => {
     useEffect(() => {
         console.log('Header re-rendered. isLoggedIn:', isLoggedIn); // Add this line
     }, [isLoggedIn]);
+
+    // Filter menu items based on role
+    const filteredMenu = menuManage.filter(item => {
+        if (role === 'ladnlord') {
+            return [1, 2, 3, 4, 5].includes(item.id);  // For landlord
+        } else {
+            return [3, 4, 5, 6].includes(item.id);  // For tenants
+        }
+    });
 
     const handleLogout = () => {
         dispatch(logout());
@@ -91,18 +101,16 @@ const Header = () => {
                             <span className="ml-1 text-black text-normal">Quản lý tài khoản</span>
                         </div>
                         {isShowMenu && <div className='absolute min-w-180 top-full bg-white shadow-md rounded-md p-4 right-0 flex flex-col'>
-                            {menuManage.map(item => {
-                                return (
-                                    <Link
-                                        className='hover:text-orange-500 flex items-center gap-2 text-blue-600 border-b border-gray-200 py-2'
-                                        key={item.id}
-                                        to={item?.path}
-                                    >
-                                        {item?.icon}
-                                        {item.text}
-                                    </Link>
-                                )
-                            })}
+                            {filteredMenu.map(item => (
+                                <Link
+                                    className='hover:text-orange-500 flex items-center gap-2 text-blue-600 border-b border-gray-200 py-2'
+                                    key={item.id}
+                                    to={item?.path}
+                                >
+                                    {item?.icon}
+                                    {item.text}
+                                </Link>
+                            ))}
                             <span
                                 className='cursor-pointer hover:text-orange-500 text-blue-500 py-2 flex items-center gap-2'
                                 onClick={() => {

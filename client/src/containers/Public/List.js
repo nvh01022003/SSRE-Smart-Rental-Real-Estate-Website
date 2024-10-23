@@ -59,9 +59,6 @@ const List = ({ categoryCode }) => {
                     />
                 ))}
             </div>
-            {/* <div>
-                <Item />
-            </div> */}
         </div>
     )
 }

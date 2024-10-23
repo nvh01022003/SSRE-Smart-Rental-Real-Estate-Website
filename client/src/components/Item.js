@@ -3,6 +3,8 @@ import icons from '../ultils/icons';
 import { useNavigate } from 'react-router-dom';
 import { formatVietnameseToString } from '../ultils/Common/formatVietnameseToString';
 import { FaMapMarkerAlt, FaDollarSign } from 'react-icons/fa';
+import axios from 'axios';
+import { useSelector } from 'react-redux';
 
 const { RiCrop2Line } = icons
 
@@ -21,11 +23,47 @@ const Item = ({ images, user, title, star, description, attributes, address, id 
     const [isStarred, setIsStarred] = useState(false);
     const [isHovered, setIsHovered] = useState(false);
 
+    const { token } = useSelector(state => state.auth);
+    console.log(token);
+
     // Trong component Item
     const navigate = useNavigate();
 
-    const handleClick = () => {
+    // const handleClick = () => {
+    //     setIsStarred(!isStarred); // Toggle trạng thái màu đỏ khi click
+
+    // };
+    const handleClick = async () => {
         setIsStarred(!isStarred); // Toggle trạng thái màu đỏ khi click
+        if (isStarred) {
+            // Nếu đã lưu, gọi API để xóa bài viết
+            try {
+                const response = await axios.delete(`http://localhost:5000/api/v1/user/tenants/deletePostSaved/${id}`, {
+                    headers: {
+                        'token': `${token}`
+                    }
+                });
+                console.log(response.data);
+                setIsStarred(false); // Đặt lại trạng thái isStarred
+            } catch (error) {
+                console.error('Error deleting post:', error);
+            }
+        } else {
+            // Nếu chưa lưu, thực hiện lưu bài viết 
+            // Gọi API để lưu bài viết 
+            try {
+                const res = await axios.post(`http://localhost:5000/api/v1/user/tenants/savePost/${id}`, {
+                    headers: {
+                        'token': `${token}`
+                    }
+                });
+                console.log('token after save:', token);
+                console.log(res.data);
+                setIsStarred(true); // Đặt lại trạng thái isStarred
+            } catch (error) {
+                console.error('Error saving post:', error);
+            }
+        }
     };
 
     // Hàm định dạng số tiền với đơn vị "đồng", "nghìn", "trăm nghìn", "triệu"
@@ -88,7 +126,6 @@ const Item = ({ images, user, title, star, description, attributes, address, id 
                                 size={30}
                                 color={isStarred || isHovered ? 'red' : 'orange'} // Đổi màu khi hover và click
                             />
-                            {/* Chèn thêm onclick navigate đến trang các bài đã lưu */}
                         </button>
                     </div>
                 </div>

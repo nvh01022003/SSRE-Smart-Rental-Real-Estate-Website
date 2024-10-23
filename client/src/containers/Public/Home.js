@@ -1,43 +1,41 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect } from 'react'
 import Header from './Header'
 import { Outlet } from 'react-router-dom'
-import { Navigation, Search } from './index'
+import { Navigation } from './index'
 import { Contact } from '../../components'
 import { useDispatch, useSelector } from 'react-redux'
 import Footer from './Footer'
 import HomeAdmin from '../../containers/Admin/HomeAdmin'
-import axios from 'axios';
+
+import { Role } from '../../store/actions/auth';
 
 const Home = () => {
-    const { isLoggedIn, token } = useSelector(state => state.auth)
-    const [role, setRole] = useState(null);
-    //console.log('token:', token);
+    const { isLoggedIn, token, role } = useSelector(state => state.auth)
+    console.log('role', role)
+
+    const dispatch = useDispatch();
 
     useEffect(() => {
         const fetchUserRole = async () => {
             try {
-                const res = await axios.post('http://localhost:5000/api/v1/auth/checkRole', {}, {
-                    headers: {
-                        'token': `${token}`,
-                    }
-                });
-                setRole(res.data.msg);
+                //const response = 
+                await dispatch(Role(token));
+                //console.log('Fetched User Role:', response);
             } catch (error) {
                 console.error('Error fetching user role:', error);
             }
         };
-
         if (isLoggedIn) {
             fetchUserRole();
         }
-    }, [isLoggedIn, token]);
+    }, [isLoggedIn, token, dispatch]);
 
     if (!isLoggedIn || !token) {
         return (<div className='w-full flex gap-6 flex-col items-center h-full'>
             <Header />
             <Navigation />
             {/* {isLoggedIn && <Search />} */}
-            <div className='w-4/5 lg:w-4/5 flex flex-col items-start justify-start mt-3'>
+            <div className='w-4/5 lg:w-4/5 flex flex-col items-start justify-start mt-3 container mx-auto'>
                 <Outlet />
             </div>
             <Contact />
@@ -58,7 +56,7 @@ const Home = () => {
                     <Header />
                     <Navigation />
                     {/* {isLoggedIn && <Search />} */}
-                    <div className='w-4/5 lg:w-4/5 flex flex-col items-start justify-start mt-3'>
+                    <div className='w-4/5 lg:w-4/5 flex flex-col items-start justify-start mt-3 container mx-auto'>
                         <Outlet />
                     </div>
                     <Contact />

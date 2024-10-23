@@ -176,7 +176,6 @@ const reportPost = async (userId, postId, desc) => {
 //         }
 //     }
 // }
-
 const listPostSaved = async (userId, page) => {
     try {
         // Tính tổng số bài viết đã lưu cho pagination
@@ -244,7 +243,6 @@ const listPostSaved = async (userId, page) => {
                 Address: post.Address,    // Địa chỉ
                 images: parsedImages,     // Danh sách hình ảnh
                 user: user ? user.dataValues : null,  // Thông tin người dùng
-                createdAt: post.createdAt
             };
         }));
 
@@ -262,8 +260,6 @@ const listPostSaved = async (userId, page) => {
         };
     }
 };
-
-
 
 // DELETE POST SAVED
 const deletePostSaved = async (userId, postId) => {
@@ -388,14 +384,6 @@ const findPostByAll = async (minPrice, maxPrice, location, minAcreage, maxAcreag
                     attributes: ['city', 'district', 'detail_address']
                 },
                 {
-                    model: Overview,
-                    attributes: ['code', 'area', 'type', 'target', 'expire']
-                },
-                {
-                    model: Coordinates,
-                    attributes: ['lat', 'lon']
-                },
-                {
                     model: Image,
                     attributes: ['img_url_list']
                 }
@@ -404,21 +392,13 @@ const findPostByAll = async (minPrice, maxPrice, location, minAcreage, maxAcreag
 
         // Fetch Category and User separately based on category_id and user_id
         const postsWithAdditionalData = await Promise.all(posts.map(async (post) => {
-            // Fetch Category
-            let category = null;
-            if (post.category_id) {
-                category = await Category.findOne({
-                    where: { id: post.category_id },
-                    attributes: ['category_name']
-                });
-            }
 
             // Fetch User
             let user = null;
             if (post.user_id) {
                 user = await User.findOne({
                     where: { id: post.user_id },
-                    attributes: ['firstName', 'lastName', 'email', 'phone', 'img_avt']
+                    attributes: ['firstName', 'lastName', 'phone', 'img_avt']
                 });
             }
 
@@ -427,7 +407,6 @@ const findPostByAll = async (minPrice, maxPrice, location, minAcreage, maxAcreag
 
             return {
                 ...post.dataValues,
-                category: category ? category.dataValues : null,
                 user: user ? user.dataValues : null,
                 images: imgUrlList
             };
@@ -502,7 +481,7 @@ const showDetailPost = async (postId) => {
                 where: {
                     id: post.overview_id
                 },
-                attributes: ['code', 'area', 'type', 'target', 'expire']
+                attributes: ['area', 'target', 'expire']
             }),
             Coordinates.findOne({
                 where: {
