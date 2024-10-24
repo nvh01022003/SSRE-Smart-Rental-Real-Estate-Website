@@ -205,10 +205,19 @@ const findPostByAll = async (minPrice, maxPrice, location, minAcreage, maxAcreag
                 {
                     model: User,
                     attributes: ['firstName', 'lastName', 'email', 'phone', 'img_avt']
-                }
-            ]
-        });
+                },
 
+            ]
+
+        });
+        posts.forEach((post) => {
+            try {
+                post.dataValues.img_url_arr = JSON.parse(post.Image.img_url_list);
+            } catch (error) {
+                console.error(`Error parsing img_url_list for post ID ${post.id}:`, error);
+                post.dataValues.img_url_list = []; // Hoặc giá trị mặc định khác
+            }
+        });
         return {
             err: 0,
             msg: {
