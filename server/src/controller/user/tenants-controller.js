@@ -169,6 +169,21 @@ const showCategory = async (req, res) => {
         })
     }
 }
+// req upgrade to landlord
+const reqUpdateToLandlord = async (req, res) => {
+    const userId = req.user.id
+    const info = req.body
+    const imgKYC = req.body.imageUrls;
+    try {
+        const response = await tenanstService.reqUpdateToLandlord(userId, info, imgKYC)
+        return res.status(200).json(response)
+    } catch (error) {
+        return res.status(500).json({
+            err: -1,
+            msg: 'Fail at auth controller upgradeToLandlord: ' + error
+        })
+    }
+}
 module.exports = {
     showInfoUser,
     changeInfo,
@@ -180,5 +195,7 @@ module.exports = {
     listPostByPage,
     totalPage,
     showDetailPost,
-    showCategory
+    showCategory,
+    reqUpdateToLandlord
+
 }

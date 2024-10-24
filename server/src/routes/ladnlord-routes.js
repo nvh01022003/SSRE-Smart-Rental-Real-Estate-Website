@@ -12,7 +12,7 @@ const router = express.Router()
 
 
 // create post
-router.post("/createPost", authentication.authenticateToken, authorization.checkRoleUser, upload.array('imgPost', 10), img.checkFileTypePost, img.updateImgs, ladnlordController.createPost)
+router.post("/createPost", authentication.authenticateToken, authorization.checkRoleUser, upload.array('imgPost', 10), img.checkFileTypeImg, img.updateImgs, ladnlordController.createPost)
 // change status post
 router.post("/changestatus/:id", authentication.authenticateToken, authorization.checkRoleUser, ladnlordController.updateStatusPost)
 // update post

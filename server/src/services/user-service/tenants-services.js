@@ -5,7 +5,7 @@ const paginationHelper = require("../../helper/pagination");
 const authServices = require("../../services/auth/auth");
 const { where } = require("sequelize");
 const { Op } = require('sequelize');
-const { User, Post, Address, Favourite, Report, Category, Overview, Coordinates, sequelize } = require("../../models/index");
+const { User, Post, Address, Image, Favourite, Report, Category, Overview, Coordinates, UserVerifications, sequelize } = require("../../models/index");
 const { response } = require("express");
 require('dotenv').config();
 // CREATE 
@@ -187,9 +187,28 @@ const findPostByAll = async (minPrice, maxPrice, location, minAcreage, maxAcreag
             where: whereCondition,
             limit: objectPagination.limitPage,
             offset: objectPagination.skip,
-            order: [['createdAt', 'DESC']]
+            order: [['createdAt', 'DESC']],
+            // trả về đủ thông tin address, img
+            include: [
+                {
+                    model: Address,
+                    attributes: ['city', 'district', 'detail_address']
+                },
+                {
+                    model: Image,
+                    attributes: ['img_url_list']
+                },
+                {
+                    model: Category,
+                    attributes: ['category_name']
+                },
+                {
+                    model: User,
+                    attributes: ['firstName', 'lastName', 'email', 'phone', 'img_avt']
+                }
+            ]
         });
-        // console.log(posts);
+
         return {
             err: 0,
             msg: {
@@ -264,17 +283,22 @@ const showDetailPost = async (postId) => {
                     id: post.coordinates_id
                 },
                 attributes: ['lat', 'lon']
+            }),
+            Image.findOne({
+                where: {
+                    id: post.img_id
+                },
+                attributes: ['img_url_list']
             })
-
         ])
-        console.log(map);
+        const imgUrlList = JSON.parse(image.dataValues.img_url_list);
+        // console.log(map);
         post.dataValues.map = `<iframe src="https://www.google.com/maps/embed?pb=!1m10!1m8!1m3!1d7668.902703874087!2d${map.dataValues.lon}!3d${map.dataValues.lat}!3m2!1i1024!2i768!4f13.1!5e0!3m2!1svi!2s!4v1729530897356!5m2!1svi!2s" width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>`;
         post.dataValues.category = category;
         post.dataValues.address = address;
         post.dataValues.user = user;
         post.dataValues.overviews = overviews;
-
-
+        post.dataValues.imgUrlList = imgUrlList;
         return {
             err: 0,
             msg: post
@@ -301,6 +325,33 @@ const showCategory = async () => {
         }
     }
 }
+// req upgrade to landlord
+const reqUpdateToLandlord = async (userId, info, imgKYC) => {
+    //   lưu vào bảng user_verifications đợi admin phê duyệt
+    const tests = JSON.stringify(imgKYC);
+    console.log(tests);
+    try {
+        const userVerification = await UserVerifications.create({
+            userId: userId,
+            fullname: info.fullname,
+            birthday: info.birthday,
+            certifiedAddress: info.certifiedAddress,
+            contact: info.contact,
+            // url_CCCD: JSON.stringify(imgKYC),
+            status: 0
+        })
+        return {
+            err: 0,
+            msg: "Request update to landlord success"
+        }
+    } catch (err) {
+        return {
+            err: 1,
+            msg: err
+        }
+    }
+
+}
 module.exports = {
     getInfoUser,
     changeInfoUser,
@@ -311,5 +362,7 @@ module.exports = {
     findPostByAll,
     listPostByPage,
     showDetailPost,
-    showCategory
+    showCategory,
+    reqUpdateToLandlord
+
 };
