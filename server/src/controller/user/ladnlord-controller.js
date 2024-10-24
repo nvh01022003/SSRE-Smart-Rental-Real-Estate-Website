@@ -76,8 +76,9 @@ const listPost = async (req, res) => {
 // SHOW LIST POST BY PAGE PAGINATION
 const listPostByPage = async (req, res) => {
     try {
-        const page = req.query.page;
-        const response = await ladnlordServices.listPostByPage(page);
+        const page = parseInt(req.query.page)
+        const userId = req.user.id
+        const response = await ladnlordServices.listPostByPage(userId, page);
         return res.status(200).json(response)
     } catch (error) {
         return res.status(400).json({ error: error.message })

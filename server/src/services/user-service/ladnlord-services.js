@@ -2,9 +2,12 @@ const bcryptjs = require("bcryptjs");
 const gravatar = require("gravatar");
 const { where } = require("sequelize");
 const helper = require("../../helper/check-coordinates");
+const paginationHelper = require("../../helper/pagination");
 const { Post, Address, Category, Image, Overview, Coordinates, sequelize } = require("../../models/index");
 const middleware = require("../../middleware/upload/uploadImg")
 const { response } = require("express");
+
+
 // TAO CODE NGAU NHIEN THEO TIME
 const generateRandomCode = () => {
     const timestamp = Date.now().toString();
@@ -189,18 +192,34 @@ const listPost = async (userId) => {
     }
 }
 // LIST POST BY PAGE PAGINATION
-const listPostByPageAtHome = async (page, limit) => {
+const listPostByPage = async (userId, page) => {
     try {
+        //pagination
+        const totalData = await Post.count({
+            where: {
+                user_id: userId
+            }
+        }
+        )
+        let objectPagination = await paginationHelper.pagination(
+            {
+                currentPage: 1,
+                limitPage: 4
+            },
+            page,
+            totalData
+        )
         const resPost = await Post.findAll({
             where: {
                 user_id: userId
             },
-            limit: limit,
-            offset: (page - 1) * limit
+            limit: objectPagination.limit,
+            offset: objectPagination.offset
         })
         return {
             err: 0,
-            msg: resPost
+            msg: resPost,
+            objectPagination
         }
     } catch (error) {
         console.log(error)
@@ -218,5 +237,5 @@ module.exports = {
     deleteListPost,
     listPost,
     updateStatusPosts,
-    listPostByPageAtHome
+    listPostByPage
 };

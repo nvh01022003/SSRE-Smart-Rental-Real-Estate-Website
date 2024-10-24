@@ -172,7 +172,7 @@ const showCategory = async (req, res) => {
 // req upgrade to landlord
 const reqUpdateToLandlord = async (req, res) => {
     const userId = req.user.id
-    const info = req.body
+    const info = req.body.info;
     const imgKYC = req.body.imageUrls;
     try {
         const response = await tenanstService.reqUpdateToLandlord(userId, info, imgKYC)

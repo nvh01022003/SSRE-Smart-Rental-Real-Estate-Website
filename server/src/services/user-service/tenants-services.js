@@ -5,7 +5,7 @@ const paginationHelper = require("../../helper/pagination");
 const authServices = require("../../services/auth/auth");
 const { where } = require("sequelize");
 const { Op } = require('sequelize');
-const { User, Post, Address, Image, Favourite, Report, Category, Overview, Coordinates, UserVerifications, sequelize } = require("../../models/index");
+const { User, Post, Address, Image, Favourite, Report, Category, Overview, Coordinates, UpgradeRequest, sequelize } = require("../../models/index");
 const { response } = require("express");
 require('dotenv').config();
 // CREATE 
@@ -369,20 +369,19 @@ const showCategory = async () => {
         }
     }
 }
-// req upgrade to landlord
+// req upgrade to landlord để gửi yêu cầu nâng cấp lên landlord
 const reqUpdateToLandlord = async (userId, info, imgKYC) => {
-    //   lưu vào bảng user_verifications đợi admin phê duyệt
-    const tests = JSON.stringify(imgKYC);
-    console.log(tests);
     try {
-        const userVerification = await UserVerifications.create({
-            userId: userId,
-            fullname: info.fullname,
-            birthday: info.birthday,
-            certifiedAddress: info.certifiedAddress,
+        info = JSON.parse(info)
+        imgKYC = JSON.stringify(imgKYC);
+        console.log(imgKYC);
+        const userVerification = await UpgradeRequest.create({
+            user_id: userId,
+            full_name: info.full_name,
+            date_of_birth: info.date_of_birth,
+            address: info.address,
             contact: info.contact,
-            // url_CCCD: JSON.stringify(imgKYC),
-            status: 0
+            id_card_image_url: imgKYC
         })
         return {
             err: 0,
