@@ -212,7 +212,7 @@ const findPostByAll = async (minPrice, maxPrice, location, minAcreage, maxAcreag
         });
         posts.forEach((post) => {
             try {
-                post.dataValues.img_url_arr = JSON.parse(post.Image.img_url_list);
+                post.dataValues.images = JSON.parse(post.Image.img_url_list);
             } catch (error) {
                 console.log("Fail to parse img_url_list");
                 post.dataValues.img_url_list = [];
