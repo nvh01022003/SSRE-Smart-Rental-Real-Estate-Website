@@ -105,18 +105,55 @@ const listPostSaved = async (userId, page) => {
             totalData
         )
         // các bài viết theo trang
-        const posts = await Favourite.findAll({
+        const listPostSave = await Favourite.findAll({
             where: {
                 user_id: userId
             },
             limit: objectPagination.limitPage,
             offset: objectPagination.skip,
-            order: [['createdAt', 'DESC']]
+            order: [['createdAt', 'DESC']],
+            // show thông tin chi tiết của bài viết gồm address, img, user tạo
+            include: [
+                {
+                    model: Post,
+                    include: [
+                        {
+                            model: Address,
+                            attributes: ['city', 'district', 'detail_address']
+                        },
+                        {
+                            model: Image,
+                            attributes: ['img_url_list']
+                        },
+                        {
+                            model: User,
+                            attributes: ['firstName', 'lastName', 'email', 'phone', 'img_avt']
+                        },
+                        {
+                            model: Category,
+                            attributes: ['category_name']
+                        }
+                    ]
+                }
+            ]
+
+        });
+        listPostSave.forEach((favourite) => {
+            try {
+                favourite.dataValues.Post.Images.forEach((image) => {
+                    image.img_url_list = JSON.parse(image.img_url_list);
+                });
+            } catch (error) {
+                console.error(`Fail to parse img_url_list for post ID ${favourite.post_id}:`, error);
+                favourite.dataValues.Post.Images.forEach((image) => {
+                    image.img_url_list = [];
+                });
+            }
         });
         return {
             err: 0,
             msg: {
-                listPost: posts,
+                listPost: listPostSave,
                 objectPagination
             }
         }
