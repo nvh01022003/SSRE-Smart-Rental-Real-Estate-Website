@@ -214,8 +214,8 @@ const findPostByAll = async (minPrice, maxPrice, location, minAcreage, maxAcreag
             try {
                 post.dataValues.img_url_arr = JSON.parse(post.Image.img_url_list);
             } catch (error) {
-                console.error(`Error parsing img_url_list for post ID ${post.id}:`, error);
-                post.dataValues.img_url_list = []; // Hoặc giá trị mặc định khác
+                console.log("Fail to parse img_url_list");
+                post.dataValues.img_url_list = [];
             }
         });
         return {
