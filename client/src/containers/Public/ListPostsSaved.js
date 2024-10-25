@@ -39,6 +39,23 @@ const ListPostsSaved = () => {
         fetchSavedPosts();
     }, [page, token]);
 
+    const handleToggleStar = async (isStarred, id) => {
+        if (isStarred) {
+            // If starred, remove the post
+            try {
+                await axios.delete(`http://localhost:5000/api/v1/user/tenants/deletePostSaved/${id}`, {
+                    headers: { 'token': `${token}` }
+                });
+                // Remove the post from the savedPosts state
+                setSavedPosts((prevPosts) => prevPosts.filter(post => post.Post.id !== id));
+            } catch (error) {
+                console.error('Error deleting post:', error);
+            }
+        } else {
+            // If unstarred, add your logic to save the post again if needed
+        }
+    };
+
     if (loading) {
         return <div>Loading...</div>; // Thông báo đang tải
     }
@@ -56,26 +73,29 @@ const ListPostsSaved = () => {
                     {savedPosts.length > 0 ? (
                         savedPosts.map((post) => (
                             <Item
-                                key={post.id}
-                                address={`${post.Address?.detail_address}, ${post.Address?.district}, ${post.Address?.city}`}
+                                key={post.Post.id}
+                                address={`${post.Post.Address?.detail_address}, ${post.Post.Address?.district}, ${post.Post.Address?.city}`} // Correctly accessing the nested Address object
                                 attributes={{
-                                    price: post?.price,
-                                    acreage: post?.acreage
+                                    price: post.Post.price, // Access price directly from post
+                                    acreage: post.Post.acreage // Access acreage directly from post
                                 }}
-                                description={post?.description}
-                                images={post?.images}
-                                title={post?.title}
+                                description={post.Post.description} // Access description directly from post
+                                images={post.Post.Images[0].img_url_list} // Access Images array from post
+                                title={post.Post.title} // Access title directly from post
                                 user={{
-                                    name: `${post?.user?.firstName} ${post?.user?.lastName}`,
-                                    phone: post?.user?.phone,
-                                    img_avt: post?.user?.img_avt
+                                    name: `${post.Post.User?.firstName} ${post.Post.User?.lastName}`, // Access User object for name
+                                    phone: post.Post.User?.phone, // Access phone from User object
+                                    img_avt: post.Post.User?.img_avt // Access avatar image from User object
                                 }}
-                                id={post?.id}
+                                id={post.Post.id} // Access id directly from post
+                                starred={true} // Set starred to true by default
+                                onToggleStar={(newStarredState) => handleToggleStar(newStarredState, post.Post.id)} // Pass the toggle function
                             />
                         ))
                     ) : (
                         <p>Không có tin nào đã lưu.</p>
                     )}
+
                     <Pagination page={page} setPage={setPage} />
                 </div>
                 <div className="w-1/3 p-4">

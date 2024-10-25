@@ -176,16 +176,98 @@ const reportPost = async (userId, postId, desc) => {
 //         }
 //     }
 // }
+// const listPostSaved = async (userId, page) => {
+//     try {
+//         // Tính tổng số bài viết đã lưu cho pagination
+//         const totalData = await Favourite.count({
+//             where: {
+//                 user_id: userId
+//             }
+//         });
+
+//         // Tạo đối tượng phân trang
+//         let objectPagination = await paginationHelper.pagination(
+//             {
+//                 currentPage: 1,
+//                 limitPage: 2
+//             },
+//             page,
+//             totalData
+//         );
+
+//         // Lấy danh sách các post_id từ bảng Favourite theo trang
+//         const favourites = await Favourite.findAll({
+//             where: { user_id: userId },
+//             limit: objectPagination.limitPage,
+//             offset: objectPagination.skip,
+//             order: [['createdAt', 'DESC']],
+//             attributes: ['post_id']
+//         });
+
+//         const postIds = favourites.map(fav => fav.post_id); // Lấy các post_id từ Favourite
+
+//         // Lấy chi tiết bài viết từ bảng Post và các bảng liên quan
+//         const posts = await Post.findAll({
+//             where: { id: postIds },
+//             include: [
+//                 {
+//                     model: Address, // Join bảng Address
+//                     attributes: ['detail_address', 'district', 'city']
+//                 },
+//                 {
+//                     model: Image, // Join bảng Image
+//                     attributes: ['img_url_list'],
+//                     // Parse img_url_list thành mảng JSON
+//                     required: true // Đảm bảo có hình ảnh
+//                 }
+//             ]
+//         });
+
+//         // Lấy thông tin User và các dữ liệu khác từ bảng User và Category
+//         const postsWithUser = await Promise.all(posts.map(async (post) => {
+//             // Fetch User bằng user_id từ bảng Post
+//             const user = await User.findOne({
+//                 where: { id: post.user_id },
+//                 attributes: ['firstName', 'lastName', 'phone', 'img_avt']
+//             });
+
+//             // Parse danh sách hình ảnh
+//             const parsedImages = JSON.parse(post.Image.img_url_list);
+
+//             return {
+//                 id: post.id,
+//                 title: post.title,
+//                 price: post.price,
+//                 acreage: post.acreage,
+//                 description: post.description,
+//                 Address: post.Address,    // Địa chỉ
+//                 images: parsedImages,     // Danh sách hình ảnh
+//                 user: user ? user.dataValues : null,  // Thông tin người dùng
+//             };
+//         }));
+
+//         return {
+//             err: 0,
+//             msg: {
+//                 listPost: postsWithUser,
+//                 objectPagination
+//             }
+//         };
+//     } catch (err) {
+//         return {
+//             err: 1,
+//             msg: err.message
+//         };
+//     }
+// };
+
 const listPostSaved = async (userId, page) => {
     try {
-        // Tính tổng số bài viết đã lưu cho pagination
         const totalData = await Favourite.count({
             where: {
                 user_id: userId
             }
         });
-
-        // Tạo đối tượng phân trang
         let objectPagination = await paginationHelper.pagination(
             {
                 currentPage: 1,
@@ -193,73 +275,67 @@ const listPostSaved = async (userId, page) => {
             },
             page,
             totalData
-        );
-
-        // Lấy danh sách các post_id từ bảng Favourite theo trang
-        const favourites = await Favourite.findAll({
-            where: { user_id: userId },
+        )
+        // các bài viết theo trang
+        const listPostSave = await Favourite.findAll({
+            where: {
+                user_id: userId
+            },
             limit: objectPagination.limitPage,
             offset: objectPagination.skip,
             order: [['createdAt', 'DESC']],
-            attributes: ['post_id']
-        });
-
-        const postIds = favourites.map(fav => fav.post_id); // Lấy các post_id từ Favourite
-
-        // Lấy chi tiết bài viết từ bảng Post và các bảng liên quan
-        const posts = await Post.findAll({
-            where: { id: postIds },
+            // show thông tin chi tiết của bài viết gồm address, img, user tạo
             include: [
                 {
-                    model: Address, // Join bảng Address
-                    attributes: ['detail_address', 'district', 'city']
-                },
-                {
-                    model: Image, // Join bảng Image
-                    attributes: ['img_url_list'],
-                    // Parse img_url_list thành mảng JSON
-                    required: true // Đảm bảo có hình ảnh
+                    model: Post,
+                    include: [
+                        {
+                            model: Address,
+                            attributes: ['city', 'district', 'detail_address']
+                        },
+                        {
+                            model: Image,
+                            attributes: ['img_url_list']
+                        },
+                        {
+                            model: User,
+                            attributes: ['firstName', 'lastName', 'email', 'phone', 'img_avt']
+                        },
+                        {
+                            model: Category,
+                            attributes: ['category_name']
+                        }
+                    ]
                 }
             ]
+
         });
-
-        // Lấy thông tin User và các dữ liệu khác từ bảng User và Category
-        const postsWithUser = await Promise.all(posts.map(async (post) => {
-            // Fetch User bằng user_id từ bảng Post
-            const user = await User.findOne({
-                where: { id: post.user_id },
-                attributes: ['firstName', 'lastName', 'phone', 'img_avt']
-            });
-
-            // Parse danh sách hình ảnh
-            const parsedImages = JSON.parse(post.Image.img_url_list);
-
-            return {
-                id: post.id,
-                title: post.title,
-                price: post.price,
-                acreage: post.acreage,
-                description: post.description,
-                Address: post.Address,    // Địa chỉ
-                images: parsedImages,     // Danh sách hình ảnh
-                user: user ? user.dataValues : null,  // Thông tin người dùng
-            };
-        }));
-
+        listPostSave.forEach((favourite) => {
+            try {
+                favourite.dataValues.Post.Images.forEach((image) => {
+                    image.img_url_list = JSON.parse(image.img_url_list);
+                });
+            } catch (error) {
+                console.error(`Fail to parse img_url_list for post ID ${favourite.post_id}:`, error);
+                favourite.dataValues.Post.Images.forEach((image) => {
+                    image.img_url_list = [];
+                });
+            }
+        });
         return {
             err: 0,
             msg: {
-                listPost: postsWithUser,
+                listPost: listPostSave,
                 objectPagination
             }
-        };
+        }
     } catch (err) {
         return {
             err: 1,
-            msg: err.message
-        };
+            msg: err
+        }
     }
-};
+}
 
 // DELETE POST SAVED
 const deletePostSaved = async (userId, postId) => {
@@ -281,103 +357,137 @@ const deletePostSaved = async (userId, postId) => {
         }
     }
 }
-// // FIND POST BY ALL
+
+
+//FIND POST BY ALL
 // const findPostByAll = async (minPrice, maxPrice, location, minAcreage, maxAcreage, categoryCode, page) => {
 //     try {
 //         let whereCondition = {};
 //         if (minPrice && maxPrice) {
 //             whereCondition.price = {
 //                 [Op.between]: [minPrice, maxPrice]
-//             }
+//             };
 //         }
 //         if (minAcreage && maxAcreage) {
 //             whereCondition.acreage = {
 //                 [Op.between]: [minAcreage, maxAcreage]
-//             }
+//             };
 //         }
 //         if (location) {
 //             const addressResult = await Address.findAll({
-//                 where: {
-//                     city: location
-//                 }
-//             })
+//                 where: { city: location }
+//             });
 //             const addressIDs = addressResult.map((address) => address.id);
-//             whereCondition.address_id = addressIDs;
+//             whereCondition.address_id = { [Op.in]: addressIDs };
 //         }
 
 //         if (categoryCode) {
 //             whereCondition.category_id = categoryCode;
 //         }
+
 //         const totalData = await Post.count({ where: whereCondition });
 //         let objectPagination = await paginationHelper.pagination(
-//             {
-//                 currentPage: 1,
-//                 limitPage: 4
-//             },
+//             { currentPage: 1, limitPage: 4 },
 //             page,
 //             totalData
-//         )
+//         );
+
 //         const posts = await Post.findAll({
 //             where: whereCondition,
 //             limit: objectPagination.limitPage,
 //             offset: objectPagination.skip,
-//             order: [['createdAt', 'DESC']]
+//             order: [['createdAt', 'DESC']],
+//             include: [
+//                 {
+//                     model: Address,
+//                     attributes: ['city', 'district', 'detail_address']
+//                 },
+//                 {
+//                     model: Image,
+//                     attributes: ['img_url_list']
+//                 }
+//             ]
 //         });
-//         // console.log(posts);
+
+//         // Fetch Category and User separately based on category_id and user_id
+//         const postsWithAdditionalData = await Promise.all(posts.map(async (post) => {
+
+//             // Fetch User
+//             let user = null;
+//             if (post.user_id) {
+//                 user = await User.findOne({
+//                     where: { id: post.user_id },
+//                     attributes: ['firstName', 'lastName', 'phone', 'img_avt']
+//                 });
+//             }
+
+//             // Parse Image URLs
+//             const imgUrlList = JSON.parse(post.Image.img_url_list);
+
+//             return {
+//                 ...post.dataValues,
+//                 user: user ? user.dataValues : null,
+//                 images: imgUrlList
+//             };
+//         }));
+
 //         return {
 //             err: 0,
 //             msg: {
-//                 listPost: posts,
+//                 listPost: postsWithAdditionalData,
 //                 objectPagination
 //             }
-//         }
+//         };
 
 //     } catch (err) {
 //         return {
 //             err: 1,
 //             msg: err
-//         }
+//         };
 //     }
-// }
+// };
 
-// FIND POST BY ALL
 const findPostByAll = async (minPrice, maxPrice, location, minAcreage, maxAcreage, categoryCode, page) => {
     try {
         let whereCondition = {};
         if (minPrice && maxPrice) {
             whereCondition.price = {
                 [Op.between]: [minPrice, maxPrice]
-            };
+            }
         }
         if (minAcreage && maxAcreage) {
             whereCondition.acreage = {
                 [Op.between]: [minAcreage, maxAcreage]
-            };
+            }
         }
         if (location) {
             const addressResult = await Address.findAll({
-                where: { city: location }
-            });
+                where: {
+                    city: location
+                }
+            })
             const addressIDs = addressResult.map((address) => address.id);
-            whereCondition.address_id = { [Op.in]: addressIDs };
+            whereCondition.address_id = addressIDs;
         }
 
         if (categoryCode) {
             whereCondition.category_id = categoryCode;
         }
-
         const totalData = await Post.count({ where: whereCondition });
         let objectPagination = await paginationHelper.pagination(
-            { currentPage: 1, limitPage: 4 },
+            {
+                currentPage: 1,
+                limitPage: 4
+            },
             page,
             totalData
-        );
-
+        )
         const posts = await Post.findAll({
             where: whereCondition,
             limit: objectPagination.limitPage,
             offset: objectPagination.skip,
             order: [['createdAt', 'DESC']],
+            // trả về đủ thông tin address, img
             include: [
                 {
                     model: Address,
@@ -386,47 +496,43 @@ const findPostByAll = async (minPrice, maxPrice, location, minAcreage, maxAcreag
                 {
                     model: Image,
                     attributes: ['img_url_list']
-                }
+                },
+                {
+                    model: Category,
+                    attributes: ['category_name']
+                },
+                {
+                    model: User,
+                    attributes: ['firstName', 'lastName', 'email', 'phone', 'img_avt']
+                },
+
             ]
+
         });
 
-        // Fetch Category and User separately based on category_id and user_id
-        const postsWithAdditionalData = await Promise.all(posts.map(async (post) => {
-
-            // Fetch User
-            let user = null;
-            if (post.user_id) {
-                user = await User.findOne({
-                    where: { id: post.user_id },
-                    attributes: ['firstName', 'lastName', 'phone', 'img_avt']
-                });
+        posts.forEach((post) => {
+            try {
+                post.dataValues.images = JSON.parse(post.Image.img_url_list);
+            } catch (error) {
+                console.log("Fail to parse img_url_list");
+                post.dataValues.img_url_list = [];
             }
-
-            // Parse Image URLs
-            const imgUrlList = JSON.parse(post.Image.img_url_list);
-
-            return {
-                ...post.dataValues,
-                user: user ? user.dataValues : null,
-                images: imgUrlList
-            };
-        }));
-
+        });
         return {
             err: 0,
             msg: {
-                listPost: postsWithAdditionalData,
+                listPost: posts,
                 objectPagination
             }
-        };
+        }
 
     } catch (err) {
         return {
             err: 1,
             msg: err
-        };
+        }
     }
-};
+}
 
 
 // show list post by page pagination

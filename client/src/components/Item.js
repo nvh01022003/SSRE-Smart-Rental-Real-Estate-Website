@@ -1,16 +1,20 @@
-import React, { memo, useState } from 'react';
+import React, { memo, useState, useEffect } from 'react';
 import icons from '../ultils/icons';
 import { useNavigate } from 'react-router-dom';
 import { formatVietnameseToString } from '../ultils/Common/formatVietnameseToString';
 import { FaMapMarkerAlt, FaDollarSign } from 'react-icons/fa';
 import axios from 'axios';
 import { useSelector } from 'react-redux';
+import Swal from 'sweetalert2';
 
 const { RiCrop2Line } = icons
 
 const { GrStar, BsBookmarkStarFill } = icons;
 
-const Item = ({ images, user, title, star, description, attributes, address, id }) => {
+const Item = ({ images, user, title, star, description, attributes, address, id, starred, onToggleStar }) => {
+    useEffect(() => {
+        setIsStarred(starred); // Update state if starred prop changes
+    }, [starred]);
 
     const handleStar = (star) => {
         let stars = [];
@@ -20,51 +24,95 @@ const Item = ({ images, user, title, star, description, attributes, address, id 
         return stars;
     };
 
+
     const [isStarred, setIsStarred] = useState(false);
     const [isHovered, setIsHovered] = useState(false);
 
     const { token } = useSelector(state => state.auth);
-    console.log(token);
 
     // Trong component Item
     const navigate = useNavigate();
 
     // const handleClick = () => {
     //     setIsStarred(!isStarred); // Toggle trạng thái màu đỏ khi click
-
     // };
     const handleClick = async () => {
-        setIsStarred(!isStarred); // Toggle trạng thái màu đỏ khi click
+        // Toggle the star state
+        setIsStarred(!isStarred); // This will initially toggle the state
+
         if (isStarred) {
-            // Nếu đã lưu, gọi API để xóa bài viết
+            // Toggle the star state
+            const newStarredState = !isStarred;
+            setIsStarred(newStarredState);
+            await onToggleStar(newStarredState); // Call the parent function to handle the API call
+
+            // If already starred, call API to delete the post
             try {
                 const response = await axios.delete(`http://localhost:5000/api/v1/user/tenants/deletePostSaved/${id}`, {
                     headers: {
                         'token': `${token}`
                     }
                 });
-                console.log(response.data);
-                setIsStarred(false); // Đặt lại trạng thái isStarred
+                console.log(response);
+                setIsStarred(false); // Reset isStarred state
             } catch (error) {
                 console.error('Error deleting post:', error);
             }
         } else {
-            // Nếu chưa lưu, thực hiện lưu bài viết 
-            // Gọi API để lưu bài viết 
+            // If not starred, try to save the post
             try {
-                const res = await axios.post(`http://localhost:5000/api/v1/user/tenants/savePost/${id}`, {
+                const res = await axios.post(`http://localhost:5000/api/v1/user/tenants/savePost/${id}`, {}, {
                     headers: {
                         'token': `${token}`
                     }
                 });
                 console.log('token after save:', token);
-                console.log(res.data);
-                setIsStarred(true); // Đặt lại trạng thái isStarred
+                console.log(res);
+                setIsStarred(true); // Set isStarred state to true
             } catch (error) {
                 console.error('Error saving post:', error);
+                setIsStarred(false); // Reset to false on error (not logged in)
+
+                if (error.response?.data?.err === 1) {
+                    Swal.fire({
+                        icon: 'error',
+                        text: 'Đăng nhập để lưu bài viết!',
+                        confirmButtonText: 'Đăng nhập ngay',
+                        customClass: {
+                            title: 'custom-title',
+                            content: 'custom-content',
+                            confirmButton: 'custom-confirm-button', // Add custom class for button
+                        },
+                        didOpen: () => {
+                            // Customize button styles if needed
+                            const confirmButton = Swal.getConfirmButton();
+                            confirmButton.style.backgroundColor = '#007bff'; // Custom background color
+                            confirmButton.style.color = 'white'; // Custom text color
+                            confirmButton.style.border = 'none'; // Remove border
+                            confirmButton.style.borderRadius = '5px'; // Rounded corners
+                            confirmButton.style.padding = '10px 20px'; // Padding
+                            confirmButton.style.cursor = 'pointer'; // Pointer cursor
+
+                            // Optional: Add hover effect for button
+                            confirmButton.onmouseover = () => {
+                                confirmButton.style.backgroundColor = '#0056b3'; // Darker shade on hover
+                            };
+                            confirmButton.onmouseout = () => {
+                                confirmButton.style.backgroundColor = '#007bff'; // Reset on mouse out
+                            };
+                        },
+                        buttonsStyling: false // Disable default button styling
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            // Redirect to the login page
+                            window.location.href = '/login'; // Change this to your login URL
+                        }
+                    });
+                }
             }
         }
     };
+
 
     // Hàm định dạng số tiền với đơn vị "đồng", "nghìn", "trăm nghìn", "triệu"
     const formatPrice = (price) => {

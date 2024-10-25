@@ -49,8 +49,8 @@ export const login = (payload) => async (dispatch) => {
         // Kiểm tra nếu đăng nhập thành công
         if (response?.err === 0) {
             dispatch({
-                type: actionTypes.LOGIN_SUCCESS,
-                data: { token: response.access_token, user: response.user },  // Truyền token và user
+                type: 'LOGIN_SUCCESS',
+                token: response.access_token  // Truyền token 
             });
             return response;  // Trả về response cho FE
         } else {

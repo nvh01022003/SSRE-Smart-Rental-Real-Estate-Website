@@ -4,26 +4,87 @@ const { Op } = require('sequelize');
 
 
 // show all user
+// const showAllUser = async () => {
+//     try {
+//         console.log('showAllUser');
+//         const users = await User.findAll({
+//             attributes: ['id', 'firstName', 'lastName', 'email', 'phone', 'img_avt'],
+//             include: [{
+//                 model: Role,
+//                 attributes: ['type'],
+//                 where: {
+//                     type: {
+//                         [Op.ne]: 'admin' // Loại trừ người dùng có vai trò 'admin'
+//                     }
+//                 },
+//                 required: true // Đảm bảo chỉ lấy người dùng có vai trò
+//             }]
+//         });
+
+//         if (users) {
+//             return {
+//                 err: 0,
+//                 msg: 'get info user success',
+//                 info_user: users,
+//             };
+//         }
+//     } catch (err) {
+//         console.log('error show', err);  // Ghi log lỗi để dễ dàng debug
+//         return {
+//             err: 1,
+//             msg: err
+//         };
+//     }
+// };
+
+// show detail user by id
 const showAllUser = async () => {
     try {
-        console.log('showAllUser')
-        const user = await User.findAll({
+        console.log('showAllUser');
+
+        // Fetch all users
+        const users = await User.findAll({
             attributes: ['id', 'firstName', 'lastName', 'email', 'phone', 'img_avt']
-        })
-        if (user) {
+        });
+
+        if (!users) {
             return {
-                err: 0,
-                msg: 'get info user success',
-                'info_user': user,
+                err: 1,
+                msg: 'No users found'
             };
         }
+
+        // Fetch roles for each user using Promise.all
+        const usersWithRoles = await Promise.all(users.map(async (user) => {
+            const role = await Role.findOne({
+                where: {
+                    user_id: user.id
+                },
+                attributes: ['type']
+            });
+            return {
+                ...user.dataValues,
+                role: role ? role.type : null
+            };
+        }));
+
+        // Filter out users with the 'admin' role
+        const filteredUsers = usersWithRoles.filter(user => user.role !== 'admin');
+
+        return {
+            err: 0,
+            msg: 'get info user success',
+            info_user: filteredUsers,
+        };
     } catch (err) {
+        console.log('error show', err);  // Log the error for easier debugging
         return {
             err: 1,
             msg: err
         };
     }
-}
+};
+
 // show detail user by id
 const showDetailUser = async (userId) => {
     try {
@@ -31,7 +92,12 @@ const showDetailUser = async (userId) => {
             where: {
                 id: userId,
             },
-            attributes: ['id', 'firstName', 'lastName', 'email', 'phone', 'img_avt']
+            attributes: ['id', 'firstName', 'lastName', 'email', 'phone', 'img_avt'],
+            include: [{
+                model: Role,
+                attributes: ['type'],
+                required: true // Đảm bảo chỉ lấy người dùng có vai trò
+            }]
         })
         if (user) {
             return {
@@ -48,17 +114,83 @@ const showDetailUser = async (userId) => {
     }
 }
 // update user by id
+// const showDetailUser = async (userId) => {
+//     try {
+//         // Fetch the user details
+//         const user = await User.findOne({
+//             where: {
+//                 id: userId,
+//             },
+//             attributes: ['id', 'firstName', 'lastName', 'email', 'phone', 'img_avt']
+//         });
+
+//         // Fetch the role for the user using Promise.all
+//         const [role] = await Promise.all([
+//             Role.findOne({
+//                 where: {
+//                     user_id: user.id
+//                 },
+//                 attributes: ['type']
+//             })
+//         ]);
+
+//         return {
+//             err: 0,
+//             msg: 'get info user success',
+//             info_user: {
+//                 ...user.dataValues,
+//                 role: role ? role.type : null
+//             },
+//         };
+//     } catch (err) {
+//         console.log('error show', err);  // Log the error for easier debugging
+//         return {
+//             err: 1,
+//             msg: err
+//         };
+//     }
+// };
+
+// update user by id
+// const updateUser = async (userId, data) => {
+//     try {
+//         const user = await User.update(data, {
+//             where: {
+//                 id: userId
+//             }
+//         })
+//         if (user) {
+//             return {
+//                 err: 0,
+//                 msg: 'update user success',
+//             };
+//         }
+//     } catch (err) {
+//         return {
+//             err: 1,
+//             msg: err
+//         };
+//     }
+// }
+// change role user by id
+// Update user by ID and optionally change the role
 const updateUser = async (userId, data) => {
     try {
         const user = await User.update(data, {
             where: {
                 id: userId
             }
-        })
+        });
+        if (data.role) {
+            await Role.update(
+                { type: data.role },  // Set the new role type
+                { where: { user_id: userId } }  // Condition to find the correct role
+            );
+        }
         if (user) {
             return {
                 err: 0,
-                msg: 'update user success',
+                msg: 'Update user success',
             };
         }
     } catch (err) {
@@ -67,8 +199,9 @@ const updateUser = async (userId, data) => {
             msg: err
         };
     }
-}
-// change role user by id
+};
+
+
 const changeRoleUser = async (userId, role) => {
     try {
         const user = await Role.update({

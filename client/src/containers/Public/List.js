@@ -47,13 +47,13 @@ const List = ({ categoryCode }) => {
                             acreage: item?.acreage
                         }}
                         description={item?.description}
-                        images={item?.images}
+                        images={JSON.parse(item?.Images[0].img_url_list)}
                         //star={item?.star}
                         title={item?.title}
                         user={{
-                            name: `${item?.user?.firstName} ${item?.user?.lastName}`,
-                            phone: item?.user?.phone,
-                            img_avt: item?.user?.img_avt
+                            name: `${item?.User?.firstName} ${item?.User?.lastName}`,
+                            phone: item?.User?.phone,
+                            img_avt: item?.User?.img_avt
                         }}
                         id={item?.id}
                     />

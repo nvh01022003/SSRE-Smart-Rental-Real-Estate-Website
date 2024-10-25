@@ -31,6 +31,7 @@ const showDetailUser = async (req, res) => {
 const updateUser = async (req, res) => {
     const userId = req.params.userId
     const data = req.body
+    console.log('data', data)
     try {
         const response = await managerUser.updateUser(userId, data)
         return res.status(200).json(response)

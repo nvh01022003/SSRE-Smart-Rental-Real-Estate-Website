@@ -51,6 +51,7 @@ const updatePost = async (req, res) => {
 const deletePost = async (req, res) => {
     try {
         const postId = req.params.id;
+        console.log('postId', postId)
         const response = await ladnlordServices.deletePost(postId);
         return res.status(200).json(response)
     } catch (error) {
