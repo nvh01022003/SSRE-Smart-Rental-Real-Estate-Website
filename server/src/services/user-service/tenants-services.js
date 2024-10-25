@@ -7,6 +7,7 @@ const { where } = require("sequelize");
 const { Op } = require('sequelize');
 const { User, Post, Address, Image, Favourite, Report, Category, Overview, Coordinates, UpgradeRequest, sequelize } = require("../../models/index");
 const { response } = require("express");
+const e = require("express");
 require('dotenv').config();
 // CREATE 
 const getInfoUser = async (userId) => {
@@ -143,6 +144,10 @@ const listPostSaved = async (userId, page) => {
                 favourite.dataValues.Post.Images.forEach((image) => {
                     image.img_url_list = JSON.parse(image.img_url_list);
                 });
+                // console.log(favourite.dataValues.Post.Images[0].img_url_list[0]);
+                // tạo thêm một thuộc tính là images trong mỗi bài viết và lưu favourite.dataValues.Post.Images[0].img_url_list[0] và nhận được res trả về trong listPostSave
+                favourite.dataValues.Post.images = favourite.dataValues.Post.Images[0].img_url_list;
+                console.log(favourite.dataValues.Post.images);
             } catch (error) {
                 console.error(`Fail to parse img_url_list for post ID ${favourite.post_id}:`, error);
                 favourite.dataValues.Post.Images.forEach((image) => {
@@ -249,9 +254,12 @@ const findPostByAll = async (minPrice, maxPrice, location, minAcreage, maxAcreag
         });
         posts.forEach((post) => {
             try {
-                post.dataValues.images = JSON.parse(post.Image.img_url_list);
+                post.dataValues.Images.forEach((image) => {
+                    image.img_url_list = JSON.parse(image.img_url_list);
+                });
+                console.log(post.dataValues.Images[0].img_url_list);
             } catch (error) {
-                console.log("Fail to parse img_url_list");
+                console.log("Fail to parse img_url_list" + error);
                 post.dataValues.img_url_list = [];
             }
         });

@@ -1,7 +1,9 @@
+const express = require("express");
+const router = express.Router();
 const axios = require("axios");
-const cheerio = require("cheerio");
-const { Post, Address, Category } = require('../models/index');
+const crawlData = require("../../testcode/test");
 
+// hàm cào dữ liệu từ trang web batdongsan.com.vn
 const crawlDataFromBatDongSanFull = async () => {
     try {
         const url = "https://batdongsan.com.vn/nha-dat-ban";
@@ -44,10 +46,9 @@ const crawlDataFromBatDongSanFull = async () => {
 
         return { message: 'Dữ liệu đã được cào và chèn thành công' };
     } catch (error) {
-        throw new Error('Lỗi tại crawlData.crawlDataFromBatDongSanFull: ' + error);
+        console.log('Lỗi tại crawlData.crawlData')
     }
 };
-
 
 module.exports = {
     crawlDataFromBatDongSanFull
