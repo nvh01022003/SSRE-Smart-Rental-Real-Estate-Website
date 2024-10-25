@@ -8,7 +8,8 @@ const router = express.Router();
 router.use(express.json());
 router.use(express.urlencoded({ extended: true }));
 
-router.post('/payment', paymentController.createPayment, paymentController.checkPaymentStatus);  // Route để tạo yêu cầu thanh toán
+router.post('/payment', paymentController.createPayment);  // Route để tạo yêu cầu thanh toán
 //router.post('/callback', paymentController.momoCallback);  // Route để xử lý callback từ MoMo
-//router.post(('/check-payment-status'), paymentController.checkPaymentStatus);  // Route để kiểm tra trạng thái thanh toán
+router.post(('/check-payment-status'), paymentController.checkPaymentStatus);  // Route để kiểm tra trạng thái thanh toán
+router.post(('/callback'), paymentController.handleMoMoCallback);  // Route để kiểm tra trạng thái thanh toán
 module.exports = router;

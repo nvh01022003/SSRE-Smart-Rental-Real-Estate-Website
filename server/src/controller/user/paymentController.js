@@ -24,23 +24,6 @@ const createPayment = async (req, res) => {
     }
 };
 
-
-
-
-// const checkPaymentStatus = async (req, res) => {
-//     const { orderId } = req.body;
-
-//     try {
-//         // Kiểm tra trạng thái giao dịch từ MoMo
-//         const statusResponse = await checkTransactionStatus(orderId);
-
-//         // Trả về kết quả trạng thái
-//         return res.status(200).json(statusResponse);
-//     } catch (error) {
-//         return res.status(500).json({ message: error.message });
-//     }
-// };
-
 const checkPaymentStatus = async (req, res) => {
     const { orderId } = req.body;
 
@@ -72,6 +55,38 @@ const checkPaymentStatus = async (req, res) => {
         }
     } catch (error) {
         return res.status(500).json({ message: error.message });
+    }
+};
+const handleMoMoCallback = async (req, res) => {
+    // Nhận dữ liệu từ MoMo
+    console.log("MoMo callback response:", req.body);
+
+    const { orderId, message, resultCode, amount } = req.body; // Lấy dữ liệu cần thiết
+
+    // Kiểm tra xem giao dịch có thành công không
+    if (resultCode === 0) {
+        console.log(`Transaction successful: ${orderId}`);
+
+        // Tìm giao dịch trong database
+        const transaction = await Transaction.findOne({ where: { paycode: orderId } });
+
+        if (transaction) {
+            // Cập nhật số dư của ví tương ứng
+            await updateWalletBalance(transaction.wallet_id, amount);
+
+            console.log(`Wallet balance updated for wallet_id: ${transaction.wallet_id}, amount: ${amount}`);
+            return res.status(200).send("OK"); // Gửi phản hồi về cho MoMo
+        } else {
+            console.log("Transaction not found in database.");
+            return res.status(404).json({ message: 'Transaction not found in database.' });
+        }
+    } else {
+        // Giao dịch không thành công
+        console.log("Transaction failed:", message);
+        return res.status(400).json({
+            message: `Transaction failed with resultCode: ${resultCode}`,
+            error: message
+        });
     }
 };
 
@@ -112,4 +127,4 @@ const checkPaymentStatus = async (req, res) => {
 
 
 
-module.exports = { createPayment, checkPaymentStatus }; 
+module.exports = { createPayment, checkPaymentStatus, handleMoMoCallback }; 

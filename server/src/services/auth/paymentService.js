@@ -12,7 +12,7 @@ const createPaymentRequest = async (amount, orderId, id) => {
     const requestId = orderId;
     const orderInfo = "Thanh toán với MoMo";
     const redirectUrl = "https://webhook.site/redirect/success";
-    const ipnUrl = "https://f10c-2402-800-6238-bde6-14f0-1473-16a8-3a73.ngrok-free.app/callback1";
+    const ipnUrl = "https://9bd4-113-174-174-63.ngrok-free.app/api/v1/user/callback";
 
     const rawSignature = `accessKey=${accessKey}&amount=${amount}&extraData=&ipnUrl=${ipnUrl}&orderId=${orderId}&orderInfo=${orderInfo}&partnerCode=${partnerCode}&redirectUrl=${redirectUrl}&requestId=${requestId}&requestType=${requestType}`;
     const signature = crypto.createHmac('sha256', secretKey).update(rawSignature).digest('hex');
@@ -115,5 +115,9 @@ async function updateWalletBalance(id, amount) {
 
 
 }
+
+
+
+
 
 module.exports = { createPaymentRequest, updateWalletBalance, checkTransactionStatus };
