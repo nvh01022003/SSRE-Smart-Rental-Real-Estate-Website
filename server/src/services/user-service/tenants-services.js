@@ -641,6 +641,32 @@ const showCategory = async () => {
         }
     }
 }
+// req upgrade to landlord để gửi yêu cầu nâng cấp lên landlord
+const reqUpdateToLandlord = async (userId, info, imgKYC) => {
+    try {
+        info = JSON.parse(info)
+        imgKYC = JSON.stringify(imgKYC);
+        console.log(imgKYC);
+        const userVerification = await UpgradeRequest.create({
+            user_id: userId,
+            full_name: info.full_name,
+            date_of_birth: info.date_of_birth,
+            address: info.address,
+            contact: info.contact,
+            id_card_image_url: imgKYC
+        })
+        return {
+            err: 0,
+            msg: "Request update to landlord success"
+        }
+    } catch (err) {
+        return {
+            err: 1,
+            msg: err
+        }
+    }
+
+}
 module.exports = {
     getInfoUser,
     changeInfoUser,
@@ -651,5 +677,6 @@ module.exports = {
     findPostByAll,
     listPostByPage,
     showDetailPost,
-    showCategory
+    showCategory,
+    reqUpdateToLandlord
 };

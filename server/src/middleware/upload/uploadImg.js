@@ -29,7 +29,7 @@ const checkFileType = (req, res, next) => {
     }
 };
 // check list file
-const checkFileTypePost = (req, res, next) => {
+const checkFileTypeImg = (req, res, next) => {
     const files = req.files;
 
     console.log(files)
@@ -102,4 +102,4 @@ const updateImgs = async (req, res, next) => {
         res.status(500).json({ err: 1, msg: 'Failed to upload images' });
     }
 };
-module.exports = { updateImg, upload, checkFileType, checkFileTypePost, updateImg, updateImgs };
+module.exports = { updateImg, upload, checkFileType, checkFileTypeImg, updateImg, updateImgs };

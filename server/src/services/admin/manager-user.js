@@ -202,10 +202,10 @@ const updateUser = async (userId, data) => {
 };
 
 
-const changeRoleUser = async (userId, role) => {
+const changeRoleUser = async (userId) => {
     try {
         const user = await Role.update({
-            type: role
+            type: 'ladnlord'
         }, {
             where: {
                 userId: userId

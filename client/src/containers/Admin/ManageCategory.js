@@ -134,14 +134,28 @@ const ManageCategory = () => {
 
     const validate = () => {
         const newErrors = {};
-        if (!currentCategory.category_name.trim()) newErrors.category_name = 'Tên chuyên mục không được để trống';
+        const specialCharPattern = /[^a-zA-Z0-9\s]/;
+
+        if (!currentCategory.category_name.trim()) {
+            newErrors.category_name = 'Tên chuyên mục không được để trống';
+        } else if (specialCharPattern.test(currentCategory.category_name.trim())) {
+            newErrors.category_name = 'Tên chuyên mục không được chứa ký tự đặc biệt';
+        }
+
         setErrors(newErrors);
         return Object.keys(newErrors).length === 0;
     };
 
     const validateCreate = () => {
         const newErrors = {};
-        if (!newCategory.category_name.trim()) newErrors.category_name = 'Tên chuyên mục không được để trống';
+        const specialCharPattern = /[^a-zA-Z0-9\s]/;
+
+        if (!newCategory.category_name.trim()) {
+            newErrors.category_name = 'Tên chuyên mục không được để trống';
+        } else if (specialCharPattern.test(newCategory.category_name.trim())) {
+            newErrors.category_name = 'Tên chuyên mục không được chứa ký tự đặc biệt';
+        }
+
         setErrors(newErrors);
         return Object.keys(newErrors).length === 0;
     };
