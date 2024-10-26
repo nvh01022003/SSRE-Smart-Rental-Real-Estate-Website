@@ -10,7 +10,7 @@ const checkCategoryExits = async (req, res, next) => {
     else {
         const category = await Category.findOne({
             where: {
-                category_name: req.body.category_name
+                category_name: req.body.category_name.trim()
             }
         })
         if (category) {
