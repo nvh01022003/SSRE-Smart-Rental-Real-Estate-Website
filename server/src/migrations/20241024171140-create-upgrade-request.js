@@ -16,7 +16,8 @@ module.exports = {
         type: Sequelize.INTEGER,
         references: {
           model: 'Users', // Đảm bảo bảng 'Users' được viết đúng
-          key: 'id'
+          key: 'id',
+          unique: true // Đảm bảo ràng buộc UNIQUE để tạo quan hệ 1:1
         },
         onUpdate: 'CASCADE',
         onDelete: 'CASCADE',
@@ -29,6 +30,9 @@ module.exports = {
         type: Sequelize.STRING
       },
       contact: {
+        type: Sequelize.STRING
+      },
+      citizen_id: {
         type: Sequelize.STRING
       },
       id_card_image_url: {

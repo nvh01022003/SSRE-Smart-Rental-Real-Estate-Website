@@ -213,8 +213,8 @@ const listPostByPage = async (userId, page) => {
             where: {
                 user_id: userId
             },
-            limit: objectPagination.limit,
-            offset: objectPagination.offset
+            limit: objectPagination.limitPage,
+            offset: objectPagination.skip
         })
         return {
             err: 0,

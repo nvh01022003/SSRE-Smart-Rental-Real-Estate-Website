@@ -20,11 +20,13 @@ module.exports = (sequelize, DataTypes) => {
     date_of_birth: DataTypes.DATE,
     address: DataTypes.STRING,
     contact: DataTypes.STRING,
+    citizen_id: DataTypes.STRING,
     id_card_image_url: DataTypes.STRING,
     status: {
       type: DataTypes.INTEGER,
       defaultValue: 0
-    }
+    },
+
   }, {
     sequelize,
     modelName: 'UpgradeRequest',

@@ -16,7 +16,7 @@ module.exports = (sequelize, DataTypes) => {
   }
   Transaction.init({
     wallet_id: DataTypes.INTEGER,
-    paycode: DataTypes.STRING
+    paycode: DataTypes.STRING,
   }, {
     sequelize,
     modelName: 'Transaction',

@@ -1,4 +1,5 @@
-const { User, Role, sequelize } = require('../../models/index');
+const { User, Role, UpgradeRequest, sequelize } = require('../../models/index');
+const paginationHelper = require("../../helper/pagination");
 const { where } = require("sequelize");
 const { Op } = require('sequelize');
 
@@ -179,6 +180,41 @@ const findUserByRole = async (role) => {
         };
     }
 }
+// hiển thị các yêu cầu nâng cấp tài khoản
+const showAllUpgradeRequest = async (page) => {
+    try {
+        // pagination
+        const totalData = await UpgradeRequest.count();
+        const pagination = await paginationHelper.pagination(
+            {
+                currentPage: 1,
+                limitPage: 5
+            },
+            page,
+            totalData
+        );
+        const upgradeRequest = await UpgradeRequest.findAll({
+            limit: pagination.limitPage,
+            offset: pagination.skip,
+            attributes: ['user_id', 'full_name', 'date_of_birth', 'address', 'contact', "citizen_id ", 'id_card_image_url', 'status']
+        });
+        if (upgradeRequest) {
+            return {
+                err: 0,
+                res: upgradeRequest,
+                pagination: pagination
+            };
+        }
+    }
+    catch (err) {
+        return {
+            err: 1,
+            msg: err
+        };
+    }
+
+
+}
 module.exports = {
     showAllUser,
     showDetailUser,
@@ -187,5 +223,6 @@ module.exports = {
     deleteUser,
     deleteUsers,
     findUserByEmail,
-    findUserByRole
+    findUserByRole,
+    showAllUpgradeRequest
 }

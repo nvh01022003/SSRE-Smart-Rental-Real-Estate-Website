@@ -389,6 +389,7 @@ const reqUpdateToLandlord = async (userId, info, imgKYC) => {
             date_of_birth: info.date_of_birth,
             address: info.address,
             contact: info.contact,
+            citizen_id: info.citizen_id,
             id_card_image_url: imgKYC
         })
         return {

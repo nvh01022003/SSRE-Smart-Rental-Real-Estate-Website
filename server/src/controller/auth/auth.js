@@ -67,7 +67,6 @@ const resetPass = async (req, res) => {
 }
 // CHECK TOKEN
 const authenticateToken = (req, res, next) => {
-    console.log("oke")
     // Lấy token từ header
     const token = req.headers["token"];
 
