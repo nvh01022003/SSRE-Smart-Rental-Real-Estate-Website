@@ -41,6 +41,7 @@ router.get("/showAllUpgradeRequest", authentication.authenticateToken, authoriza
 // show all category
 router.get("/showAllCategory", authentication.authenticateToken, authorization.checkRoleAdmin, managerCategoryController.showAllCategory)
 // create category
+// check lại 
 router.post("/createCategory", authentication.authenticateToken, authorization.checkRoleAdmin, validateCategory.checkCategoryExits, managerCategoryController.createCategory)
 // update category by id
 router.put("/updateCategory/:categoryId", authentication.authenticateToken, authorization.checkRoleAdmin, validateCategory.checkCategoryExits, managerCategoryController.updateCategory)
