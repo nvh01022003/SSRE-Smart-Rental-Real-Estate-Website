@@ -28,6 +28,9 @@ router.post("/reportPost/:id", authentication.authenticateToken, tenantsControll
 router.get("/findPostByAll", tenantsController.findPostByAll)
 // show detail post
 router.get("/showDetailPost/:id", tenantsController.showDetailPost)
+// gửi yêu cầu nâng cấp tài khoản thành landlord và có up ảnh chứng minh nhân dân và đợi phê duyệt
+router.post("/reqUpdateToLandlord", authentication.authenticateToken, upload.array('imgKYC', 2), img.checkFileTypeImg, img.updateImgs, tenantsController.reqUpdateToLandlord)
+
 
 
 

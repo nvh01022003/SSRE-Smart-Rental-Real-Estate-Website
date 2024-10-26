@@ -62,7 +62,7 @@ const ContactDetail = styled.span`
 
 const Contact = () => {
     return (
-        <ContactContainer>
+        <ContactContainer className='container'>
             <Image
                 src={text.image}
                 alt="thumbnail"

@@ -30,6 +30,9 @@ const checkFileType = (req, res, next) => {
 };
 // check list file
 const checkFileTypeImg = (req, res, next) => {
+
+    console.log("oke")
+
     const files = req.files;
 
     console.log(files)

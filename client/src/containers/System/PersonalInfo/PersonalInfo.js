@@ -296,6 +296,7 @@ const PersonalInfo = () => {
             </div>
         </div>
     );
+
 };
 
 export default PersonalInfo;

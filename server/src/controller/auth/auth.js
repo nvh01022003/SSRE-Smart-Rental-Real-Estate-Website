@@ -67,6 +67,7 @@ const resetPass = async (req, res) => {
 }
 // CHECK TOKEN
 const authenticateToken = (req, res, next) => {
+    console.log("oke")
     // Lấy token từ header
     const token = req.headers["token"];
     console.log("token", token)
@@ -81,6 +82,7 @@ const authenticateToken = (req, res, next) => {
             return res.status(403).json({ err: 1, msg: 'Token not valid' });
         }
         req.user = user; // Thêm thông tin người dùng vào request
+        console.log("oke")
         next();
     });
 };
