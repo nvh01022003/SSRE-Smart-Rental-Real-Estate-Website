@@ -214,7 +214,22 @@ const listPostByPage = async (userId, page) => {
                 user_id: userId
             },
             limit: objectPagination.limitPage,
-            offset: objectPagination.skip
+            offset: objectPagination.skip,
+            attributes: ['id', 'title', 'price', 'createdAt'],
+            include: [
+                {
+                    model: Category,
+                    attributes: ['category_name']
+                },
+                {
+                    model: Overview,
+                    attributes: ['code', 'area', 'type', "expire"]
+                },
+                {
+                    model: Image,
+                    attributes: ['img_url_list']
+                }
+            ]
         })
         return {
             err: 0,
