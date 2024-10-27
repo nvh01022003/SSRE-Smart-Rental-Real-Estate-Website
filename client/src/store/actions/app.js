@@ -6,7 +6,6 @@ import axios from 'axios';
 export const getCategories = () => async (dispatch) => {
     try {
         const response = await axios.get('http://localhost:5000/api/v1/auth/category');
-        console.log(response);
         if (response?.data.err === 0) {
             dispatch({
                 type: actionTypes.GET_CATEGORIES,

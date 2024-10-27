@@ -12,6 +12,12 @@ module.exports = (sequelize, DataTypes) => {
     static associate(models) {
       // define association here
       this.belongsTo(models.User, { foreignKey: 'user_id' });
+
+      // Define association with Wallet model
+      this.hasOne(models.Wallet, {
+        foreignKey: 'user_id',
+        sourceKey: 'user_id'
+      });
     }
   }
   UpgradeRequest.init({

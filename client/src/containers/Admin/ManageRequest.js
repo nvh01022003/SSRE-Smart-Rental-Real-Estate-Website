@@ -104,6 +104,7 @@ import { Navigation, Pagination } from 'swiper/modules';
 import 'swiper/swiper-bundle.css'; // Corrected import path
 import Lightbox from 'react-image-lightbox';
 import 'react-image-lightbox/style.css';
+import axios from 'axios';
 
 const ManageRequest = () => {
     const dispatch = useDispatch();
@@ -130,6 +131,25 @@ const ManageRequest = () => {
 
     const closeLightbox = () => {
         setIsOpen(false);
+    };
+
+    const handleApprove = async (userId) => {
+        try {
+            const response = await axios.put(`http://localhost:5000/api/v1/admin/changeRoleUser/${userId}`, {}, {
+                headers: {
+                    'token': token
+                }
+            });
+            if (response.data.err === 0) {
+                //alert('Thay đổi vai trò người dùng thành công và ví đã được tạo');
+                dispatch(fetchUpgradeRequests(token, 1)); // Refresh the list
+            } else {
+                //alert(response.data.msg);
+            }
+        } catch (error) {
+            console.error('Error approving request:', error);
+            //alert('Đã xảy ra lỗi khi phê duyệt yêu cầu');
+        }
     };
 
     if (!upgradeRequests.length) {
@@ -178,6 +198,7 @@ const ManageRequest = () => {
                         <button
                             className="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors w-1/2"
                             aria-label="Approve request"
+                            onClick={() => handleApprove(request.user_id)}
                         >
                             Phê duyệt
                         </button>
