@@ -10,7 +10,7 @@ module.exports = {
         type: Sequelize.INTEGER
       },
       title: {
-        type: Sequelize.STRING
+        type: Sequelize.TEXT
       },
       price: {
         type: Sequelize.DECIMAL(10, 2)
@@ -34,7 +34,7 @@ module.exports = {
         onDelete: 'CASCADE'
       },
       description: {
-        type: Sequelize.STRING
+        type: Sequelize.TEXT
       },
       user_id: {
         type: Sequelize.INTEGER,
@@ -74,6 +74,9 @@ module.exports = {
         },
         onUpdate: 'CASCADE',
         onDelete: 'CASCADE'
+      },
+      acreage: {
+        type: Sequelize.DECIMAL(10, 2)
       },
       createdAt: {
         allowNull: false,

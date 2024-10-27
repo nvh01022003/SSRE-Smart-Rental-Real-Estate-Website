@@ -2,9 +2,12 @@ const bcryptjs = require("bcryptjs");
 const gravatar = require("gravatar");
 const { where } = require("sequelize");
 const helper = require("../../helper/check-coordinates");
+const paginationHelper = require("../../helper/pagination");
 const { Post, Address, Category, Image, Overview, Coordinates, sequelize } = require("../../models/index");
 const middleware = require("../../middleware/upload/uploadImg")
 const { response } = require("express");
+
+
 // TAO CODE NGAU NHIEN THEO TIME
 const generateRandomCode = () => {
     const timestamp = Date.now().toString();
@@ -14,9 +17,9 @@ const generateRandomCode = () => {
 
 // CREATE POST
 const createNewPost = async (userId, contentPost, files) => {
-    contentPost = JSON.parse(contentPost)
+    contentPost = JSON.parse(contentPost)  //ép kiểu qua kiểu json vì bên client gửi lên dạng string
     const imageUrls = files;
-    const { title, address, price, description, overview, category_id } = contentPost
+    const { title, address, price, description, overview, category_id, acreage } = contentPost
     const addressData = address
     const overviewData = {
         ...overview,
@@ -32,16 +35,12 @@ const createNewPost = async (userId, contentPost, files) => {
     }
 
     try {
-        // diachi
-        const resAddress = await Address.create(addressData)
-        // bang overview
-        const resOverview = await Overview.create(overviewData)
-        // bang toa do
-        const resCoordinates = await Coordinates.create(coordinatesData)
-        // bang img cua baiviet
-        const resImage = await Image.create({ img_url_list: JSON.stringify(imageUrls) })
-        console.log(resAddress.id, resOverview.id, resCoordinates.id, resImage.id)
-        // tao bang bai viet
+        const [resAddress, resOverview, resCoordinates, resImage] = await Promise.all([
+            Address.create(addressData),
+            Overview.create(overviewData),
+            Coordinates.create(coordinatesData),
+            Image.create({ img_url_list: JSON.stringify(imageUrls) })
+        ]);
         const resPost = await Post.create({
             title,
             price,
@@ -51,6 +50,7 @@ const createNewPost = async (userId, contentPost, files) => {
             overview_id: resOverview.id,
             coordinates_id: resCoordinates.id,
             category_id: category_id,
+            acreage: acreage,
             img_id: resImage.id
         });
         return {
@@ -77,6 +77,27 @@ const updateStatusPost = async (postId, status) => {
         return {
             err: 0,
             msg: 'Update status post success',
+            post: resPost
+        }
+    } catch (error) {
+        console.log(error)
+        return {
+            err: 1,
+            msg: error
+        }
+    }
+}
+// UPDATE STATUS POSTS
+const updateStatusPosts = async (postIds, status) => {
+    try {
+        const resPost = await Post.update({ status }, {
+            where: {
+                id: postIds
+            }
+        })
+        return {
+            err: 0,
+            msg: 'Update status posts success',
             post: resPost
         }
     } catch (error) {
@@ -129,9 +150,92 @@ const deletePost = async (postId) => {
         }
     }
 }
+// DELETE LIST POST BY LIST ID POST
+const deleteListPost = async (postIds) => {
+    try {
+        const resPost = await Post.destroy({
+            where: {
+                id: postIds
+            }
+        })
+        return {
+            err: 0,
+            msg: 'Delete list post success',
+            post: resPost
+        }
+    } catch (error) {
+        console.log(error)
+        return {
+            err: 1,
+            msg: error
+        }
+    }
+}
+// LIST POST
+const listPost = async (userId) => {
+    try {
+        const resPost = await Post.findAll({
+            where: {
+                user_id: userId
+            }
+        })
+        return {
+            err: 0,
+            msg: resPost
+        }
+    } catch (error) {
+        console.log(error)
+        return {
+            err: 1,
+            msg: error
+        }
+    }
+}
+// LIST POST BY PAGE PAGINATION
+const listPostByPage = async (userId, page) => {
+    try {
+        //pagination
+        const totalData = await Post.count({
+            where: {
+                user_id: userId
+            }
+        }
+        )
+        let objectPagination = await paginationHelper.pagination(
+            {
+                currentPage: 1,
+                limitPage: 4
+            },
+            page,
+            totalData
+        )
+        const resPost = await Post.findAll({
+            where: {
+                user_id: userId
+            },
+            limit: objectPagination.limitPage,
+            offset: objectPagination.skip
+        })
+        return {
+            err: 0,
+            msg: resPost,
+            objectPagination
+        }
+    } catch (error) {
+        console.log(error)
+        return {
+            err: 1,
+            msg: error
+        }
+    }
+}
 module.exports = {
     createNewPost,
     updateStatusPost,
     updatePost,
-    deletePost
+    deletePost,
+    deleteListPost,
+    listPost,
+    updateStatusPosts,
+    listPostByPage
 };

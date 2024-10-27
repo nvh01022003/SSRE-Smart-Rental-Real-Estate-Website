@@ -11,18 +11,17 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate({ Category, Image, Overview, User, Coordinates, Address }) {
       // define association here
-      this.hasOne(Category, { foreignKey: 'id' })
+      this.belongsTo(Category, { foreignKey: 'category_id' })
       this.hasOne(Overview, { foreignKey: 'id' })
-      this.hasOne(Image, { foreignKey: 'id' })
-      this.hasOne(User, { foreignKey: 'id' })
+      this.hasMany(Image, { foreignKey: 'id' })
+      this.belongsTo(User, { foreignKey: 'user_id' })
       this.hasOne(Coordinates, { foreignKey: 'id' })
       this.hasOne(Address, { foreignKey: 'id' })
-
     }
   }
   Post.init({
-    title: DataTypes.STRING,
-    description: DataTypes.STRING,
+    title: DataTypes.TEXT,
+    description: DataTypes.TEXT,
     category_id: DataTypes.INTEGER,
     address_id: DataTypes.INTEGER,
     user_id: DataTypes.INTEGER,

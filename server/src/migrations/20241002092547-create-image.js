@@ -10,7 +10,7 @@ module.exports = {
         type: Sequelize.INTEGER
       },
       img_url_list: {
-        type: Sequelize.STRING
+        type: Sequelize.TEXT
       },
       createdAt: {
         allowNull: false,
