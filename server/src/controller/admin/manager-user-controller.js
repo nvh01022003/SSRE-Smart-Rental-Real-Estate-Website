@@ -31,6 +31,7 @@ const showDetailUser = async (req, res) => {
 const updateUser = async (req, res) => {
     const userId = req.params.userId
     const data = req.body
+    console.log('data', data)
     try {
         const response = await managerUser.updateUser(userId, data)
         return res.status(200).json(response)
@@ -44,9 +45,8 @@ const updateUser = async (req, res) => {
 // change role user by id
 const changeRoleUser = async (req, res) => {
     const userId = req.params.userId
-    const role = req.body.role
     try {
-        const response = await managerUser.changeRoleUser(userId, role)
+        const response = await managerUser.changeRoleUser(userId)
         return res.status(200).json(response)
     } catch (error) {
         return res.status(500).json({

@@ -155,6 +155,8 @@ const listPostSaved = async (userId, page) => {
                 });
             }
         });
+
+        console.log('listPostSave', listPostSave);
         return {
             err: 0,
             msg: {
@@ -299,70 +301,150 @@ const listPostByPage = async (page) => {
     }
 }
 // show detail post
+// const showDetailPost = async (postId) => {
+//     try {
+//         const post = await Post.findOne({
+//             where: {
+//                 id: postId
+//             }
+//         })
+//         // tim chi tiet cac bang khac : category, address, user, overviews dùng promise.all
+//         const [category, address, user, overviews, map, image] = await Promise.all([
+//             Category.findOne({
+//                 where: {
+//                     id: post.category_id
+//                 },
+//                 attributes: ['category_name']
+//             }),
+//             Address.findOne({
+//                 where: {
+//                     id: post.address_id
+//                 },
+//                 attributes: ['city', 'district', 'detail_address']
+//             }),
+//             User.findOne({
+//                 where: {
+//                     id: post.user_id
+//                 },
+//                 attributes: ['firstName', 'lastName', 'email', 'phone', 'img_avt']
+//             }),
+//             Overview.findOne({
+//                 where: {
+//                     id: post.overview_id
+//                 },
+//                 attributes: ['code', 'area', 'type', 'target', 'expire']
+//             }),
+//             Coordinates.findOne({
+//                 where: {
+//                     id: post.coordinates_id
+//                 },
+//                 attributes: ['lat', 'lon']
+//             }),
+//             Image.findOne({
+//                 where: {
+//                     id: post.img_id
+//                 },
+//                 attributes: ['img_url_list']
+//             })
+//         ])
+//         post.dataValues.map = `<iframe src="https://www.google.com/maps/embed?pb=!1m10!1m8!1m3!1d7668.902703874087!2d${map.dataValues.lon}!3d${map.dataValues.lat}!3m2!1i1024!2i768!4f13.1!5e0!3m2!1svi!2s!4v1729530897356!5m2!1svi!2s" width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>`;
+//         post.dataValues.category = category;
+//         post.dataValues.address = address;
+//         post.dataValues.user = user;
+//         post.dataValues.overviews = overviews;
+//         post.dataValues.images = JSON.parse(image.dataValues.img_url_list);
+//         return {
+//             err: 0,
+//             msg: post
+//         }
+//     } catch (err) {
+//         return {
+//             err: 1,
+//             msg: err
+//         }
+//     }
+// }
+
+// show category
+
 const showDetailPost = async (postId) => {
     try {
         const post = await Post.findOne({
             where: {
                 id: postId
             }
-        })
-        // tim chi tiet cac bang khac : category, address, user, overviews dùng promise.all
-        const [category, address, user, overviews, map, image] = await Promise.all([
-            Category.findOne({
-                where: {
-                    id: post.category_id
-                },
-                attributes: ['category_name']
-            }),
-            Address.findOne({
-                where: {
-                    id: post.address_id
-                },
-                attributes: ['city', 'district', 'detail_address']
-            }),
-            User.findOne({
-                where: {
-                    id: post.user_id
-                },
-                attributes: ['firstName', 'lastName', 'email', 'phone', 'img_avt']
-            }),
-            Overview.findOne({
-                where: {
-                    id: post.overview_id
-                },
-                attributes: ['code', 'area', 'type', 'target', 'expire']
-            }),
-            Coordinates.findOne({
-                where: {
-                    id: post.coordinates_id
-                },
-                attributes: ['lat', 'lon']
-            }),
-            Image.findOne({
-                where: {
-                    id: post.img_id
-                },
-                attributes: ['img_url_list']
-            })
-        ])
+        });
+
+        if (!post) {
+            return {
+                err: 1,
+                msg: 'Post not found'
+            };
+        }
+
+        // Fetch related data sequentially
+        const category = await Category.findOne({
+            where: {
+                id: post.category_id
+            },
+            attributes: ['category_name']
+        });
+
+        const address = await Address.findOne({
+            where: {
+                id: post.address_id
+            },
+            attributes: ['city', 'district', 'detail_address']
+        });
+
+        const user = await User.findOne({
+            where: {
+                id: post.user_id
+            },
+            attributes: ['firstName', 'lastName', 'email', 'phone', 'img_avt']
+        });
+
+        const overviews = await Overview.findOne({
+            where: {
+                id: post.overview_id
+            },
+            attributes: ['code', 'area', 'type', 'target', 'expire']
+        });
+
+        const map = await Coordinates.findOne({
+            where: {
+                id: post.coordinates_id
+            },
+            attributes: ['lat', 'lon']
+        });
+
+        const image = await Image.findOne({
+            where: {
+                id: post.img_id
+            },
+            attributes: ['img_url_list']
+        });
+
+        // Add related data to post
         post.dataValues.map = `<iframe src="https://www.google.com/maps/embed?pb=!1m10!1m8!1m3!1d7668.902703874087!2d${map.dataValues.lon}!3d${map.dataValues.lat}!3m2!1i1024!2i768!4f13.1!5e0!3m2!1svi!2s!4v1729530897356!5m2!1svi!2s" width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>`;
         post.dataValues.category = category;
         post.dataValues.address = address;
         post.dataValues.user = user;
         post.dataValues.overviews = overviews;
         post.dataValues.images = JSON.parse(image.dataValues.img_url_list);
+
         return {
             err: 0,
             msg: post
-        }
+        };
     } catch (err) {
         return {
             err: 1,
             msg: err
-        }
+        };
     }
-}
-// show category
+};
+
 const showCategory = async () => {
     try {
         const category = await Category.findAll();

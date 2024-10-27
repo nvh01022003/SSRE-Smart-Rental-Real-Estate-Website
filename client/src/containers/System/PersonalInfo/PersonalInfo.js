@@ -1,13 +1,13 @@
-import React, { useEffect, useContext, useState, useRef } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { getPersonalInfo } from '../../../services/userService';
 import axios from 'axios';
 import './PersonalInfo.css';
 import Swal from 'sweetalert2';
-import { AuthContext } from '../../../Context/AuthContext';
+import { useSelector } from 'react-redux';
 
 const PersonalInfo = () => {
     const [personalInfo, setPersonalInfo] = useState(null);
-    const { token } = useContext(AuthContext);
+    const { token } = useSelector(state => state.auth);
 
     const [formData, setFormData] = useState({
         id: '',
@@ -23,8 +23,12 @@ const PersonalInfo = () => {
 
     const initialFormData = useRef(formData);
 
+    //const token = localStorage.getItem('token');
+
     useEffect(() => {
+
         const fetchPersonalInfo = async () => {
+
             try {
                 console.log('Token on fetch:', token); // Debug log
 
@@ -112,7 +116,7 @@ const PersonalInfo = () => {
             console.log('Token on update:', token); // Debug log
             console.log('Sending data:', formData); // Debug log
 
-            const response = await axios.post('http://localhost:5000/api/v1/user/changeInfo', formData, {
+            const response = await axios.post('http://localhost:5000/api/v1/user/tenants/changeInfo', formData, {
                 headers: {
                     'token': `${token}`
                 }
@@ -292,6 +296,7 @@ const PersonalInfo = () => {
             </div>
         </div>
     );
+
 };
 
 export default PersonalInfo;

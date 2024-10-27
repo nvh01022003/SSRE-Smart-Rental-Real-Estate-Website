@@ -1,53 +1,40 @@
 import actionTypes from "../actions/actionTypes";
 
+
 const initState = {
-    isLoggedIn: !!localStorage.getItem('token'),
-    //JSON.parse(localStorage.getItem('isLoggedIn')) ||
-    token: localStorage.getItem('token') || null,
-    //localStorage.getItem('token') ||
+    isLoggedIn: false,
+    token: null,
     user: null,
-    //JSON.parse(localStorage.getItem('user')) ||
     error: null,
+    role: null,
 }
 
 const authReducer = (state = initState, action) => {
     switch (action.type) {
         case actionTypes.VERIFY_SUCCESS:
             {
-                //localStorage.setItem('isLoggedIn', true);
                 return {
                     ...state,
-                    //isLoggedIn: true,
                     error: null,
-                    //token: action.data.token,
                 }
             }
         case actionTypes.REGISTER_SUCCESS:
             {
-                //localStorage.setItem('isLoggedIn', true);
                 return {
                     ...state,
-                    //isLoggedIn: true,
                     error: null,
                 }
             }
         case actionTypes.LOGIN_SUCCESS:
-            //localStorage.setItem('isLoggedIn', true);
-            //localStorage.setItem('token', action.data.token); // Lưu token vào localStorage
-            //localStorage.setItem('user', JSON.stringify(action.data.user));   // Lưu user vào localStorage
             return {
                 ...state,
                 isLoggedIn: true,
-                token: action.data.token,
+                token: action.token,
                 //user: action.data.user,
                 error: null,
-                //currentData: action.data.user, // Cập nhật currentData với thông tin từ user
             }
         case actionTypes.REGISTER_FAIL:
         case actionTypes.LOGIN_FAIL:
-            //localStorage.setItem('isLoggedIn', false);
-            //localStorage.setItem('token', null);
-            //localStorage.setItem('user', null);
             return {
                 ...state,
                 isLoggedIn: false,
@@ -56,15 +43,19 @@ const authReducer = (state = initState, action) => {
                 error: action.data,
             }
         case actionTypes.LOGOUT:
-            //localStorage.removeItem('user');
-            //localStorage.removeItem('token');
+            localStorage.removeItem('user');
             return {
                 ...state,
                 isLoggedIn: false,
                 token: null,
                 user: null,
+                role: null
             }
-
+        case actionTypes.SET_USER_ROLE:
+            return {
+                ...state,
+                role: action.data.msg,
+            };
         default:
             return state;
     }

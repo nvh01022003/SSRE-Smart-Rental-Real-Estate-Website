@@ -23,7 +23,7 @@ const Homepage = () => {
 
 
 
-            <div>
+            <div className='w-full flex flex-col'>
                 <Search />
                 <div className='w-full flex gap-4'>
                     <div className='w-[70%]'>

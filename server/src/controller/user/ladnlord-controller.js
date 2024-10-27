@@ -3,6 +3,7 @@ const ladnlordServices = require("../../services/user-service/ladnlord-services"
 const createPost = async (req, res) => {
     try {
         const imageUrls = req.body.imageUrls; // URL của các ảnh đã upload
+        console.log('imageUrls', imageUrls)
         const contentPost = req.body.contentPost;
         const response = await ladnlordServices.createNewPost(req.user.id, contentPost, imageUrls);
         return res.status(200).json(response)
@@ -10,6 +11,7 @@ const createPost = async (req, res) => {
         return res.status(400).json({ error: error.message })
     }
 };
+
 // UPDATE STATUS POST BY ID
 const updateStatusPost = async (req, res) => {
     try {
@@ -21,6 +23,7 @@ const updateStatusPost = async (req, res) => {
         return res.status(400).json({ error: error.message })
     }
 };
+
 // UPATE STATUS POSTS
 const updateStatusPosts = async (req, res) => {
     try {
@@ -32,6 +35,7 @@ const updateStatusPosts = async (req, res) => {
         return res.status(400).json({ error: error.message })
     }
 }
+
 // UPATE POST
 const updatePost = async (req, res) => {
     try {
@@ -47,12 +51,14 @@ const updatePost = async (req, res) => {
 const deletePost = async (req, res) => {
     try {
         const postId = req.params.id;
+        console.log('postId', postId)
         const response = await ladnlordServices.deletePost(postId);
         return res.status(200).json(response)
     } catch (error) {
         return res.status(400).json({ error: error.message })
     }
 }
+
 // DELETE LIST POST BY LIST ID POST
 const deleteListPost = async (req, res) => {
     try {
@@ -84,6 +90,7 @@ const listPostByPage = async (req, res) => {
         return res.status(400).json({ error: error.message })
     }
 }
+
 module.exports = {
     createPost,
     updateStatusPost,
@@ -93,4 +100,5 @@ module.exports = {
     listPost,
     updateStatusPosts,
     listPostByPage
+
 }

@@ -45,30 +45,30 @@
 
 // export default User;
 
-import React, { useEffect, useState, useContext } from 'react';
+import React, { useEffect, useState } from 'react';
 import anonAvatar from '../assets/anon-avatar.png';
 import { useSelector } from 'react-redux';
 import axios from 'axios';
-import { AuthContext } from '../../src/Context/AuthContext';
 
 const User = () => {
     //const dispatch = useDispatch();
     const [currentData, setCurrentData] = useState(null);
     const isLoggedIn = useSelector((state) => state.auth.isLoggedIn); // Lấy isLoggedIn từ redux store
 
-    const { token } = useContext(AuthContext);
+    const { token } = useSelector((state) => state.auth)
 
     useEffect(() => {
         const fetchPersonalInfo = async () => {
             try {
                 //const token = localStorage.getItem('token');
-                const response = await axios.get('http://localhost:5000/api/v1/user/showInfo', {
+                const response = await axios.get('http://localhost:5000/api/v1/user/tenants/showInfo', {
                     headers: {
                         'token': `${token}`
                     }
                 });
                 if (response.data.err === 0) {
                     setCurrentData(response.data.info_user);
+                    localStorage.setItem('user', JSON.stringify(response.data.info_user));
                 } else {
                     console.error('Error fetching personal information:', response.data.msg);
                 }
@@ -77,10 +77,14 @@ const User = () => {
             }
         };
 
-        if (isLoggedIn) {
-            fetchPersonalInfo();
+        if (isLoggedIn && token) {
+            const timer = setTimeout(() => {
+                fetchPersonalInfo();
+            }, 1); // Delay 1 second
+
+            return () => clearTimeout(timer); // Cleanup the timer on component unmount or before re-running useEffect
         }
-    }, [isLoggedIn]);
+    }, [isLoggedIn, token]);
 
     if (!currentData) {
         return (
