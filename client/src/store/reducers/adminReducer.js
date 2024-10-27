@@ -2,6 +2,8 @@ import actionTypes from "../actions/actionTypes";
 
 const initialState = {
     users: [],
+    upgradeRequests: [],
+    pagination: {},
 };
 
 const adminReducer = (state = initialState, action) => {
@@ -20,6 +22,21 @@ const adminReducer = (state = initialState, action) => {
             return {
                 ...state,
                 users: state.users.map(user => user.id === action.payload.id ? action.payload : user),
+            };
+
+
+
+        case actionTypes.FETCH_UPGRADE_REQUESTS_SUCCESS:
+            return {
+                ...state,
+                upgradeRequests: action.payload,
+                pagination: action.pagination,
+                error: null
+            };
+        case actionTypes.FETCH_UPGRADE_REQUESTS_FAILURE:
+            return {
+                ...state,
+                error: action.payload
             };
         default:
             return state;

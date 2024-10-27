@@ -1,63 +1,53 @@
-import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import React, { useEffect, useState } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
 import Header from './Header';
 import Navigation from './Navigation';
 import Contact from '../../components/Contact';
 import Footer from './Footer';
 import Pagination from './Pagination';
-import { useSelector } from 'react-redux';
-import Item from '../../components/Item'; // Import the Item component
+import Item from '../../components/Item';
+import Loading from '../../components/Loading';
+import { fetchSavedPosts, deleteSavedPost } from '../../store/actions/post';
 
 const ListPostsSaved = () => {
-    const [savedPosts, setSavedPosts] = useState([]);
-    const [loading, setLoading] = useState(true);
+    const dispatch = useDispatch();
     const { token } = useSelector(state => state.auth);
+    const initialSavedPosts = useSelector(state => state.post.savedPosts);
+    const [savedPosts, setSavedPosts] = useState(initialSavedPosts);
+    console.log(savedPosts);
+    console.log(initialSavedPosts);
     const [page, setPage] = useState(1);
+    const [loading, setLoading] = useState(true);
+
+    // Cập nhật savedPosts khi initialSavedPosts thay đổi
+    useEffect(() => {
+        setSavedPosts(initialSavedPosts);
+    }, [initialSavedPosts]);
 
     useEffect(() => {
-        const fetchSavedPosts = async () => {
-            setLoading(true); // Bắt đầu tải dữ liệu
-            try {
-                const response = await axios.get(`http://localhost:5000/api/v1/user/tenants/listPostSaved?page=${page}`, {
-                    headers: {
-                        'token': `${token}`
-                    }
-                });
-                console.log(response); // Debug log
-                if (response.data.err === 0) {
-                    setSavedPosts(response.data.msg.listPost); // Cập nhật danh sách bài viết đã lưu
-                } else {
-                    console.error('Error fetching saved posts:', response.data.msg);
-                }
-            } catch (error) {
-                console.error('Error fetching saved posts:', error);
-            } finally {
-                setLoading(false); // Kết thúc tải dữ liệu
-            }
+        const fetchPosts = async () => {
+            setLoading(true);
+            await dispatch(fetchSavedPosts(token, page));
+            setLoading(false);
         };
-
-        fetchSavedPosts();
-    }, [page, token]);
+        fetchPosts();
+    }, [dispatch, token, page]);
 
     const handleToggleStar = async (isStarred, id) => {
+        console.log('Toggle star called for post:', id, 'New state:', isStarred); // Xem trạng thái mới
         if (isStarred) {
-            // If starred, remove the post
-            try {
-                await axios.delete(`http://localhost:5000/api/v1/user/tenants/deletePostSaved/${id}`, {
-                    headers: { 'token': `${token}` }
-                });
-                // Remove the post from the savedPosts state
-                setSavedPosts((prevPosts) => prevPosts.filter(post => post.Post.id !== id));
-            } catch (error) {
-                console.error('Error deleting post:', error);
-            }
+            await dispatch(deleteSavedPost(token, id));
+            // Xóa bài viết khỏi danh sách ngay lập tức
+            const updatedSavedPosts = savedPosts.filter(post => post.Post.id !== id);
+            setSavedPosts(updatedSavedPosts);
         } else {
-            // If unstarred, add your logic to save the post again if needed
+            // Nếu cần thêm logic để thêm bài viết vào danh sách đã lưu
         }
     };
 
+
     if (loading) {
-        return <div>Loading...</div>; // Thông báo đang tải
+        return <Loading />; // Hiện loading indicator
     }
 
     return (
@@ -74,28 +64,27 @@ const ListPostsSaved = () => {
                         savedPosts.map((post) => (
                             <Item
                                 key={post.Post.id}
-                                address={`${post.Post.Address?.detail_address}, ${post.Post.Address?.district}, ${post.Post.Address?.city}`} // Correctly accessing the nested Address object
+                                address={`${post.Post.Address?.detail_address}, ${post.Post.Address?.district}, ${post.Post.Address?.city}`}
                                 attributes={{
-                                    price: post.Post.price, // Access price directly from post
-                                    acreage: post.Post.acreage // Access acreage directly from post
+                                    price: post.Post.price,
+                                    acreage: post.Post.acreage
                                 }}
-                                description={post.Post.description} // Access description directly from post
-                                images={post.Post.Images[0].img_url_list} // Access Images array from post
-                                title={post.Post.title} // Access title directly from post
+                                description={post.Post.description}
+                                images={post.Post.Images[0]?.img_url_list}
+                                title={post.Post.title}
                                 user={{
-                                    name: `${post.Post.User?.firstName} ${post.Post.User?.lastName}`, // Access User object for name
-                                    phone: post.Post.User?.phone, // Access phone from User object
-                                    img_avt: post.Post.User?.img_avt // Access avatar image from User object
+                                    name: `${post.Post.User?.firstName} ${post.Post.User?.lastName}`,
+                                    phone: post.Post.User?.phone,
+                                    img_avt: post.Post.User?.img_avt
                                 }}
-                                id={post.Post.id} // Access id directly from post
-                                starred={true} // Set starred to true by default
-                                onToggleStar={(newStarredState) => handleToggleStar(newStarredState, post.Post.id)} // Pass the toggle function
+                                id={post.Post.id}
+                                starred={true}
+                                onToggleStar={(newStarredState) => handleToggleStar(newStarredState, post.Post.id)}
                             />
                         ))
                     ) : (
                         <p>Không có tin nào đã lưu.</p>
                     )}
-
                     <Pagination page={page} setPage={setPage} />
                 </div>
                 <div className="w-1/3 p-4">
@@ -104,10 +93,10 @@ const ListPostsSaved = () => {
                         <ul className="list-none text-gray-700">
                             {savedPosts.length > 0 ? (
                                 savedPosts.map((post) => (
-                                    <li key={post.id} className="flex items-center mb-2">
+                                    <li key={post.Post.id} className="flex items-center mb-2">
                                         <i className="fas fa-newspaper text-2xl mr-2"></i>
-                                        <a href={`/post/${post.id}`} className="hover:text-blue-500">
-                                            {post.title}
+                                        <a href={`/post/${post.Post.id}`} className="hover:text-blue-500">
+                                            {post.Post.title}
                                         </a>
                                     </li>
                                 ))
@@ -131,3 +120,5 @@ const ListPostsSaved = () => {
 }
 
 export default ListPostsSaved;
+
+

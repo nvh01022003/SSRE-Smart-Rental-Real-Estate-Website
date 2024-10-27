@@ -168,10 +168,10 @@ const Header = () => {
     }, [searchParams.get('page')]);
 
     const filteredMenu = menuManage.filter(item => {
-        if (role === 'landlord') {
+        if (role === 'ladnlord') {
             return [1, 2, 3, 4, 5].includes(item.id);
         } else {
-            return [3, 4, 5, 6].includes(item.id);
+            return [3, 4, 6].includes(item.id);
         }
     });
 

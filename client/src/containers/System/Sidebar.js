@@ -98,7 +98,7 @@ const Sidebar = ({ isSidebarOpen }) => {
     }, [token]);
 
     const filteredMenu = menuSidebar.filter(item =>
-        role === 'landlord' ? [1, 2, 3, 4, 5].includes(item.id) : [3, 4, 5, 6].includes(item.id)
+        role === 'ladnlord' ? [1, 2, 3, 4, 5].includes(item.id) : [3, 4, 6].includes(item.id)
     );
 
     const handleLogout = () => {

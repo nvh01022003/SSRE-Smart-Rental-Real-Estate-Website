@@ -73,3 +73,47 @@ export const getNewPosts = () => async (dispatch) => {
         })
     }
 }
+
+
+export const fetchSavedPosts = (token, page) => async (dispatch) => {
+    try {
+        const response = await axios.get(`http://localhost:5000/api/v1/user/tenants/listPostSaved?page=${page}`, {
+            headers: {
+                'token': `${token}`
+            }
+        });
+        if (response.data.err === 0) {
+            dispatch({
+                type: actionTypes.FETCH_SAVED_POSTS_SUCCESS,
+                payload: response.data.msg.listPost
+            });
+        } else {
+            dispatch({
+                type: actionTypes.FETCH_SAVED_POSTS_FAILURE,
+                payload: response.data.msg
+            });
+        }
+    } catch (error) {
+        dispatch({
+            type: actionTypes.FETCH_SAVED_POSTS_FAILURE,
+            payload: error.message
+        });
+    }
+};
+
+export const deleteSavedPost = (token, id) => async (dispatch) => {
+    try {
+        await axios.delete(`http://localhost:5000/api/v1/user/tenants/deletePostSaved/${id}`, {
+            headers: { 'token': `${token}` }
+        });
+        dispatch({
+            type: actionTypes.DELETE_SAVED_POST_SUCCESS,
+            payload: id
+        });
+    } catch (error) {
+        dispatch({
+            type: actionTypes.DELETE_SAVED_POST_FAILURE,
+            payload: error.message
+        });
+    }
+};

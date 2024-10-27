@@ -131,11 +131,6 @@ const ManageUser = () => {
         return Object.keys(newErrors).length === 0;
     };
 
-    const handleFileChange = (e) => {
-        const file = e.target.files[0];
-        setImageFile(file);
-    };
-
     const handleDeleteUser = async (userId) => {
         const result = await Swal.fire({
             title: 'Bạn có chắc muốn xóa người dùng này ?',
@@ -492,7 +487,7 @@ const ManageUser = () => {
                             />
                             {errors.phone && <small className="text-red-500 italic">{errors.phone}</small>}
                         </div>
-                        <div className="mb-4">
+                        {/* <div className="mb-4">
                             <label>Vai trò:</label>
                             <select
                                 name="role"
@@ -503,15 +498,8 @@ const ManageUser = () => {
                                 <option value="tenant">Người thuê</option>
                                 <option value="ladnlord">Chủ nhà</option>
                             </select>
-                        </div>
-                        {/* <div className="mb-4">
-                            <label>Hình ảnh:</label>
-                            <input
-                                type="file"
-                                onChange={handleFileChange}
-                                className="border p-2 rounded-md w-full"
-                            />
                         </div> */}
+
 
                         <div className="flex justify-end">
                             <button

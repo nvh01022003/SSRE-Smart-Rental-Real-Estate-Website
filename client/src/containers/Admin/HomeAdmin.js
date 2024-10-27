@@ -9,6 +9,7 @@ import { FiHome, FiUsers, FiFolder, FiFileText, FiUserCheck, FiMenu, FiX } from 
 import logo from '../../assets/logo.png'
 import ManageUser from './ManageUser';
 import ManageCategory from './ManageCategory';
+import ManageRequest from './ManageRequest';
 
 const HomeAdmin = () => {
     const dispatch = useDispatch();
@@ -108,40 +109,41 @@ const HomeAdmin = () => {
                 {/* Main Content */}
                 <div className="flex-1 overflow-auto p-8">
                     {activeTab === "Quản lý yêu cầu" && (
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                            {upgradeRequests.map((request) => (
-                                <div
-                                    key={request.id}
-                                    className="bg-white rounded-lg shadow-lg p-6 transition-transform hover:scale-105"
-                                >
-                                    <img
-                                        src={request.image}
-                                        alt={request.fullName}
-                                        className="w-32 h-32 rounded-full mx-auto mb-4 object-cover"
-                                    />
-                                    <h3 className="text-xl font-semibold mb-2 text-center">{request.fullName}</h3>
-                                    <div className="space-y-2">
-                                        <p><span className="font-medium">Birthday:</span> {request.birthday}</p>
-                                        <p><span className="font-medium">Address:</span> {request.address}</p>
-                                        <p><span className="font-medium">Citizen ID:</span> {request.citizenId}</p>
-                                    </div>
-                                    <div className="mt-4 flex justify-center space-x-4">
-                                        <button
-                                            className="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors"
-                                            aria-label="Approve request"
-                                        >
-                                            Approve
-                                        </button>
-                                        <button
-                                            className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors"
-                                            aria-label="Reject request"
-                                        >
-                                            Reject
-                                        </button>
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
+                        // <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        //     {upgradeRequests.map((request) => (
+                        //         <div
+                        //             key={request.id}
+                        //             className="bg-white rounded-lg shadow-lg p-6 transition-transform hover:scale-105"
+                        //         >
+                        //             <img
+                        //                 src={request.image}
+                        //                 alt={request.fullName}
+                        //                 className="w-32 h-32 rounded-full mx-auto mb-4 object-cover"
+                        //             />
+                        //             <h3 className="text-xl font-semibold mb-2 text-center">{request.fullName}</h3>
+                        //             <div className="space-y-2">
+                        //                 <p><span className="font-medium">Birthday:</span> {request.birthday}</p>
+                        //                 <p><span className="font-medium">Address:</span> {request.address}</p>
+                        //                 <p><span className="font-medium">Citizen ID:</span> {request.citizenId}</p>
+                        //             </div>
+                        //             <div className="mt-4 flex justify-center space-x-4">
+                        //                 <button
+                        //                     className="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors"
+                        //                     aria-label="Approve request"
+                        //                 >
+                        //                     Approve
+                        //                 </button>
+                        //                 <button
+                        //                     className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors"
+                        //                     aria-label="Reject request"
+                        //                 >
+                        //                     Reject
+                        //                 </button>
+                        //             </div>
+                        //         </div>
+                        //     ))}
+                        // </div>
+                        <ManageRequest />
                     )}
                     {activeTab === "Quản lý người dùng" && (
                         <ManageUser />

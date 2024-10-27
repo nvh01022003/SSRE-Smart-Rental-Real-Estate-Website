@@ -161,6 +161,9 @@ const reqUpdateToLandlord = async (req, res) => {
     const userId = req.user.id
     const info = req.body.info;
     const imgKYC = req.body.imageUrls;
+    console.log(imgKYC)
+    console.log(info)
+    console.log(userId)
     try {
         const response = await tenanstService.reqUpdateToLandlord(userId, info, imgKYC)
         return res.status(200).json(response)

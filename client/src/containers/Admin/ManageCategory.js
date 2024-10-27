@@ -16,8 +16,6 @@ const ManageCategory = () => {
     const categories = useSelector((state) => state.app.categories);
     const [errors, setErrors] = useState({});
     const { token } = useSelector((state) => state.auth);
-    const posts = useSelector((state) => state.post.posts);
-    console.log(posts);
 
     useEffect(() => {
         const delayFetch = setTimeout(() => {
@@ -294,7 +292,7 @@ const ManageCategory = () => {
                     className="border p-2 rounded-md flex-grow mr-4"
                 />
                 <button
-                    className="bg-green-500 text-white px-4 py-2 rounded-md"
+                    className="bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600"
                     onClick={openModalCreate}
                 >
                     Tạo mới

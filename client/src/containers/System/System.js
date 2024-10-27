@@ -62,7 +62,7 @@ const System = () => {
                         {isSidebarOpen ? <FiX /> : <FiMenu />}
                     </button>
                 </div>
-                <Sidebar isSidebarOpen={isSidebarOpen} />
+                <Sidebar isSidebarOpen={isSidebarOpen} />s
             </div>
             <div className="flex-auto bg-white shadow-md h-auto p-4 overflow-auto">
                 <Outlet />

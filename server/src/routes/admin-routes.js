@@ -32,7 +32,8 @@ router.delete("/deleteUser/:userId", authentication.authenticateToken, authoriza
 router.get("/findUserByName", authentication.authenticateToken, authorization.checkRoleAdmin, managerUserController.findUserByEmail)
 // find user by role
 router.get("/findUserByRole", authentication.authenticateToken, authorization.checkRoleAdmin, managerUserController.findUserByRole)
-
+// hiển thị các yêu cầu nâng cấp tài khoản
+router.get("/showAllUpgradeRequest", authentication.authenticateToken, authorization.checkRoleAdmin, managerUserController.showAllUpgradeRequest)
 
 
 

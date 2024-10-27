@@ -108,6 +108,19 @@ const findUserByRole = async (req, res) => {
         })
     }
 }
+// show all upgrade request
+const showAllUpgradeRequest = async (req, res) => {
+    try {
+        const page = parseInt(req.query.page)
+        const response = await managerUser.showAllUpgradeRequest(page)
+        return res.status(200).json(response)
+    } catch (error) {
+        return res.status(500).json({
+            err: -1,
+            msg: 'Fail at auth controller showAllUpgradeRequest: ' + error
+        })
+    }
+}
 module.exports = {
     showAllUser,
     showDetailUser,
@@ -116,6 +129,7 @@ module.exports = {
     deleteUser,
     deleteUsers,
     findUserByEmail,
-    findUserByRole
+    findUserByRole,
+    showAllUpgradeRequest
 
 }

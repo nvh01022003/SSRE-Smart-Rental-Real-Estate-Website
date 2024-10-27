@@ -1,160 +1,3 @@
-// import React, { memo, useState, useEffect } from 'react';
-// import icons from '../ultils/icons';
-// import { useNavigate } from 'react-router-dom';
-// import { formatVietnameseToString } from '../ultils/Common/formatVietnameseToString';
-// import { FaMapMarkerAlt, FaDollarSign } from 'react-icons/fa';
-// import axios from 'axios';
-// import { useSelector } from 'react-redux';
-// import Swal from 'sweetalert2';
-// import styled from 'styled-components';
-
-// const { RiCrop2Line } = icons;
-// const { GrStar, BsBookmarkStarFill } = icons;
-
-// const ItemContainer = styled.div`
-//     width: 100%;
-//     display: flex;
-//     border-top: 1px solid orange;
-//     padding: 1rem;
-//     background-color: #fff9f3;
-
-//     @media (max-width: 768px) {
-//         flex-direction: column; /* Stack items vertically on mobile */
-//     }
-// `;
-
-// const IconContainer = styled.div`
-//     display: flex;
-//     align-items: center;
-//     gap: 10px; /* Space between icons */
-
-//     @media (max-width: 768px) {
-//         flex-direction: column; /* Stack icons vertically on mobile */
-//         align-items: flex-start; /* Align to the start */
-//     }
-// `;
-
-// const Item = ({ images, user, title, star, description, attributes, address, id, starred, onToggleStar }) => {
-//     useEffect(() => {
-//         setIsStarred(starred);
-//     }, [starred]);
-
-//     const handleStar = (star) => {
-//         let stars = [];
-//         for (let i = 1; i <= +star; i++) {
-//             stars.push(<GrStar className='star-item' size={20} color='#FFB300' />);
-//         }
-//         return stars;
-//     };
-
-//     const [isStarred, setIsStarred] = useState(false);
-//     const [isHovered, setIsHovered] = useState(false);
-//     const { token } = useSelector(state => state.auth);
-//     const navigate = useNavigate();
-
-//     const handleClick = async () => {
-//         setIsStarred(!isStarred);
-//         if (isStarred) {
-//             try {
-//                 await axios.delete(`http://localhost:5000/api/v1/user/tenants/deletePostSaved/${id}`, {
-//                     headers: { 'token': `${token}` }
-//                 });
-//                 setIsStarred(false);
-//             } catch (error) {
-//                 console.error('Error deleting post:', error);
-//             }
-//         } else {
-//             try {
-//                 await axios.post(`http://localhost:5000/api/v1/user/tenants/savePost/${id}`, {}, {
-//                     headers: { 'token': `${token}` }
-//                 });
-//                 setIsStarred(true);
-//             } catch (error) {
-//                 console.error('Error saving post:', error);
-//                 setIsStarred(false);
-//                 if (error.response?.data?.err === 1) {
-//                     Swal.fire({
-//                         icon: 'error',
-//                         text: 'Đăng nhập để lưu bài viết!',
-//                         confirmButtonText: 'Đăng nhập ngay',
-//                     }).then((result) => {
-//                         if (result.isConfirmed) {
-//                             window.location.href = '/login';
-//                         }
-//                     });
-//                 }
-//             }
-//         }
-//     };
-
-//     const formatPrice = (price) => {
-//         const priceNumber = parseFloat(price);
-//         return priceNumber >= 1_000_000
-//             ? (priceNumber / 1_000_000).toFixed(2).toLocaleString('vi-VN') + ' triệu đồng'
-//             : priceNumber.toLocaleString('vi-VN') + ' đồng';
-//     };
-
-//     return (
-//         <ItemContainer>
-//             <div className='mr-5 w-full md:w-2/5 flex flex-wrap items-center relative' style={{ boxShadow: '0 0 8px rgba(128, 128, 128, 0.5)', borderRadius: '8px' }} onClick={() => navigate(`/chi-tiet/${formatVietnameseToString(title)}/${id}`)}>
-//                 {images.length > 0 && (
-//                     <img src={images[0]} alt="preview" className='w-full h-[235px] object-cover cursor-pointer rounded-md' />
-//                 )}
-//                 <span className='bg-overlay-70 text-white px-2 rounded-md absolute left-1 bottom-4'>{`${images.length} ảnh`}</span>
-//             </div>
-
-//             <div className='w-full md:w-3/5'>
-//                 <div className='flex justify-between gap-4 w-full'>
-//                     <div className='flex-wrap'>
-//                         {handleStar(+star).length > 0 && handleStar(+star).map((star, number) => (
-//                             <span key={number} className='h-5'>{star}</span>
-//                         ))}
-//                         <span className='text-red-600 font-medium cursor-pointer hover:underline text-lg' onClick={() => navigate(`/chi-tiet/${formatVietnameseToString(title)}/${id}`)}>
-//                             {title}
-//                         </span>
-//                     </div>
-//                     <div className='w-[10%] justify-end '>
-//                         <button className='hover:bg-red-50' onMouseEnter={() => setIsHovered(true)} onMouseLeave={() => setIsHovered(false)} onClick={handleClick}>
-//                             <BsBookmarkStarFill size={30} color={isStarred || isHovered ? 'red' : 'orange'} />
-//                         </button>
-//                     </div>
-//                 </div>
-//                 <div className='my-2 flex items-center gap-10'>
-//                     <IconContainer>
-//                         <span className='font-bold mr-5 text-green-600 whitespace-nowrap overflow-hidden text-ellipsis flex'>
-//                             <FaDollarSign className="inline-block pt-1 h-6" />
-//                             <p className='text-lg'>{formatPrice(attributes?.price)}/tháng</p>
-//                         </span>
-//                         <span>
-//                             <RiCrop2Line className="inline-block mb-1" /> {attributes?.acreage} m²
-//                         </span>
-//                     </IconContainer>
-//                 </div>
-//                 <div className='whitespace-nowrap overflow-hidden text-ellipsis text-gray-500'>
-//                     <FaMapMarkerAlt className="inline-block mb-1" />
-//                     {address}
-//                 </div>
-//                 <p className='text-gray-500 w-full h-[82px] text-ellipsis overflow-hidden pt-3'>
-//                     {description}
-//                 </p>
-//                 <div className='flex items-center mt-5 justify-between'>
-//                     <div className='flex items-center'>
-//                         <img src={user?.img_avt} alt="avatar" className='w-[30px] h-[30px] object-cover rounded-full mr-2' />
-//                         <p className='text-gray-500'>{user?.name}</p>
-//                     </div>
-//                     <div className='flex items-center gap-1'>
-//                         <p className='text-gray-500'>Liên hệ :</p>
-//                         <button type='button' className='px-1 py--1 rounded-md font-medium border border-blue-500 text-blue-500 bg-#fff9f3 hover:bg-blue-500 hover:text-white h-7'>
-//                             {user?.phone}
-//                         </button>
-//                     </div>
-//                 </div>
-//             </div>
-//         </ItemContainer>
-//     );
-// };
-
-// export default memo(Item);
 import React, { memo, useState, useEffect } from 'react';
 import icons from '../ultils/icons';
 import { useNavigate } from 'react-router-dom';
@@ -165,8 +8,11 @@ import { useSelector } from 'react-redux';
 import Swal from 'sweetalert2';
 import styled from 'styled-components';
 
+
+
 const { RiCrop2Line } = icons;
 const { GrStar, BsBookmarkStarFill } = icons;
+
 const ItemContainer = styled.div`
     width: 100%;
     display: flex;
@@ -176,7 +22,7 @@ const ItemContainer = styled.div`
     border-radius: 8px;
     box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.05);
     transition: transform 0.2s ease-in-out;
-    
+
     &:hover {
         transform: translateY(-4px);
     }
@@ -191,7 +37,7 @@ const IconContainer = styled.div`
     align-items: center;
     gap: 10px;
     color: #FF8C00;
-    
+
     @media (max-width: 768px) {
         flex-direction: column;
         align-items: flex-start;
@@ -204,14 +50,29 @@ const Item = ({ images, user, title, star, description, attributes, address, id,
     const { token } = useSelector(state => state.auth);
     const navigate = useNavigate();
 
+    useEffect(() => {
+        // Khôi phục trạng thái từ localStorage
+        const savedStarredState = localStorage.getItem(`starred-${id}`);
+        setIsStarred(savedStarredState === 'true'); // Chuyển đổi chuỗi thành boolean
+    }, [id]);
+
+    const handleStar = (star) => {
+        let stars = [];
+        for (let i = 1; i <= +star; i++) {
+            stars.push(<GrStar className='star-item' size={20} color='#FFB300' />);
+        }
+        return stars;
+    };
+
     const handleClick = async () => {
         setIsStarred(!isStarred);
+        localStorage.setItem(`starred-${id}`, !isStarred); // Lưu trạng thái vào localStorage
+
         if (isStarred) {
             try {
                 await axios.delete(`http://localhost:5000/api/v1/user/tenants/deletePostSaved/${id}`, {
                     headers: { 'token': `${token}` }
                 });
-                setIsStarred(false);
             } catch (error) {
                 console.error('Error deleting post:', error);
             }
@@ -220,10 +81,8 @@ const Item = ({ images, user, title, star, description, attributes, address, id,
                 await axios.post(`http://localhost:5000/api/v1/user/tenants/savePost/${id}`, {}, {
                     headers: { 'token': `${token}` }
                 });
-                setIsStarred(true);
             } catch (error) {
                 console.error('Error saving post:', error);
-                setIsStarred(false);
                 if (error.response?.data?.err === 1) {
                     Swal.fire({
                         icon: 'error',
@@ -248,49 +107,32 @@ const Item = ({ images, user, title, star, description, attributes, address, id,
 
     return (
         <ItemContainer>
-            <div
-                className='mr-5 w-full md:w-2/5 flex flex-wrap items-center relative'
+            <div className='mr-5 w-full md:w-2/5 flex flex-wrap items-center relative'
                 style={{
                     boxShadow: '0px 4px 8px rgba(128, 128, 128, 0.3)',
                     borderRadius: '8px',
                     overflow: 'hidden',
                     cursor: 'pointer',
                 }}
-                onClick={() => navigate(`/chi-tiet/${formatVietnameseToString(title)}/${id}`)}
-            >
+                onClick={() => navigate(`/chi-tiet/${formatVietnameseToString(title)}/${id}`)}>
                 {images.length > 0 && (
-                    <img
-                        src={images[0]}
-                        alt="preview"
-                        className='w-full h-[235px] object-cover'
-                        style={{ transition: 'transform 0.2s ease' }}
-                    />
+                    <img src={images[0]} alt="preview" className='w-full h-[235px] object-cover cursor-pointer' style={{ transition: 'transform 0.2s ease' }} />
                 )}
-                <span className='bg-overlay-70 text-white px-2 rounded-md absolute left-1 bottom-4'>
-                    {`${images.length} ảnh`}
-                </span>
+                <span className='bg-overlay-70 text-white px-2 rounded-md absolute left-1 bottom-4'>{`${images.length} ảnh`}</span>
             </div>
 
             <div className='w-full md:w-3/5'>
                 <div className='flex justify-between gap-4 w-full mb-2'>
                     <div className='flex-wrap'>
-                        {Array.from({ length: star }, (_, i) => (
-                            <GrStar key={i} className='star-item' size={20} color='#FFB300' />
+                        {handleStar(+star).length > 0 && handleStar(+star).map((star, number) => (
+                            <span key={number} className='h-5'>{star}</span>
                         ))}
-                        <span
-                            className='text-red-600 font-medium cursor-pointer hover:underline text-lg'
-                            onClick={() => navigate(`/chi-tiet/${formatVietnameseToString(title)}/${id}`)}
-                        >
+                        <span className='text-red-600 font-medium cursor-pointer hover:underline text-lg' onClick={() => navigate(`/chi-tiet/${formatVietnameseToString(title)}/${id}`)}>
                             {title}
                         </span>
                     </div>
-                    <div className='w-[10%] justify-end'>
-                        <button
-                            className='hover:bg-red-50 p-1 rounded-full'
-                            onMouseEnter={() => setIsHovered(true)}
-                            onMouseLeave={() => setIsHovered(false)}
-                            onClick={handleClick}
-                        >
+                    <div className='w-[10%] justify-end '>
+                        <button className='hover:bg-red-50 p-1 rounded-full' onMouseEnter={() => setIsHovered(true)} onMouseLeave={() => setIsHovered(false)} onClick={handleClick}>
                             <BsBookmarkStarFill size={30} color={isStarred || isHovered ? 'red' : 'orange'} />
                         </button>
                     </div>
@@ -298,35 +140,29 @@ const Item = ({ images, user, title, star, description, attributes, address, id,
                 <div className='my-2 flex items-center gap-6'>
                     <IconContainer>
                         <span className='font-bold text-green-600 flex items-center gap-1'>
-                            <FaDollarSign className="inline-block" />
+                            <FaDollarSign className="inline-block " />
                             <p className='text-lg'>{formatPrice(attributes?.price)}/tháng</p>
                         </span>
                         <span className='flex items-center gap-1'>
-                            <RiCrop2Line /> {attributes?.acreage} m²
+                            <RiCrop2Line className="inline-block" /> {attributes?.acreage} m²
                         </span>
                     </IconContainer>
                 </div>
                 <div className='text-gray-500 mb-3'>
-                    <FaMapMarkerAlt className="inline-block" /> {address}
+                    <FaMapMarkerAlt className="inline-block" />
+                    {address}
                 </div>
                 <p className='text-gray-500 h-[82px] overflow-hidden' style={{ display: '-webkit-box', WebkitLineClamp: 3, WebkitBoxOrient: 'vertical' }}>
                     {description}
                 </p>
                 <div className='flex items-center mt-5 justify-between'>
                     <div className='flex items-center'>
-                        <img
-                            src={user?.img_avt}
-                            alt="avatar"
-                            className='w-[30px] h-[30px] object-cover rounded-full mr-2'
-                        />
+                        <img src={user?.img_avt} alt="avatar" className='w-[30px] h-[30px] object-cover rounded-full mr-2' />
                         <p className='text-gray-500'>{user?.name}</p>
                     </div>
                     <div className='flex items-center gap-1'>
                         <p className='text-gray-500'>Liên hệ :</p>
-                        <button
-                            type='button'
-                            className='px-2 py-1 rounded-md font-medium border border-blue-500 text-blue-500 bg-white hover:bg-blue-500 hover:text-white transition-all duration-300'
-                        >
+                        <button type='button' className='px-2 py-1 rounded-md font-medium border border-blue-500 text-blue-500 bg-white hover:bg-blue-500 hover:text-white transition-all duration-300'>
                             {user?.phone}
                         </button>
                     </div>

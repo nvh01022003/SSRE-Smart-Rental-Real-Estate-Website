@@ -3,7 +3,8 @@ const initState = {
     posts: [],
     msg: '',
     count: 0,
-    newPosts: []
+    newPosts: [],
+    savedPosts: [],
 }
 
 const postReducer = (state = initState, action) => {
@@ -22,6 +23,31 @@ const postReducer = (state = initState, action) => {
                 msg: action.msg || '',
                 newPosts: action.newPosts || []
             }
+
+
+
+        case actionTypes.FETCH_SAVED_POSTS_SUCCESS:
+            return {
+                ...state,
+                savedPosts: action.payload,
+                error: null
+            };
+        case actionTypes.FETCH_SAVED_POSTS_FAILURE:
+            return {
+                ...state,
+                error: action.payload
+            };
+        case actionTypes.DELETE_SAVED_POST_SUCCESS:
+            return {
+                ...state,
+                savedPosts: state.savedPosts.filter(post => post.Post.id !== action.payload),
+                error: null
+            };
+        case actionTypes.DELETE_SAVED_POST_FAILURE:
+            return {
+                ...state,
+                error: action.payload
+            };
         default:
             return state;
     }

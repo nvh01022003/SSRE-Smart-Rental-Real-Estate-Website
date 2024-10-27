@@ -79,13 +79,11 @@ export const showDetailUser = async (userId, token) => {
 
 export const fetchCategories = (token) => async (dispatch) => {
     try {
-        const response = await axios.get('http://localhost:5000/api/v1/admin/showAllCategory', {
-            headers: { 'token': `${token}` },
-        });
+        const response = await axios.get('http://localhost:5000/api/v1/auth/category');
         if (response.data.err === 0) {
             dispatch({
                 type: actionTypes.GET_CATEGORIES,
-                data: { categories: response.data.info_category }
+                data: { categories: response.data.msg },
             });
         }
     } catch (error) {
@@ -143,5 +141,33 @@ export const deleteCategory = (categoryId, token) => async (dispatch) => {
         return response.data;
     } catch (error) {
         console.error('Error deleting category:', error);
+    }
+};
+
+
+export const fetchUpgradeRequests = (token, page) => async (dispatch) => {
+    try {
+        const response = await axios.get(`http://localhost:5000/api/v1/admin/showAllUpgradeRequest?page=${page}`, {
+            headers: {
+                'token': `${token}`
+            }
+        });
+        if (response.data.err === 0) {
+            dispatch({
+                type: actionTypes.FETCH_UPGRADE_REQUESTS_SUCCESS,
+                payload: response.data.res,
+                pagination: response.data.pagination
+            });
+        } else {
+            dispatch({
+                type: actionTypes.FETCH_UPGRADE_REQUESTS_FAILURE,
+                payload: response.data.msg
+            });
+        }
+    } catch (error) {
+        dispatch({
+            type: actionTypes.FETCH_UPGRADE_REQUESTS_FAILURE,
+            payload: error.message
+        });
     }
 };

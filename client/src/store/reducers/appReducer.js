@@ -1,6 +1,6 @@
 import actionTypes from "../actions/actionTypes";
 const initState = {
-    msg: '',
+    msg: [],
     categories: [],
     prices: [],
     areas: [],
