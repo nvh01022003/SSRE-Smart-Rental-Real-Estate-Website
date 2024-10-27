@@ -11,8 +11,8 @@ const createPaymentRequest = async (amount, orderId, id) => {
     var requestType = "payWithMethod";
     const requestId = orderId;
     const orderInfo = "Thanh toán với MoMo";
-    const redirectUrl = "https://webhook.site/redirect/success";
-    const ipnUrl = "https://9bd4-113-174-174-63.ngrok-free.app/api/v1/user/callback";
+    const redirectUrl = "http://localhost:3000/he-thong/nap-tien/momo";
+    const ipnUrl = "https://91f0-2402-800-629c-3048-cd1d-d9e7-9f6f-b7b5.ngrok-free.app/api/v1/user/callback";
 
     const rawSignature = `accessKey=${accessKey}&amount=${amount}&extraData=&ipnUrl=${ipnUrl}&orderId=${orderId}&orderInfo=${orderInfo}&partnerCode=${partnerCode}&redirectUrl=${redirectUrl}&requestId=${requestId}&requestType=${requestType}`;
     const signature = crypto.createHmac('sha256', secretKey).update(rawSignature).digest('hex');

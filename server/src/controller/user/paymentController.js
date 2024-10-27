@@ -4,16 +4,16 @@ const { Wallet, Transaction } = require('../../models'); // Import model Wallet
 // Tạo yêu cầu thanh toán
 const createPayment = async (req, res) => {
     const amount = req.body.amount;
-    console.log('...', amount);
+    console.log('...',amount);
     const userId = req.user.id;
-    console.log('...', userId);
+    console.log('...',userId);
     try {
         // Kiểm tra ví
-        const wallet = await Wallet.findOne({ where: { user_id: userId }, attributes: ['id'] });
+        const wallet = await Wallet.findOne({ where: { user_id: userId }, attributes: ['id']});
         if (!wallet) {
             return res.status(404).json({ message: 'Wallet not found' });
         }
-        console.log('vi', wallet)
+        console.log('vi',wallet)
         const orderId = "MOMO" + new Date().getTime(); // Mã đơn hàng (unique)
 
         // Tạo yêu cầu thanh toán và nhận URL từ MoMo
@@ -25,7 +25,24 @@ const createPayment = async (req, res) => {
         return res.status(500).json({ message: error.message });
     }
 };
-// dự phòng kiểm tra trạng thái thanh toán
+const showBalance = async (req, res) => {
+    const userId = req.user.id;
+    try {
+        const wallet = await Wallet.findOne({ where: { user_id: userId }, attributes: ['balance']});
+        if (!wallet) {
+            return res.status(404).json({ message: 'Wallet not found' });
+        }
+        return (
+            res.status(200).json({
+                err: 0,
+                msg: 'get balance success',
+                balance: wallet.balance
+            })
+        )
+    } catch (error) {
+        return res.status(500).json(error);
+    }
+};
 const checkPaymentStatus = async (req, res) => {
     const { orderId } = req.body;
 
@@ -59,7 +76,6 @@ const checkPaymentStatus = async (req, res) => {
         return res.status(500).json({ message: error.message });
     }
 };
-
 const handleMoMoCallback = async (req, res) => {
     // Nhận dữ liệu từ MoMo
     console.log("MoMo callback response:", req.body);
@@ -90,25 +106,6 @@ const handleMoMoCallback = async (req, res) => {
             message: `Transaction failed with resultCode: ${resultCode}`,
             error: message
         });
-    }
-};
-
-const showBalance = async (req, res) => {
-    const userId = req.user.id;
-    try {
-        const wallet = await Wallet.findOne({ where: { user_id: userId }, attributes: ['balance'] });
-        if (!wallet) {
-            return res.status(404).json({ message: 'Wallet not found' });
-        }
-        return (
-            res.status(200).json({
-                err: 0,
-                msg: 'get balance success',
-                balance: wallet.balance
-            })
-        )
-    } catch (error) {
-        return res.status(500).json(error);
     }
 };
 

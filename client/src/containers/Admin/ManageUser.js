@@ -236,17 +236,17 @@ const ManageUser = () => {
 
 
     return (
-        <div className="p-6 bg-white rounded-lg shadow-lg">
+        <div className="p-4 md:p-6 bg-white rounded-lg shadow-lg">
             <h2 className="text-2xl font-bold mb-4">Quản lý người dùng</h2>
 
             {/* Search and Role Filter */}
-            <div className="flex mb-4">
+            <div className="flex flex-col md:flex-row mb-4">
                 <input
                     type="text"
                     placeholder="Tìm kiếm người dùng theo tên..."
                     value={search}
                     onChange={handleSearch}
-                    className="border p-2 rounded-md flex-grow mr-4"
+                    className="border p-2 rounded-md flex-grow mb-2 md:mb-0 md:mr-4"
                 />
                 <select value={role} onChange={handleRoleChange} className="border p-2 rounded-md">
                     <option value="all">Tất cả vai trò</option>
@@ -256,7 +256,7 @@ const ManageUser = () => {
             </div>
 
             {/* Bulk Delete */}
-            <div className="flex justify-between items-center mb-4">
+            <div className="flex flex-col md:flex-row justify-between items-center mb-4">
                 <button
                     className={`bg-red-500 text-white px-4 py-2 rounded-md ${selectedUsers.length === 0 ? "opacity-50 cursor-not-allowed" : ""}`}
                     onClick={handleDeleteSelected}
@@ -264,7 +264,7 @@ const ManageUser = () => {
                 >
                     Xóa người dùng đã chọn
                 </button>
-                <div className="flex items-center">
+                <div className="flex items-center mt-2 md:mt-0">
                     <input
                         type="checkbox"
                         checked={selectedUsers.length === users.length}
@@ -275,78 +275,78 @@ const ManageUser = () => {
             </div>
 
             {/* User Table */}
-            <table className="table-auto w-full text-left">
-                <thead>
-                    <tr className="bg-gray-100">
-                        <th className="p-2">
-                            <input
-                                type="checkbox"
-                                checked={selectedUsers.length === users.length}
-                                onChange={toggleSelectAllUsers}
-                            />
-                        </th>
-                        <th className="p-2">ID</th>
-                        <th className="p-2">Họ</th>
-                        <th className="p-2">Tên</th>
-                        <th className="p-2">Email</th>
-                        <th className="p-2">Số điện thoại</th>
-                        <th className="p-2">Vai trò</th>
-                        <th className="p-2">Hình ảnh</th>
-                        <th className="p-2">Chức năng</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {filteredUsers.map((user) => (
-                        <tr key={user.id} className="border-b">
-                            <td className="p-2">
+            <div className="overflow-x-auto">
+                <table className="table-auto w-full text-left">
+                    <thead>
+                        <tr className="bg-gray-100">
+                            <th className="p-2">
                                 <input
                                     type="checkbox"
-                                    checked={selectedUsers.includes(user.id)}
-                                    onChange={() => toggleSelectUser(user.id)}
+                                    checked={selectedUsers.length === users.length}
+                                    onChange={toggleSelectAllUsers}
                                 />
-                            </td>
-                            <td className="p-2">{user.id}</td>
-                            <td className="p-2">{user.firstName}</td>
-                            <td className="p-2">{user.lastName}</td>
-                            <td className="p-2">{user.email}</td>
-                            <td className="p-2">{user.phone}</td>
-                            <td className="p-2">
-                                {user.role === "tenant" ? "Người thuê" : user.role === "ladnlord" ? "Chủ nhà" : user.role}
-                            </td>
-                            <td className="p-2">
-                                <img src={user.img_avt} alt={user.firstName} className="w-12 h-12 rounded-full object-cover" />
-                            </td>
-                            <td className="p-2">
-                                <button
-                                    className="bg-blue-500 text-white px-2 py-1 rounded-md mr-2"
-                                    onClick={() => openModalView(user)} // View details logic 
-                                >
-                                    <FaEye />
-                                </button>
-                                <button
-                                    className="bg-yellow-500 text-white px-2 py-1 rounded-md mr-2"
-                                    onClick={() => openModal(user)} // Open modal with user data
-                                >
-                                    <FaEdit />
-                                </button>
-                                <button
-                                    className="bg-red-500 text-white px-2 py-1 rounded-md"
-                                    //onClick={() => dispatch(deleteUser(user.id, token))}
-                                    onClick={() => handleDeleteUser(user.id)}
-                                >
-                                    <FaTrashAlt />
-                                </button>
-                            </td>
+                            </th>
+                            <th className="p-2">ID</th>
+                            <th className="p-2">Họ</th>
+                            <th className="p-2">Tên</th>
+                            <th className="p-2">Email</th>
+                            <th className="p-2">Số điện thoại</th>
+                            <th className="p-2 hidden md:table-cell">Vai trò</th>
+                            <th className="p-2 hidden md:table-cell">Hình ảnh</th>
+                            <th className="p-2">Chức năng</th>
                         </tr>
-                    ))}
-                </tbody>
-            </table>
-
+                    </thead>
+                    <tbody>
+                        {filteredUsers.map((user) => (
+                            <tr key={user.id} className="border-b">
+                                <td className="p-2">
+                                    <input
+                                        type="checkbox"
+                                        checked={selectedUsers.includes(user.id)}
+                                        onChange={() => toggleSelectUser(user.id)}
+                                    />
+                                </td>
+                                <td className="p-2">{user.id}</td>
+                                <td className="p-2">{user.firstName}</td>
+                                <td className="p-2">{user.lastName}</td>
+                                <td className="p-2">{user.email}</td>
+                                <td className="p-2">{user.phone}</td>
+                                <td className="p-2 hidden md:table-cell">
+                                    {user.role === "tenant" ? "Người thuê" : user.role === "ladnlord" ? "Chủ nhà" : user.role}
+                                </td>
+                                <td className="p-2 hidden md:table-cell">
+                                    <img src={user.img_avt} alt={user.firstName} className="w-12 h-12 rounded-full object-cover" />
+                                </td>
+                                <td className="p-2">
+                                    <button
+                                        className="bg-blue-500 text-white px-2 py-1 rounded-md mr-2"
+                                        onClick={() => openModalView(user)} // View details logic 
+                                    >
+                                        <FaEye />
+                                    </button>
+                                    <button
+                                        className="bg-yellow-500 text-white px-2 py-1 rounded-md mr-2"
+                                        onClick={() => openModal(user)} // Open modal with user data
+                                    >
+                                        <FaEdit />
+                                    </button>
+                                    <button
+                                        className="bg-red-500 text-white px-2 py-1 rounded-md"
+                                        onClick={() => handleDeleteUser(user.id)}
+                                    >
+                                        <FaTrashAlt />
+                                    </button>
+                                </td>
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
+            </div>
 
             {/* Update User Modal */}
             {isModalOpenView && currentUser && (
                 <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center">
-                    <div className="bg-white p-6 rounded-lg w-1/3">
+                    <div className="bg-white p-4 md:p-6 rounded-lg w-11/12 md:w-1/3">
                         <h3 className="text-xl font-bold mb-4">Thông tin chi tiết người dùng</h3>
                         <div className="mb-4">
                             <label>ID:</label>
@@ -361,7 +361,6 @@ const ManageUser = () => {
                             <label>Họ:</label>
                             <input
                                 type="text"
-                                //name="firstName"
                                 value={currentUser.firstName}
                                 disabled
                                 className="border p-2 rounded-md w-full"
@@ -371,7 +370,6 @@ const ManageUser = () => {
                             <label>Tên:</label>
                             <input
                                 type="text"
-                                //name="lastName"
                                 value={currentUser.lastName}
                                 disabled
                                 className="border p-2 rounded-md w-full"
@@ -381,7 +379,6 @@ const ManageUser = () => {
                             <label>Email:</label>
                             <input
                                 type="email"
-                                //name="email"
                                 value={currentUser.email}
                                 disabled
                                 className="border p-2 rounded-md w-full"
@@ -391,7 +388,6 @@ const ManageUser = () => {
                             <label>Số điện thoại:</label>
                             <input
                                 type="text"
-                                //name="phone"
                                 value={currentUser.phone}
                                 disabled
                                 className="border p-2 rounded-md w-full"
@@ -404,16 +400,14 @@ const ManageUser = () => {
                                 value={currentUser.role === "tenant" ? "Người thuê" : currentUser.role === "ladnlord" ? "Chủ nhà" : currentUser.role}
                                 disabled
                                 className="border p-2 rounded-md w-full"
-                            >
-
-                            </input>
+                            />
                         </div>
-                        <div className="flex ">
+                        <div className="flex">
                             <div className="w-5/6">
-                                <label>Hỉnh ảnh:</label>
+                                <label>Hình ảnh:</label>
                                 <img src={currentUser.img_avt} alt={currentUser.firstName} className="w-15 h-15 rounded-full object-cover mt-3" />
                             </div>
-                            <div className=" mt-20">
+                            <div className="mt-20">
                                 <button
                                     className="bg-gray-500 text-white px-4 py-2 rounded-md mr-2"
                                     onClick={closeModalView}
@@ -422,17 +416,14 @@ const ManageUser = () => {
                                 </button>
                             </div>
                         </div>
-
-
                     </div>
                 </div>
             )}
 
-
             {/* Update User Modal */}
             {isModalOpen && currentUser && (
                 <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center">
-                    <div className="bg-white p-6 rounded-lg w-1/3">
+                    <div className="bg-white p-4 md:p-6 rounded-lg w-11/12 md:w-1/3">
                         <h3 className="text-xl font-bold mb-4">Cập nhật người dùng</h3>
                         <div className="mb-4">
                             <label>ID:</label>
@@ -487,19 +478,6 @@ const ManageUser = () => {
                             />
                             {errors.phone && <small className="text-red-500 italic">{errors.phone}</small>}
                         </div>
-                        {/* <div className="mb-4">
-                            <label>Vai trò:</label>
-                            <select
-                                name="role"
-                                value={currentUser.role}
-                                onChange={handleInputChange}
-                                className="border p-2 rounded-md w-full"
-                            >
-                                <option value="tenant">Người thuê</option>
-                                <option value="ladnlord">Chủ nhà</option>
-                            </select>
-                        </div> */}
-
 
                         <div className="flex justify-end">
                             <button
