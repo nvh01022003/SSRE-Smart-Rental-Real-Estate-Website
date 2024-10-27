@@ -261,23 +261,32 @@ const ManageCategory = () => {
         category.category_name.toLowerCase().includes(search.toLowerCase())
     );
 
+    // const formatDate = (dateString) => {
+    //     const date = new Date(dateString);
+    //     const daysOfWeek = ['Chủ nhật', 'Thứ hai', 'Thứ ba', 'Thứ tư', 'Thứ năm', 'Thứ sáu', 'Thứ bảy'];
+
+    //     const dayName = daysOfWeek[date.getDay()];
+    //     const formattedDate = date.toLocaleDateString('vi-VN', {
+    //         day: '2-digit',
+    //         month: '2-digit',
+    //         year: 'numeric'
+    //     });
+    //     const formattedTime = date.toLocaleTimeString('vi-VN', {
+    //         hour: '2-digit',
+    //         minute: '2-digit'
+    //     });
+
+    //     return `${dayName}, ${formattedTime} ngày ${formattedDate}`;
+    // };
     const formatDate = (dateString) => {
         const date = new Date(dateString);
-        const daysOfWeek = ['Chủ nhật', 'Thứ hai', 'Thứ ba', 'Thứ tư', 'Thứ năm', 'Thứ sáu', 'Thứ bảy'];
-
-        const dayName = daysOfWeek[date.getDay()];
-        const formattedDate = date.toLocaleDateString('vi-VN', {
+        return date.toLocaleDateString('vi-VN', {
             day: '2-digit',
             month: '2-digit',
             year: 'numeric'
         });
-        const formattedTime = date.toLocaleTimeString('vi-VN', {
-            hour: '2-digit',
-            minute: '2-digit'
-        });
-
-        return `${dayName}, ${formattedTime} ngày ${formattedDate}`;
     };
+
 
     return (
         <div className="p-6 bg-white rounded-lg shadow-lg">

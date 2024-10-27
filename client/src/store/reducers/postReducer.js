@@ -1,5 +1,6 @@
 import actionTypes from "../actions/actionTypes";
 const initState = {
+    postsAdmin: [],
     posts: [],
     msg: '',
     count: 0,
@@ -24,6 +25,17 @@ const postReducer = (state = initState, action) => {
                 newPosts: action.newPosts || []
             }
 
+        case actionTypes.FETCH_POSTS_SUCCESS:
+            return {
+                ...state,
+                postsAdmin: action.postsAdmin || [],
+            }
+        case actionTypes.DELETE_POST_SUCCESS:
+            return {
+                ...state,
+                //postsAdmin: action.payload || [],
+                postsAdmin: state.postsAdmin.filter(postAdmin => postAdmin.id !== action.payload),
+            }
 
 
         case actionTypes.FETCH_SAVED_POSTS_SUCCESS:

@@ -1,6 +1,43 @@
 import axios from 'axios';
 import actionTypes from './actionTypes';
 
+// Manage posts
+export const fetchPostsAdmin = (token) => async (dispatch) => {
+    try {
+        const response = await axios.get('http://localhost:5000/api/v1/admin/showAllPost', {
+            headers: { 'token': `${token}` },
+        });
+
+        if (response.data.err === 0) {
+            dispatch({
+                type: actionTypes.FETCH_POSTS_SUCCESS,
+                postsAdmin: response.data.posts,
+            });
+        } else {
+            console.error('Error fetching users:', response.data.msg);
+        }
+    } catch (error) {
+        console.error('Error during API request:', error);
+    }
+};
+
+export const deletePost = (postId, token) => async (dispatch) => {
+    try {
+        const response = await axios.delete(`http://localhost:5000/api/v1/admin/deletePost/${postId}`, {
+            headers: { 'token': token }
+        });
+
+        if (response.data.err === 0) {
+            dispatch({ type: actionTypes.DELETE_POST_SUCCESS, payload: postId });
+        } else {
+            console.error('Error deleting user:', response.data.msg);
+        }
+    } catch (error) {
+        console.error('Error during API request:', error);
+    }
+};
+
+
 // Manage users
 export const fetchUsers = (token) => async (dispatch) => {
     try {
