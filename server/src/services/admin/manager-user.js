@@ -203,6 +203,29 @@ const updateUser = async (userId, data) => {
 //     }
 // };
 
+const rejectUpgradeRequest = async (userId) => {
+    try {
+        // Update the status of the upgrade request to 1 (approved)
+        await UpgradeRequest.update({
+            status: 1
+        }, {
+            where: {
+                user_id: userId
+            }
+        });
+        return {
+            err: 0,
+            msg: 'reject upgrade request successfully',
+        };
+    } catch (err) {
+        return {
+            err: 1,
+            msg: err.message || 'Đã xảy ra lỗi'  // Trả về thông báo lỗi để hỗ trợ kiểm tra và ghi nhật ký.
+        };
+    }
+};
+
+
 const { Wallet } = require('../../models/index');
 const changeRoleUser = async (userId) => {
     let transaction;
@@ -418,7 +441,16 @@ const showAllUpgradeRequest = async (page) => {
             },
             limit: pagination.limitPage,
             offset: pagination.skip,
-            attributes: ['user_id', 'full_name', 'date_of_birth', 'address', 'contact', 'citizen_id', 'id_card_image_url', 'status']
+            attributes: ['user_id', 'full_name', 'date_of_birth', 'address', 'contact', 'citizen_id', 'id_card_image_url', 'status'],
+            include: [
+                {
+                    model: User,
+                    attributes: ['email'],
+                    where: {
+                        id: sequelize.col('UpgradeRequest.user_id')
+                    }
+                }
+            ]
         });
 
         // 4. Nếu có yêu cầu nâng cấp được tìm thấy, trả về kết quả thành công với danh sách yêu cầu nâng cấp và thông tin phân trang
@@ -448,5 +480,6 @@ module.exports = {
     deleteUsers,
     findUserByEmail,
     findUserByRole,
-    showAllUpgradeRequest
+    showAllUpgradeRequest,
+    rejectUpgradeRequest
 }

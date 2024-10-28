@@ -31,7 +31,7 @@ const checkRoleUserTenants = async (req, res, next) => {
                 user_id: userId
             }
         })
-        if (role.type === 'tenants') {
+        if (role.type === 'tenant') {
             next();
         } else {
             return res.status(403).json({

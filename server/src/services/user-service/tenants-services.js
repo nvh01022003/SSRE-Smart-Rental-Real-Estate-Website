@@ -282,6 +282,8 @@ const findPostByAll = async (minPrice, maxPrice, location, minAcreage, maxAcreag
         }
     }
 }
+
+
 // show list post by page pagination
 const listPostByPage = async (page) => {
     try {

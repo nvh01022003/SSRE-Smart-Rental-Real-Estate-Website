@@ -24,17 +24,22 @@ router.delete("/deleteUsers", authentication.authenticateToken, authorization.ch
 router.get("/showDetailUser/:userId", authentication.authenticateToken, authorization.checkRoleAdmin, managerUserController.showDetailUser)
 // update user by id
 router.put("/updateUser/:userId", authentication.authenticateToken, authorization.checkRoleAdmin, validate.validateUpdateUserByAdmin, managerUserController.updateUser)
-// change role user by id
-router.put("/changeRoleUser/:userId", authentication.authenticateToken, authorization.checkRoleAdmin, managerUserController.changeRoleUser)
 // delete user by id
-router.delete("/deleteUser/:userId", authentication.authenticateToken, authorization.checkRoleAdmin, managerUserController.deleteUser)
+router.delete("/deleteUser/:userId", authentication.authenticateToken, authorization.checkRoleAdmin, managerUserController.deleteUser, managerUserController.sendMailReasonDeleteUser)
 // find user by name
 router.get("/findUserByName", authentication.authenticateToken, authorization.checkRoleAdmin, managerUserController.findUserByEmail)
 // find user by role
 router.get("/findUserByRole", authentication.authenticateToken, authorization.checkRoleAdmin, managerUserController.findUserByRole)
+
+// MANAGE UPGRADE REQUEST
 // hiển thị các yêu cầu nâng cấp tài khoản
 router.get("/showAllUpgradeRequest", authentication.authenticateToken, authorization.checkRoleAdmin, managerUserController.showAllUpgradeRequest)
 
+// phê duyệt yêu cầu nâng cấp tài khoản
+// change role user by id
+router.put("/changeRoleUser/:userId", authentication.authenticateToken, authorization.checkRoleAdmin, managerUserController.changeRoleUser, managerUserController.sendMailApproveUpgradeRequest)
+// từ chối yêu cầu nâng cấp tài khoản
+router.put("/rejectUpgradeRequest/:userId", authentication.authenticateToken, authorization.checkRoleAdmin, managerUserController.rejectUpgradeRequest, managerUserController.sendMailRejectUpgradeRequest)
 
 
 // MANAGE CATEGORY
@@ -57,5 +62,5 @@ router.delete("/deletePosts", authentication.authenticateToken, authorization.ch
 // show detail post by id
 router.get("/showDetailPost/:postId", authentication.authenticateToken, authorization.checkRoleAdmin, managerPostController.showDetailPost)
 // delete post by id
-router.delete("/deletePost/:postId", authentication.authenticateToken, authorization.checkRoleAdmin, managerPostController.deletePost)
+router.delete("/deletePost/:postId", authentication.authenticateToken, authorization.checkRoleAdmin, managerPostController.deletePost, managerPostController.sendMailReasonDeletePost)
 module.exports = router

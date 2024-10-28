@@ -4,23 +4,21 @@ import { fetchUsers, deleteUser, updateUser } from "../../store/actions/admin";
 import { FaTrashAlt, FaEdit, FaEye } from "react-icons/fa";
 import { useSelector } from "react-redux";
 import Swal from "sweetalert2";
+import Loading from "../../components/Loading";
 
 const ManageUser = () => {
     const dispatch = useDispatch();
     const [search, setSearch] = useState("");
     const [role, setRole] = useState("all");
-    //const [users, setUsers] = useState([]);
     const [selectedUsers, setSelectedUsers] = useState([]);
     const [isModalOpen, setIsModalOpen] = useState(false); // State to control modal
     const [isModalOpenView, setIsModalOpenView] = useState(false); // State to control modal
     const [currentUser, setCurrentUser] = useState(null); // State to store user info for update
     const { token } = useSelector((state) => state.auth);
     const users = useSelector((state) => state.admin.users);
-    //console.log(users);
+    const [isLoading, setIsLoading] = useState(false); // State để quản lý trạng thái loading
 
     const [errors, setErrors] = useState({});
-    const [imageFile, setImageFile] = useState(null); // Handle image file
-
 
     useEffect(() => {
         // Delay fetchUsers by 1 second
@@ -57,7 +55,7 @@ const ManageUser = () => {
     };
 
     const handleDeleteSelected = () => {
-        selectedUsers.forEach(userId => dispatch(deleteUser(userId, token)));
+        //selectedUsers.forEach(userId => dispatch(deleteUser(userId, token)));
         Swal.fire('Thành công', 'Xóa toàn bộ người dùng thành công !', 'success');
         setSelectedUsers([]);
     };
@@ -131,13 +129,117 @@ const ManageUser = () => {
         return Object.keys(newErrors).length === 0;
     };
 
-    const handleDeleteUser = async (userId) => {
-        const result = await Swal.fire({
-            title: 'Bạn có chắc muốn xóa người dùng này ?',
+    // const handleDeleteUser = async (userId) => {
+    //     const result = await Swal.fire({
+    //         title: 'Bạn có chắc muốn xóa người dùng này ?',
+    //         showCancelButton: true,
+    //         confirmButtonText: 'Có',
+    //         cancelButtonText: 'Không',
+    //         buttonsStyling: false, // Tắt kiểu mặc định của SweetAlert2
+    //         customClass: {
+    //             confirmButton: 'custom-confirm',
+    //             cancelButton: 'custom-cancel',
+    //         },
+    //         didOpen: () => {
+    //             const confirmButton = Swal.getConfirmButton();
+    //             const cancelButton = Swal.getCancelButton();
+
+    //             // Áp dụng CSS trực tiếp cho nút Xác nhận
+    //             confirmButton.style.backgroundColor = 'red';
+    //             confirmButton.style.color = 'white';
+    //             confirmButton.style.padding = '8px 16px';
+    //             confirmButton.style.marginRight = '20px'; // Tạo khoảng cách giữa hai nút
+    //             confirmButton.style.borderRadius = '4px';
+    //             confirmButton.style.border = 'none';
+    //             confirmButton.style.cursor = 'pointer';
+
+    //             // Áp dụng CSS trực tiếp cho nút Hủy
+    //             cancelButton.style.backgroundColor = 'gray';
+    //             cancelButton.style.color = 'white';
+    //             cancelButton.style.padding = '8px 16px';
+    //             cancelButton.style.borderRadius = '4px';
+    //             cancelButton.style.border = 'none';
+    //             cancelButton.style.cursor = 'pointer';
+    //         },
+    //         customClass: {
+    //             title: 'custom-title',  // Tùy chỉnh CSS cho tiêu đề
+    //         },
+    //         html: `
+    //             <style>
+    //                 .custom-title {
+    //                     font-size: 20px;
+    //                     font-weight: bold;
+    //                 }
+    //                 .swal2-popup {
+    //                     width: 300px; /* Kích thước nhỏ gọn */
+    //                 }
+    //             </style>
+    //         `,
+    //     });
+
+    //     if (result.isConfirmed) {
+    //         try {
+    //             await dispatch(deleteUser(userId, token));
+    //             Swal.fire({
+    //                 title: 'Xóa người dùng thành công !',
+    //                 text: 'Người dùng đã được xóa',
+    //                 icon: 'success',
+    //                 buttonsStyling: false,
+    //                 didOpen: () => {
+    //                     const confirmButton = Swal.getConfirmButton();
+    //                     confirmButton.style.backgroundColor = 'green';
+    //                     confirmButton.style.color = 'white';
+    //                     confirmButton.style.padding = '8px 16px';
+    //                     confirmButton.style.borderRadius = '4px';
+    //                     confirmButton.style.border = 'none';
+    //                     confirmButton.style.cursor = 'pointer';
+    //                 },
+    //                 html: `
+    //                     <style>
+    //                         .swal2-popup {
+    //                             width: 300px;
+    //                         }
+    //                     </style>
+    //                 `,
+    //             });
+    //             setTimeout(() => {
+    //                 dispatch(fetchUsers(token)); // Refresh user list after deletion
+    //             }, 1);
+    //         } catch (error) {
+    //             Swal.fire({
+    //                 title: 'Error',
+    //                 text: 'Xóa người dùng thất bại',
+    //                 icon: 'error',
+    //                 buttonsStyling: false,
+    //                 didOpen: () => {
+    //                     const confirmButton = Swal.getConfirmButton();
+    //                     confirmButton.style.backgroundColor = 'darkred';
+    //                     confirmButton.style.color = 'white';
+    //                     confirmButton.style.padding = '8px 16px';
+    //                     confirmButton.style.borderRadius = '4px';
+    //                     confirmButton.style.border = 'none';
+    //                     confirmButton.style.cursor = 'pointer';
+    //                 },
+    //                 html: `
+    //                     <style>
+    //                         .swal2-popup {
+    //                             width: 300px;
+    //                         }
+    //                     </style>
+    //                 `,
+    //             });
+    //         }
+    //     }
+    // };
+    const handleDeleteUser = async (userId, email) => {
+        const { value: reasonDeleteUser } = await Swal.fire({
+            title: 'Lí do xóa người dùng',
+            input: 'textarea',
+            inputPlaceholder: 'Nhập lí do xóa người dùng...',
             showCancelButton: true,
-            confirmButtonText: 'Có',
-            cancelButtonText: 'Không',
-            buttonsStyling: false, // Tắt kiểu mặc định của SweetAlert2
+            confirmButtonText: 'Gửi',
+            cancelButtonText: 'Hủy',
+            buttonsStyling: false,
             customClass: {
                 confirmButton: 'custom-confirm',
                 cancelButton: 'custom-cancel',
@@ -163,25 +265,33 @@ const ManageUser = () => {
                 cancelButton.style.border = 'none';
                 cancelButton.style.cursor = 'pointer';
             },
-            customClass: {
-                title: 'custom-title',  // Tùy chỉnh CSS cho tiêu đề
-            },
             html: `
                 <style>
-                    .custom-title {
-                        font-size: 20px;
-                        font-weight: bold;
-                    }
-                    .swal2-popup {
-                        width: 300px; /* Kích thước nhỏ gọn */
-                    }
-                </style>
+                .custom-title {
+                    font-size: 20px;
+                    font-weight: bold;
+                }
+                .swal2-popup {
+                    width: 500px; /* Kích thước rộng hơn */
+                }
+                .swal2-validation-message {
+                    color: red; /* Màu đỏ cho thông báo lỗi */
+                }
+            </style>
             `,
+            preConfirm: () => {
+                const reason = Swal.getInput().value;
+                if (!reason) {
+                    Swal.showValidationMessage('Vui lòng nhập lý do xóa người dùng !');
+                }
+                return reason; // Trả về giá trị lý do nếu người dùng nhập
+            }
         });
 
-        if (result.isConfirmed) {
+        if (reasonDeleteUser) {
+            setIsLoading(true); // Hiển thị thẻ Loading ngay khi bắt đầu xử lý
             try {
-                await dispatch(deleteUser(userId, token));
+                await dispatch(deleteUser(userId, token, email, reasonDeleteUser));
                 Swal.fire({
                     title: 'Xóa người dùng thành công !',
                     text: 'Người dùng đã được xóa',
@@ -230,10 +340,15 @@ const ManageUser = () => {
                         </style>
                     `,
                 });
+            } finally {
+                setIsLoading(false); // Ẩn thẻ Loading sau khi xử lý xong
             }
         }
     };
 
+    if (isLoading || !users.length) {
+        return <Loading />;
+    }
 
     return (
         <div className="p-4 md:p-6 bg-white rounded-lg shadow-lg">
@@ -296,7 +411,7 @@ const ManageUser = () => {
                             <th className="p-2">Chức năng</th>
                         </tr>
                     </thead>
-                    <tbody>
+                    <tbody className="overflow-y-auto">
                         {filteredUsers.map((user) => (
                             <tr key={user.id} className="border-b">
                                 <td className="p-2">
@@ -332,7 +447,7 @@ const ManageUser = () => {
                                     </button>
                                     <button
                                         className="bg-red-500 text-white px-2 py-1 rounded-md"
-                                        onClick={() => handleDeleteUser(user.id)}
+                                        onClick={() => handleDeleteUser(user.id, user.email)} // Delete user logic
                                     >
                                         <FaTrashAlt />
                                     </button>
