@@ -48,7 +48,7 @@ const List = ({ categoryCode }) => {
                             acreage: item?.acreage
                         }}
                         description={item?.description}
-                        images={item?.Images[0].img_url_list}
+                        images={item?.Image.img_url_list}
                         // images={JSON.parse(item?.Images[0].img_url_list)}
                         //star={item?.star}
                         title={item?.title}
