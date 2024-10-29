@@ -403,7 +403,25 @@ const listPost = async (userId) => {
         const resPost = await Post.findAll({
             where: {
                 user_id: userId
-            }
+            },
+            include: [
+                {
+                    model: Category,
+                    attributes: ['category_name']
+                },
+                {
+                    model: Address,
+                    attributes: ['city', 'district', 'detail_address']
+                },
+                {
+                    model: Overview,
+                    attributes: ['target', 'expire']
+                },
+                {
+                    model: Image,
+                    attributes: ['img_url_list']
+                }
+            ]
         })
         return {
             err: 0,

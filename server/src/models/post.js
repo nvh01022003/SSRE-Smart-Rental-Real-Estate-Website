@@ -13,7 +13,8 @@ module.exports = (sequelize, DataTypes) => {
       // define association here
       this.belongsTo(Category, { foreignKey: 'category_id' })
       this.hasOne(Overview, { foreignKey: 'id' })
-      this.hasMany(Image, { foreignKey: 'id' })
+      //this.hasMany(Image, { foreignKey: 'id' })
+      this.belongsTo(Image, { foreignKey: 'img_id' });
       this.belongsTo(User, { foreignKey: 'user_id' })
       this.hasOne(Coordinates, { foreignKey: 'id' })
       this.hasOne(Address, { foreignKey: 'id' })

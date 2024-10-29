@@ -141,13 +141,9 @@ const listPostSaved = async (userId, page) => {
         });
         listPostSave.forEach((favourite) => {
             try {
-                favourite.dataValues.Post.Images.forEach((image) => {
-                    image.img_url_list = JSON.parse(image.img_url_list);
-                });
-                // console.log(favourite.dataValues.Post.Images[0].img_url_list[0]);
-                // tạo thêm một thuộc tính là images trong mỗi bài viết và lưu favourite.dataValues.Post.Images[0].img_url_list[0] và nhận được res trả về trong listPostSave
-                favourite.dataValues.Post.images = favourite.dataValues.Post.Images[0].img_url_list;
-                console.log(favourite.dataValues.Post.images);
+                favourite.dataValues.Post.Image.dataValues.img_url_list = JSON.parse(favourite.dataValues.Post.Image.dataValues.img_url_list);
+                // ví dụ ae muốn lấy ảnh đầu tiên thì là favourite.dataValues.Post.Image.dataValues.img_url_list[0]
+                console.log(favourite.dataValues.Post.Image.dataValues.img_url_list[0]);
             } catch (error) {
                 console.error(`Fail to parse img_url_list for post ID ${favourite.post_id}:`, error);
                 favourite.dataValues.Post.Images.forEach((image) => {
@@ -155,8 +151,6 @@ const listPostSaved = async (userId, page) => {
                 });
             }
         });
-
-        console.log('listPostSave', listPostSave);
         return {
             err: 0,
             msg: {
@@ -171,7 +165,6 @@ const listPostSaved = async (userId, page) => {
         }
     }
 }
-
 
 // DELETE POST SAVED
 const deletePostSaved = async (userId, postId) => {
@@ -240,8 +233,12 @@ const findPostByAll = async (minPrice, maxPrice, location, minAcreage, maxAcreag
                     model: Address,
                     attributes: ['city', 'district', 'detail_address']
                 },
+                // tìm ảnh theo id của bài viết theo img_id
                 {
                     model: Image,
+                    where: {
+                        id: sequelize.col('post.img_id')
+                    },
                     attributes: ['img_url_list']
                 },
                 {
@@ -258,10 +255,8 @@ const findPostByAll = async (minPrice, maxPrice, location, minAcreage, maxAcreag
         });
         posts.forEach((post) => {
             try {
-                post.dataValues.Images.forEach((image) => {
-                    image.img_url_list = JSON.parse(image.img_url_list);
-                });
-                console.log(post.dataValues.Images[0].img_url_list);
+                post.dataValues.Image.img_url_list = JSON.parse(post.dataValues.Image.img_url_list);
+                console.log(post.dataValues.Image.img_url_list);
             } catch (error) {
                 console.log("Fail to parse img_url_list" + error);
                 post.dataValues.img_url_list = [];
