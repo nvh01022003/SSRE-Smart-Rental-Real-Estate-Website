@@ -139,22 +139,22 @@ const listPostSaved = async (userId, page) => {
             ]
 
         });
-        listPostSave.forEach((favourite) => {
-            try {
-                favourite.dataValues.Post.Images.forEach((image) => {
-                    image.img_url_list = JSON.parse(image.img_url_list);
-                });
-                // console.log(favourite.dataValues.Post.Images[0].img_url_list[0]);
-                // tạo thêm một thuộc tính là images trong mỗi bài viết và lưu favourite.dataValues.Post.Images[0].img_url_list[0] và nhận được res trả về trong listPostSave
-                favourite.dataValues.Post.images = favourite.dataValues.Post.Images[0].img_url_list;
-                console.log(favourite.dataValues.Post.images);
-            } catch (error) {
-                console.error(`Fail to parse img_url_list for post ID ${favourite.post_id}:`, error);
-                favourite.dataValues.Post.Images.forEach((image) => {
-                    image.img_url_list = [];
-                });
-            }
-        });
+        // listPostSave.forEach((favourite) => {
+        //     try {
+        //         favourite.dataValues.Post.Images.forEach((image) => {
+        //             image.img_url_list = JSON.parse(image.img_url_list);
+        //         });
+        //         // console.log(favourite.dataValues.Post.Images[0].img_url_list[0]);
+        //         // tạo thêm một thuộc tính là images trong mỗi bài viết và lưu favourite.dataValues.Post.Images[0].img_url_list[0] và nhận được res trả về trong listPostSave
+        //         favourite.dataValues.Post.images = favourite.dataValues.Post.Images[0].img_url_list;
+        //         console.log(favourite.dataValues.Post.images);
+        //     } catch (error) {
+        //         console.error(`Fail to parse img_url_list for post ID ${favourite.post_id}:`, error);
+        //         favourite.dataValues.Post.Images.forEach((image) => {
+        //             image.img_url_list = [];
+        //         });
+        //     }
+        // });
 
         console.log('listPostSave', listPostSave);
         return {
@@ -238,8 +238,12 @@ const findPostByAll = async (minPrice, maxPrice, location, minAcreage, maxAcreag
                     model: Address,
                     attributes: ['city', 'district', 'detail_address']
                 },
+                // tìm ảnh theo id của bài viết theo img_id
                 {
                     model: Image,
+                    where: {
+                        id: sequelize.col('post.img_id')
+                    },
                     attributes: ['img_url_list']
                 },
                 {
@@ -254,17 +258,17 @@ const findPostByAll = async (minPrice, maxPrice, location, minAcreage, maxAcreag
             ]
 
         });
+        // console.log(posts);
         posts.forEach((post) => {
             try {
-                post.dataValues.Images.forEach((image) => {
-                    image.img_url_list = JSON.parse(image.img_url_list);
-                });
-                console.log(post.dataValues.Images[0].img_url_list);
+                post.dataValues.Image.img_url_list = JSON.parse(post.dataValues.Image.img_url_list);
+                console.log(post.dataValues.Image.img_url_list);
             } catch (error) {
                 console.log("Fail to parse img_url_list" + error);
                 post.dataValues.img_url_list = [];
             }
         });
+
         return {
             err: 0,
             msg: {
