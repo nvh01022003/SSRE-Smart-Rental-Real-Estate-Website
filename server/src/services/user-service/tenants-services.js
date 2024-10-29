@@ -139,24 +139,18 @@ const listPostSaved = async (userId, page) => {
             ]
 
         });
-        // listPostSave.forEach((favourite) => {
-        //     try {
-        //         favourite.dataValues.Post.Images.forEach((image) => {
-        //             image.img_url_list = JSON.parse(image.img_url_list);
-        //         });
-        //         // console.log(favourite.dataValues.Post.Images[0].img_url_list[0]);
-        //         // tạo thêm một thuộc tính là images trong mỗi bài viết và lưu favourite.dataValues.Post.Images[0].img_url_list[0] và nhận được res trả về trong listPostSave
-        //         favourite.dataValues.Post.images = favourite.dataValues.Post.Images[0].img_url_list;
-        //         console.log(favourite.dataValues.Post.images);
-        //     } catch (error) {
-        //         console.error(`Fail to parse img_url_list for post ID ${favourite.post_id}:`, error);
-        //         favourite.dataValues.Post.Images.forEach((image) => {
-        //             image.img_url_list = [];
-        //         });
-        //     }
-        // });
-
-        console.log('listPostSave', listPostSave);
+        listPostSave.forEach((favourite) => {
+            try {
+                favourite.dataValues.Post.Image.dataValues.img_url_list = JSON.parse(favourite.dataValues.Post.Image.dataValues.img_url_list);
+                // ví dụ ae muốn lấy ảnh đầu tiên thì là favourite.dataValues.Post.Image.dataValues.img_url_list[0]
+                console.log(favourite.dataValues.Post.Image.dataValues.img_url_list[0]);
+            } catch (error) {
+                console.error(`Fail to parse img_url_list for post ID ${favourite.post_id}:`, error);
+                favourite.dataValues.Post.Images.forEach((image) => {
+                    image.img_url_list = [];
+                });
+            }
+        });
         return {
             err: 0,
             msg: {
