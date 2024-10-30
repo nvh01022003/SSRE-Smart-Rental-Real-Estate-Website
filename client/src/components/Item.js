@@ -99,10 +99,14 @@ const Item = ({ images, user, title, star, description, attributes, address, id,
     };
 
     const formatPrice = (price) => {
-        const priceNumber = parseFloat(price);
-        return priceNumber >= 1_000_000
-            ? (priceNumber / 1_000_000).toFixed(2).toLocaleString('vi-VN') + ' triệu đồng'
-            : priceNumber.toLocaleString('vi-VN') + ' đồng';
+        const priceNumber = parseFloat(price); // Chuyển chuỗi thành số
+
+        if (priceNumber >= 1_000_000) {
+            const formattedPrice = (priceNumber / 1_000_000).toLocaleString('vi-VN', { minimumFractionDigits: 0, maximumFractionDigits: 2 });
+            return formattedPrice + ' triệu đồng'; // Đơn vị triệu, với dấu phẩy
+        } else {
+            return priceNumber.toLocaleString('vi-VN', { minimumFractionDigits: 0 }) + ' đồng'; // Đơn vị đồng, với dấu phẩy
+        }
     };
 
     return (

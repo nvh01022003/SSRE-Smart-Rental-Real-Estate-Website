@@ -78,9 +78,15 @@ const Modal = ({ setIsShowModal, content, name, handleSubmit, queries, arrMinMax
         // const gaps = name === 'price'
         //     ? getCodes(arrMinMax, content)
         //     : name === 'area' ? getCodesArea(arrMinMax, content) : []
+
+        // Multiply the price values by 1,000,000 if the name is 'price'
+        if (name === 'price') {
+            arrMinMax = arrMinMax.map(value => value * 1000000);
+        }
+
         handleSubmit(e, {
             [`${name}Number`]: arrMinMax,
-            [name]: `Từ ${convert100toTarget(min)} - ${convert100toTarget(max)} ${name === 'price' ? 'triệu' : 'm2'}`
+            [name]: `Từ ${convert100toTarget(min)} - ${convert100toTarget(max)} ${name === 'price' ? 'triệu' : 'm²'}`
         }, {
             [`${name}Arr`]: [min, max]
         })
@@ -104,46 +110,47 @@ const Modal = ({ setIsShowModal, content, name, handleSubmit, queries, arrMinMax
                         <GrLinkPrevious size={24} />
                     </span>
                 </div>
-                {(name === 'category' || name === 'province') && <div className='p-4 flex flex-col'>
-                    <span className='py-2 flex gap-2 items-center border-b border-gray-200'>
-                        <input
-                            type="radio"
-                            name={name}
-                            value={defaultText || ''}
-                            id='default'
-                            checked={!queries[`${name}Code`] ? true : false}
-                            onChange={(e) => handleSubmit(e, { [name]: defaultText, [`${name}Code`]: null })}
-                        />
-                        <label htmlFor='default'>{defaultText}</label>
-                    </span>
-                    {content?.map(item => {
-                        return (
-                            <span key={item.code} className='py-2 flex gap-2 items-center border-b border-gray-200'>
-                                <input
-                                    type="radio"
-                                    name={name}
-                                    id={item.code}
-                                    value={item.code}
-                                    checked={item.code === queries[`${name}Code`] ? true : false}
-                                    onChange={(e) => handleSubmit(e, { [name]: item.value, [`${name}Code`]: item.code })}
-                                />
-                                <label htmlFor={item.code}>{item.value}</label>
-                            </span>
-                        )
-                    })}
-                </div>}
+                {(name === 'category' || name === 'province') &&
+                    <div className='p-4 flex flex-col overflow-y-auto h-[450px]'>
+                        <span className='py-2 flex gap-2 items-center border-b border-gray-200'>
+                            <input
+                                type="radio"
+                                name={name}
+                                value={defaultText || ''}
+                                id='default'
+                                checked={!queries[`${name}Code`] ? true : false}
+                                onChange={(e) => handleSubmit(e, { [name]: defaultText, [`${name}Code`]: null })}
+                            />
+                            <label htmlFor='default'>{defaultText}</label>
+                        </span>
+                        {content?.map(item => {
+                            return (
+                                <span key={item.code} className='py-2 flex gap-2 items-center border-b border-gray-200 '>
+                                    <input
+                                        type="radio"
+                                        name={name}
+                                        id={item.code}
+                                        value={item.code}
+                                        checked={item.code === queries[`${name}Code`] ? true : false}
+                                        onChange={(e) => handleSubmit(e, { [name]: item.value, [`${name}Code`]: item.code })}
+                                    />
+                                    <label htmlFor={item.code}>{item.value}</label>
+                                </span>
+                            )
+                        })}
+                    </div>}
                 {(name === 'price' || name === 'area') && <div className='p-12 py-20 '>
                     <div className='flex flex-col items-center justify-center relative'>
                         <div className='z-30 absolute top-[-48px] font-bold text-xl text-orange-600'>
                             {(persent1 === 100 && persent2 === 100)
-                                ? `Trên ${convert100toTarget(persent1)} ${name === 'price' ? 'triệu' : 'm2'} +`
+                                ? `Trên ${convert100toTarget(persent1)} ${name === 'price' ? 'triệu' : 'm²'} +`
                                 : `Từ ${persent1 <= persent2
                                     ? convert100toTarget(persent1)
                                     : convert100toTarget(persent2)} - ${persent2 >= persent1
                                         ? convert100toTarget(persent2)
                                         : convert100toTarget(persent1)} ${name === 'price'
                                             ? 'triệu'
-                                            : 'm2'}`}
+                                            : 'm²'}`}
                         </div>
                         <div onClick={handleClickTrack} id='track' className='slider-track h-[5px] absolute top-0 bottom-0 w-full bg-gray-300 rounded-full'></div>
                         <div onClick={handleClickTrack} id='track-active' className='slider-track-active h-[5px] absolute top-0 bottom-0 bg-orange-600 rounded-full'></div>
@@ -188,7 +195,7 @@ const Modal = ({ setIsShowModal, content, name, handleSubmit, queries, arrMinMax
                                     handleClickTrack(e, 100)
                                 }}
                             >
-                                {name === 'price' ? '15 triệu +' : name === 'area' ? 'Trên 90 m2' : ''}
+                                {name === 'price' ? '15 triệu +' : name === 'area' ? 'Trên 90 m²' : ''}
                             </span>
                         </div>
                     </div>

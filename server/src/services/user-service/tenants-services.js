@@ -165,7 +165,6 @@ const listPostSaved = async (userId, page) => {
         }
     }
 }
-
 // DELETE POST SAVED
 const deletePostSaved = async (userId, postId) => {
     try {
@@ -193,13 +192,15 @@ const findPostByAll = async (minPrice, maxPrice, location, minAcreage, maxAcreag
         if (minPrice && maxPrice) {
             whereCondition.price = {
                 [Op.between]: [minPrice, maxPrice]
-            }
+            };
         }
+
         if (minAcreage && maxAcreage) {
             whereCondition.acreage = {
                 [Op.between]: [minAcreage, maxAcreage]
-            }
+            };
         }
+
         if (location) {
             const addressResult = await Address.findAll({
                 where: {
@@ -279,8 +280,6 @@ const findPostByAll = async (minPrice, maxPrice, location, minAcreage, maxAcreag
         }
     }
 }
-
-
 // show list post by page pagination
 const listPostByPage = async (page) => {
     try {

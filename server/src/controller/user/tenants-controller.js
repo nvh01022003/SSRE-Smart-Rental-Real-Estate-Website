@@ -1,6 +1,7 @@
 const tenanstService = require("../../services/user-service/tenants-services")
 const helperService = require("../../services/tools/userSearches-service")
 const jwt = require("jsonwebtoken");
+const { json } = require("sequelize");
 // show info user
 const showInfoUser = async (req, res) => {
     const userId = req.user.id
@@ -88,14 +89,20 @@ const deletePostSaved = async (req, res) => {
 }
 // find post by all condition
 const findPostByAll = async (req, res) => {
-    const minPrice = req.body.minPrice
-    const maxPrice = req.body.maxPrice
-    const location = req.body.location
-    const minAcreage = req.body.minAcreage
-    const maxAcreage = req.body.maxAcreage
-    const categoryCode = req.body.category
+    const minPrice = parseFloat(req.query.minPrice)
+    const maxPrice = parseFloat(req.query.maxPrice)
+    const location = req.query.location
+    const minAcreage = parseFloat(req.query.minAcreage)
+    const maxAcreage = parseFloat(req.query.maxAcreage)
+    const categoryCode = parseInt(req.query.category)
     const page = parseInt(req.query.page)
     console.log('Page', page)
+    console.log('1', minPrice)
+    console.log('2', maxPrice)
+    console.log('3', location)
+    console.log('4', minAcreage)
+    console.log('5', maxAcreage)
+    console.log('6', categoryCode)
     try {
         const response = await tenanstService.findPostByAll(minPrice, maxPrice, location, minAcreage, maxAcreage, categoryCode, page)
         return res.status(200).json(response)
