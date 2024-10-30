@@ -253,6 +253,7 @@ const findPostByAll = async (minPrice, maxPrice, location, minAcreage, maxAcreag
             ]
 
         });
+        // console.log(posts);
         posts.forEach((post) => {
             try {
                 post.dataValues.Image.img_url_list = JSON.parse(post.dataValues.Image.img_url_list);
@@ -262,6 +263,7 @@ const findPostByAll = async (minPrice, maxPrice, location, minAcreage, maxAcreag
                 post.dataValues.img_url_list = [];
             }
         });
+
         return {
             err: 0,
             msg: {

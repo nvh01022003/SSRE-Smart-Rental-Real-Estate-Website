@@ -3,7 +3,7 @@ import logo from '../assets/logo.png';
 
 const Loading = () => {
     return (
-        <div className="h-screen inset-0 flex items-center justify-center bg-gray-300 bg-opacity-50 backdrop-blur-sm">
+        <div className="fixed inset-0 flex items-center justify-center bg-gray-300 bg-opacity-50 backdrop-blur-sm">
             {/* fixed */}
             <div className="relative flex items-center justify-center">
                 {/* Outer Glow Effect */}

@@ -60,7 +60,7 @@ const ListPostsSaved = () => {
             <div className="w-4/5 container flex flex-row items-start justify-start mx-auto pb-6">
                 <div className="w-2/3 p-4 ">
                     {/* Render saved posts */}
-                    {/* {savedPosts.length > 0 ? (
+                    {savedPosts.length > 0 ? (
                         savedPosts.map((post) => (
                             <Item
                                 key={post.Post.id}
@@ -70,7 +70,7 @@ const ListPostsSaved = () => {
                                     acreage: post.Post.acreage
                                 }}
                                 description={post.Post.description}
-                                images={post.Post.Images[0]?.img_url_list}
+                                images={post.Post.Image?.img_url_list}
                                 title={post.Post.title}
                                 user={{
                                     name: `${post.Post.User?.firstName} ${post.Post.User?.lastName}`,
@@ -84,7 +84,7 @@ const ListPostsSaved = () => {
                         ))
                     ) : (
                         <p>Không có tin nào đã lưu.</p>
-                    )} */}
+                    )}
                     <Pagination page={page} setPage={setPage} />
                 </div>
                 <div className="w-1/3 p-4">

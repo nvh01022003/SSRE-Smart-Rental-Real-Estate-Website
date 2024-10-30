@@ -21,6 +21,12 @@ module.exports = {
       paycode: {
         type: Sequelize.STRING
       },
+      amount: {
+        type: Sequelize.DECIMAL
+      },
+      status: {
+        type: Sequelize.STRING
+      },
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE
