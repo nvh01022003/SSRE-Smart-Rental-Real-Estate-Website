@@ -16,6 +16,7 @@ const showAllCategory = async (req, res) => {
 // create category
 const createCategory = async (req, res) => {
     const categoryName = req.body.category_name
+
     try {
         const response = await managerCategory.createCategory(categoryName)
         return res.status(200).json(response)

@@ -23,7 +23,7 @@ router.delete("/deleteUsers", authentication.authenticateToken, authorization.ch
 // show detail user by id
 router.get("/showDetailUser/:userId", authentication.authenticateToken, authorization.checkRoleAdmin, managerUserController.showDetailUser)
 // update user by id
-router.put("/updateUser/:userId", authentication.authenticateToken, authorization.checkRoleAdmin, managerUserController.updateUser)
+router.put("/updateUser/:userId", authentication.authenticateToken, authorization.checkRoleAdmin, validate.validateUpdateUserByAdmin, managerUserController.updateUser)
 // change role user by id
 router.put("/changeRoleUser/:userId", authentication.authenticateToken, authorization.checkRoleAdmin, managerUserController.changeRoleUser)
 // delete user by id

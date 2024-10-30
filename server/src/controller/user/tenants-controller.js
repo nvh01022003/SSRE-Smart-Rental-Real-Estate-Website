@@ -95,23 +95,10 @@ const findPostByAll = async (req, res) => {
     const maxAcreage = req.body.maxAcreage
     const categoryCode = req.body.category
     const page = parseInt(req.query.page)
-    const token = req.headers["token"];
+    console.log('Page', page)
     try {
         const response = await tenanstService.findPostByAll(minPrice, maxPrice, location, minAcreage, maxAcreage, categoryCode, page)
         return res.status(200).json(response)
-        // if (response.msg.listPost.length == 0 && token) {
-        //     jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
-        //         if (err) {
-        //             return res.status(403).json({ err: 1, msg: 'Token not valid' });
-        //         }
-        //         req.user = user;
-        //     })
-        //     const searchInfo = await helperService.saveUserSearches(req.body, req.user.id)
-        //     return res.status(200).json(searchInfo)
-        // }
-        // else {
-        //     return res.status(200).json(response)
-        // }
     } catch (error) {
         return res.status(500).json({
             err: -1,
@@ -147,6 +134,7 @@ const totalPage = async (req, res) => {
 // show dateil post
 const showDetailPost = async (req, res) => {
     const postId = req.params.id
+    console.log("id post", postId)
     try {
         const response = await tenanstService.showDetailPost(postId)
         return res.status(200).json(response)
@@ -187,6 +175,7 @@ const reqUpdateToLandlord = async (req, res) => {
         })
     }
 }
+
 module.exports = {
     showInfoUser,
     changeInfo,
@@ -200,5 +189,4 @@ module.exports = {
     showDetailPost,
     showCategory,
     reqUpdateToLandlord
-
 }
