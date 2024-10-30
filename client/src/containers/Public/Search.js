@@ -83,14 +83,14 @@ const Search = () => {
         // Map priceNumber to minPrice and maxPrice
         if (queries.priceNumber) {
             const [minPrice, maxPrice] = queries.priceNumber;
-            queryCodesObj.minPrice = minPrice;
+            queryCodesObj.minPrice = minPrice !== undefined ? minPrice : 0; // Default minPrice to 0 if not provided
             queryCodesObj.maxPrice = maxPrice;
         }
 
         // Map areaNumber to minAcreage and maxAcreage
         if (queries.areaNumber) {
             const [minAcreage, maxAcreage] = queries.areaNumber;
-            queryCodesObj.minAcreage = minAcreage;
+            queryCodesObj.minAcreage = minAcreage !== undefined ? minAcreage : 0; // Default minAcreage to 0 if not provided
             queryCodesObj.maxAcreage = maxAcreage;
         }
 

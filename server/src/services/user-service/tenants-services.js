@@ -189,16 +189,48 @@ const deletePostSaved = async (userId, postId) => {
 const findPostByAll = async (minPrice, maxPrice, location, minAcreage, maxAcreage, categoryCode, page) => {
     try {
         let whereCondition = {};
-        if (minPrice && maxPrice) {
+        if (minPrice && !maxPrice) {
+            // TH1: Chỉ chọn giá tối thiểu, không chọn giá tối đa
+            whereCondition.price = {
+                [Op.gte]: minPrice
+            };
+        } else if (!minPrice && maxPrice) {
+            // TH2: Chỉ chọn giá tối đa, không chọn giá tối thiểu
+            whereCondition.price = {
+                [Op.lte]: maxPrice
+            };
+        } else if (minPrice && maxPrice) {
+            // TH3: Chọn cả giá tối thiểu và giá tối đa
             whereCondition.price = {
                 [Op.between]: [minPrice, maxPrice]
             };
         }
 
-        if (minAcreage && maxAcreage) {
+        if (minAcreage && !maxAcreage) {
+            // TH1: Chỉ chọn diện tích tối thiểu, không chọn diện tích tối đa
+            whereCondition.acreage = {
+                [Op.gte]: minAcreage
+            };
+        } else if (!minAcreage && maxAcreage) {
+            // TH2: Chỉ chọn diện tích tối đa, không chọn diện tích tối thiểu
+            whereCondition.acreage = {
+                [Op.lte]: maxAcreage
+            };
+        } else if (minAcreage && maxAcreage) {
+            // TH3: Chọn cả diện tích tối thiểu và diện tích tối đa
             whereCondition.acreage = {
                 [Op.between]: [minAcreage, maxAcreage]
             };
+        }
+
+        if (location) {
+            const addressResult = await Address.findAll({
+                where: {
+                    city: location
+                }
+            })
+            const addressIDs = addressResult.map((address) => address.id);
+            whereCondition.address_id = addressIDs;
         }
 
         if (location) {
