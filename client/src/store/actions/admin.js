@@ -21,10 +21,14 @@ export const fetchPostsAdmin = (token) => async (dispatch) => {
     }
 };
 
-export const deletePost = (postId, token) => async (dispatch) => {
+export const deletePost = (postId, token, email, reasonDeletePost) => async (dispatch) => {
     try {
         const response = await axios.delete(`http://localhost:5000/api/v1/admin/deletePost/${postId}`, {
-            headers: { 'token': token }
+            headers: { 'token': token },
+            data: {
+                email,
+                reasonDeletePost
+            }
         });
 
         if (response.data.err === 0) {
@@ -38,7 +42,7 @@ export const deletePost = (postId, token) => async (dispatch) => {
 };
 
 
-// Manage users
+// Manage users 
 export const fetchUsers = (token) => async (dispatch) => {
     try {
         const response = await axios.get('http://localhost:5000/api/v1/admin/showAllUser', {
@@ -58,10 +62,14 @@ export const fetchUsers = (token) => async (dispatch) => {
     }
 };
 
-export const deleteUser = (userId, token) => async (dispatch) => {
+export const deleteUser = (userId, token, email, reasonDeleteUser) => async (dispatch) => {
     try {
         const response = await axios.delete(`http://localhost:5000/api/v1/admin/deleteUser/${userId}`, {
-            headers: { 'token': token }
+            headers: { 'token': token },
+            data: {
+                email,
+                reasonDeleteUser
+            }
         });
 
         if (response.data.err === 0) {
@@ -181,7 +189,7 @@ export const deleteCategory = (categoryId, token) => async (dispatch) => {
     }
 };
 
-
+// Manage upgrade requests
 export const fetchUpgradeRequests = (token, page) => async (dispatch) => {
     try {
         const response = await axios.get(`http://localhost:5000/api/v1/admin/showAllUpgradeRequest?page=${page}`, {

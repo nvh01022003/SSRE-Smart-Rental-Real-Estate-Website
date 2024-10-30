@@ -1,14 +1,18 @@
 import actionTypes from './actionTypes'
 import * as apis from '../../services'
+import axios from 'axios';
 
 
 export const getCategories = () => async (dispatch) => {
     try {
-        const response = await apis.apiGetCategories()
+        const response = await axios.get('http://localhost:5000/api/v1/auth/category');
         if (response?.data.err === 0) {
             dispatch({
                 type: actionTypes.GET_CATEGORIES,
-                categories: response.data.response
+                data: {
+                    categories: response.data.msg,
+                    msg: response.data.msg
+                }
             })
         } else {
             dispatch({
@@ -18,10 +22,14 @@ export const getCategories = () => async (dispatch) => {
             })
         }
     } catch (error) {
+        console.error('Error fetching categories:', error);
         dispatch({
             type: actionTypes.GET_CATEGORIES,
-            categories: null
-        })
+            data: {
+                categories: [],
+                msg: 'Error fetching categories'
+            }
+        });
     }
 }
 export const getPrices = () => async (dispatch) => {

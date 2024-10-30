@@ -1,13 +1,16 @@
-import React, { useEffect, useContext, useState, useRef } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { getPersonalInfo } from '../../../services/userService';
 import axios from 'axios';
 import './PersonalInfo.css';
 import Swal from 'sweetalert2';
-import { AuthContext } from '../../../Context/AuthContext';
+import { useSelector } from 'react-redux';
+import { Loading } from '../../../components';
 
 const PersonalInfo = () => {
     const [personalInfo, setPersonalInfo] = useState(null);
-    const { token } = useContext(AuthContext);
+    const { token } = useSelector(state => state.auth);
+
+    const [isLoading, setIsLoading] = useState(false);
 
     const [formData, setFormData] = useState({
         id: '',
@@ -23,8 +26,12 @@ const PersonalInfo = () => {
 
     const initialFormData = useRef(formData);
 
+    //const token = localStorage.getItem('token');
+
     useEffect(() => {
+
         const fetchPersonalInfo = async () => {
+
             try {
                 console.log('Token on fetch:', token); // Debug log
 
@@ -65,11 +72,8 @@ const PersonalInfo = () => {
         let formattedValue = value;
 
         if (name === 'firstName' || name === 'lastName') {
-            // Automatically capitalize the first letter of each word
-            formattedValue = value.replace(/\b\w/g, char => char.toUpperCase());
-
             // Remove special characters
-            formattedValue = formattedValue.replace(/[^a-zA-Z\s]/g, '');
+            formattedValue = formattedValue.replace(/[-~!@#$%^&*()_+<>?:"Ơ}/*+=ơ\]';,./\\|]/g, '');
         }
 
         setFormData({ ...formData, [name]: formattedValue });
@@ -112,7 +116,7 @@ const PersonalInfo = () => {
             console.log('Token on update:', token); // Debug log
             console.log('Sending data:', formData); // Debug log
 
-            const response = await axios.post('http://localhost:5000/api/v1/user/changeInfo', formData, {
+            const response = await axios.post('http://localhost:5000/api/v1/user/tenants/changeInfo', formData, {
                 headers: {
                     'token': `${token}`
                 }
@@ -155,6 +159,7 @@ const PersonalInfo = () => {
     };
 
     const handleFileUpload = async (file) => {
+        setIsLoading(true);
         const uploadData = new FormData();
         uploadData.append('avatar', file); // Ensure the field name matches what the server expects
 
@@ -194,10 +199,13 @@ const PersonalInfo = () => {
             console.error('Error uploading image:', error);
             Swal.fire('Error', 'Error uploading image', 'error');
         }
+        finally {
+            setIsLoading(false);
+        }
     };
 
-    if (!personalInfo) {
-        return <div>Đang tải...</div>;
+    if (isLoading || !personalInfo) {
+        return <Loading />;
     }
 
     return (
@@ -292,6 +300,7 @@ const PersonalInfo = () => {
             </div>
         </div>
     );
+
 };
 
 export default PersonalInfo;

@@ -10,6 +10,7 @@ import ManageUser from './ManageUser';
 import ManageCategory from './ManageCategory';
 import ManageRequest from './ManageRequest';
 import ManagePost from './ManagePost';
+import Dashboard from './Dashboard';
 
 const HomeAdmin = () => {
     const dispatch = useDispatch();
@@ -100,12 +101,9 @@ const HomeAdmin = () => {
                     {activeTab === "Quản lý tin đăng" && (
                         <ManagePost />
                     )}
-                    {/* {activeTab !== "Quản lý yêu cầu" && activeTab !== "Đăng xuất" && activeTab === "Quản lý người dùng" && (
-                        <div className="bg-white rounded-lg shadow-lg p-6">
-                            <h2 className="text-2xl font-bold mb-4">{activeTab}</h2>
-                            <p className="text-gray-600">Content for {activeTab} goes here.</p>
-                        </div>
-                    )} */}
+                    {activeTab === "Tổng quan" && (
+                        <Dashboard />
+                    )}
                 </div>
             </div>
 

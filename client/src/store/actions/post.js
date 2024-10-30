@@ -1,5 +1,6 @@
 import actionTypes from './actionTypes'
 import { apiGetNewPosts, apiGetPosts, apiGetPostsLimit } from '../../services/post'
+import axios from 'axios'
 
 export const getPosts = () => async (dispatch) => {
     try {
@@ -23,26 +24,29 @@ export const getPosts = () => async (dispatch) => {
         })
     }
 }
-export const getPostsLimit = (query) => async (dispatch) => {
+export const getPostsLimit = (params) => async (dispatch) => {
     try {
-        const response = await apiGetPostsLimit(query)
+        const response = await axios.get('http://localhost:5000/api/v1/user/tenants/findPostByAll', { params });
         if (response?.data.err === 0) {
             dispatch({
                 type: actionTypes.GET_POSTS_LIMIT,
-                posts: response.data.response?.rows,
-                count: response.data.response?.count
+                posts: response.data.msg.listPost || [],  // Safeguard if rows is missing
+                count: response.data?.response?.count || 0,  // Safeguard if count is missing
+                msg: response.data.msg.listPost || 'No posts found',  // Assuming the response format contains `listPost`
             })
         } else {
             dispatch({
                 type: actionTypes.GET_POSTS_LIMIT,
-                msg: response.data.msg
+                posts: [],
+                msg: response.data?.msg || 'An error occurred',
             })
         }
 
     } catch (error) {
         dispatch({
             type: actionTypes.GET_POSTS_LIMIT,
-            posts: null
+            posts: [],
+            msg: 'Failed to fetch posts, please try again later.'
         })
     }
 }
@@ -69,3 +73,47 @@ export const getNewPosts = () => async (dispatch) => {
         })
     }
 }
+
+
+export const fetchSavedPosts = (token, page) => async (dispatch) => {
+    try {
+        const response = await axios.get(`http://localhost:5000/api/v1/user/tenants/listPostSaved?page=${page}`, {
+            headers: {
+                'token': `${token}`
+            }
+        });
+        if (response.data.err === 0) {
+            dispatch({
+                type: actionTypes.FETCH_SAVED_POSTS_SUCCESS,
+                payload: response.data.msg.listPost
+            });
+        } else {
+            dispatch({
+                type: actionTypes.FETCH_SAVED_POSTS_FAILURE,
+                payload: response.data.msg
+            });
+        }
+    } catch (error) {
+        dispatch({
+            type: actionTypes.FETCH_SAVED_POSTS_FAILURE,
+            payload: error.message
+        });
+    }
+};
+
+export const deleteSavedPost = (token, id) => async (dispatch) => {
+    try {
+        await axios.delete(`http://localhost:5000/api/v1/user/tenants/deletePostSaved/${id}`, {
+            headers: { 'token': `${token}` }
+        });
+        dispatch({
+            type: actionTypes.DELETE_SAVED_POST_SUCCESS,
+            payload: id
+        });
+    } catch (error) {
+        dispatch({
+            type: actionTypes.DELETE_SAVED_POST_FAILURE,
+            payload: error.message
+        });
+    }
+};

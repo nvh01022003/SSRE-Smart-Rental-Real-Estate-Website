@@ -7,7 +7,7 @@ const getTokenFromPersistAuth = () => {
     const persistAuth = localStorage.getItem('persist:auth');
     if (persistAuth) {
         const authState = JSON.parse(persistAuth);
-        const token = authState?.token?.slice(1, -1); // Xóa dấu ngoặc kép khỏi chuỗi mã thông báo
+        const token = authState?.token?.replace(/(^"|"$)/g, ''); // Remove surrounding quotes
         return token;
     }
     return null;
@@ -24,12 +24,16 @@ export const AuthProvider = ({ children }) => {
     }, []);
 
     const login = (newToken) => {
-        localStorage.setItem('token', newToken);
+        //localStorage.setItem('token', newToken);
+        localStorage.setItem('persist:auth', JSON.stringify({ ...JSON.parse(localStorage.getItem('persist:auth')), token: `"${newToken}"` }));
         setToken(newToken);
     };
 
     const logout = () => {
-        localStorage.removeItem('token');
+        //localStorage.removeItem('token');
+        const persistAuth = JSON.parse(localStorage.getItem('persist:auth'));
+        delete persistAuth.token;
+        localStorage.setItem('persist:auth', JSON.stringify(persistAuth));
         setToken(null);
     };
 
