@@ -17,7 +17,11 @@ import ValidateCode from './containers/Public/ForgotPass/ValidateCode';
 import ResetPass from './containers/Public/ForgotPass/ResetPass';
 import ListPostsSaved from './containers/Public/ListPostsSaved';
 import UpgradeAccount from './containers/Public/UpgradeAccount';
-
+import HistoryPayment from './components/HistoryPayment';
+import DepositeHistory from './components/DepositeHistory';
+import Payment from './containers/System/Payment';
+import Momo from './components/Momo';
+import BankTransfer from './components/BankTransfer';
 function App() {
 
   const dispatch = useDispatch()
@@ -86,6 +90,12 @@ function App() {
 
           <Route path={path.UPGRADE_ACCOUNT} element={<UpgradeAccount />} />
 
+          <Route path={path.PAYMENT} element={<Payment />} >
+            <Route path={path.DEPOSITE_HISTORY} element={<DepositeHistory />} />
+            <Route path={path.HISTORY_PAYMENT} element={<HistoryPayment />} />
+            <Route path={path.MOMO} element={<Momo />} />
+            <Route path={path.BANK_TRANSFER} element={<BankTransfer />} />
+          </Route>
         </Route>
 
 

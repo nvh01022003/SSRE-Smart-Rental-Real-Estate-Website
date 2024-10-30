@@ -70,7 +70,7 @@ const ListPostsSaved = () => {
                                     acreage: post.Post.acreage
                                 }}
                                 description={post.Post.description}
-                                images={post.Post.Images[0]?.img_url_list}
+                                images={post.Post.Image?.img_url_list}
                                 title={post.Post.title}
                                 user={{
                                     name: `${post.Post.User?.firstName} ${post.Post.User?.lastName}`,

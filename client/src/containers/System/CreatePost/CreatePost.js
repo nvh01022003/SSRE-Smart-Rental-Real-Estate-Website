@@ -255,7 +255,9 @@ const CreatePost = () => {
 
     }, [isLoggedIn, token]);
 
-    console.log(payload)
+    if (isLoading) {
+        return <Loading />;
+    }
 
     return (
         <div>

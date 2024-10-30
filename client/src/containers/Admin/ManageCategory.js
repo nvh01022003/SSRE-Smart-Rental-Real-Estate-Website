@@ -289,16 +289,17 @@ const ManageCategory = () => {
 
 
     return (
-        <div className="p-6 bg-white rounded-lg shadow-lg">
+        <div className="p-4 md:p-6 bg-white rounded-lg shadow-lg">
             <h2 className="text-2xl font-bold mb-4">Quản lý chuyên mục</h2>
 
-            <div className="flex mb-4">
+            {/* Search and Create Button */}
+            <div className="flex flex-col md:flex-row mb-4">
                 <input
                     type="text"
                     placeholder="Tìm kiếm chuyên mục theo tên..."
                     value={search}
                     onChange={handleSearch}
-                    className="border p-2 rounded-md flex-grow mr-4"
+                    className="border p-2 rounded-md flex-grow mb-2 md:mb-0 md:mr-4"
                 />
                 <button
                     className="bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600"
@@ -308,7 +309,8 @@ const ManageCategory = () => {
                 </button>
             </div>
 
-            <div className="flex justify-between items-center mb-4">
+            {/* Bulk Delete */}
+            <div className="flex flex-col md:flex-row justify-between items-center mb-4">
                 <button
                     className={`bg-red-500 text-white px-4 py-2 rounded-md ${selectedCategories.length === 0 ? "opacity-50 cursor-not-allowed" : ""}`}
                     onClick={handleDeleteSelected}
@@ -316,7 +318,7 @@ const ManageCategory = () => {
                 >
                     Xóa chuyên mục đã chọn
                 </button>
-                <div className="flex items-center">
+                <div className="flex items-center mt-2 md:mt-0">
                     <input
                         type="checkbox"
                         checked={selectedCategories.length === categories.length}
@@ -326,65 +328,103 @@ const ManageCategory = () => {
                 </div>
             </div>
 
-            <table className="table-auto w-full text-left">
-                <thead>
-                    <tr className="bg-gray-100">
-                        <th className="p-2">
-                            <input
-                                type="checkbox"
-                                checked={selectedCategories.length === categories.length}
-                                onChange={toggleSelectAllCategories}
-                            />
-                        </th>
-                        <th className="p-2">ID</th>
-                        <th className="p-2">Tên chuyên mục</th>
-                        <th className="p-2">Ngày đăng</th>
-                        <th className="p-2">Ngày cập nhật</th>
-                        <th className="p-2">Chức năng</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {filteredCategories.map((category) => (
-                        <tr key={category.id} className="border-b">
-                            <td className="p-2">
+            {/* Category Table */}
+            <div className="overflow-x-auto">
+                <table className="table-auto w-full text-left">
+                    <thead>
+                        <tr className="bg-gray-100">
+                            <th className="p-2">
                                 <input
                                     type="checkbox"
-                                    checked={selectedCategories.includes(category.id)}
-                                    onChange={() => toggleSelectCategory(category.id)}
+                                    checked={selectedCategories.length === categories.length}
+                                    onChange={toggleSelectAllCategories}
                                 />
-                            </td>
-                            <td className="p-2">{category.id}</td>
-                            <td className="p-2">{category.category_name}</td>
-                            <td className="p-2">{formatDate(category.createdAt)}</td>
-                            <td className="p-2">{formatDate(category.updatedAt)}</td>
-                            <td className="p-2">
-                                <button
-                                    className="bg-blue-500 text-white px-2 py-1 rounded-md mr-2"
-                                    onClick={() => openModalView(category)}
-                                >
-                                    <FaEye />
-                                </button>
-                                <button
-                                    className="bg-yellow-500 text-white px-2 py-1 rounded-md mr-2"
-                                    onClick={() => openModal(category)}
-                                >
-                                    <FaEdit />
-                                </button>
-                                <button
-                                    className="bg-red-500 text-white px-2 py-1 rounded-md"
-                                    onClick={() => handleDeleteCategory(category.id)}
-                                >
-                                    <FaTrashAlt />
-                                </button>
-                            </td>
+                            </th>
+                            <th className="p-2">ID</th>
+                            <th className="p-2">Tên chuyên mục</th>
+                            <th className="p-2">Ngày đăng</th>
+                            <th className="p-2">Ngày cập nhật</th>
+                            <th className="p-2">Chức năng</th>
                         </tr>
-                    ))}
-                </tbody>
-            </table>
+                    </thead>
+                    <tbody>
+                        {filteredCategories.map((category) => (
+                            <tr key={category.id} className="border-b">
+                                <td className="p-2">
+                                    <input
+                                        type="checkbox"
+                                        checked={selectedCategories.includes(category.id)}
+                                        onChange={() => toggleSelectCategory(category.id)}
+                                    />
+                                </td>
+                                <td className="p-2">{category.id}</td>
+                                <td className="p-2">{category.category_name}</td>
+                                <td className="p-2">{formatDate(category.createdAt)}</td>
+                                <td className="p-2">{formatDate(category.updatedAt)}</td>
+                                <td className="p-2">
+                                    <button
+                                        className="bg-blue-500 text-white px-2 py-1 rounded-md mr-2"
+                                        onClick={() => openModalView(category)}
+                                    >
+                                        <FaEye />
+                                    </button>
+                                    <button
+                                        className="bg-yellow-500 text-white px-2 py-1 rounded-md mr-2"
+                                        onClick={() => openModal(category)}
+                                    >
+                                        <FaEdit />
+                                    </button>
+                                    <button
+                                        className="bg-red-500 text-white px-2 py-1 rounded-md"
+                                        onClick={() => handleDeleteCategory(category.id)}
+                                    >
+                                        <FaTrashAlt />
+                                    </button>
+                                </td>
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
+            </div>
 
-            {isModalOpenView && currentCategory && (
+            {/* Create Category Modal */}
+            {isModalOpenCreate && (
                 <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center">
-                    <div className="bg-white p-6 rounded-lg w-1/3">
+                    <div className="bg-white p-6 rounded-lg w-11/12 md:w-1/3">
+                        <h3 className="text-xl font-bold mb-4">Tạo mới chuyên mục</h3>
+                        <div className="mb-4">
+                            <label>Tên chuyên mục:</label>
+                            <input
+                                type="text"
+                                name="category_name"
+                                value={newCategory.category_name}
+                                onChange={handleNewCategoryChange}
+                                className="border p-2 rounded-md w-full"
+                            />
+                            {errors.category_name && <small className="text-red-500 italic">{errors.category_name}</small>}
+                        </div>
+                        <div className="flex justify-end">
+                            <button
+                                className="bg-gray-500 text-white px-4 py-2 rounded-md mr-2"
+                                onClick={closeModalCreate}
+                            >
+                                Hủy
+                            </button>
+                            <button
+                                className="bg-green-500 text-white px-4 py-2 rounded-md"
+                                onClick={handleCreateCategory}
+                            >
+                                Tạo mới
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* View Category Modal */}
+            {isModalOpen && currentCategory && (
+                <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center">
+                    <div className="bg-white p-6 rounded-lg w-11/12 md:w-1/3">
                         <h3 className="text-xl font-bold mb-4">Chi tiết chuyên mục</h3>
                         <div className="mb-4">
                             <label>ID:</label>
@@ -428,81 +468,6 @@ const ManageCategory = () => {
                                 onClick={closeModalView}
                             >
                                 Đóng
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            )}
-
-            {isModalOpenCreate && (
-                <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center">
-                    <div className="bg-white p-6 rounded-lg w-1/3">
-                        <h3 className="text-xl font-bold mb-4">Tạo mới chuyên mục</h3>
-                        <div className="mb-4">
-                            <label>Tên chuyên mục:</label>
-                            <input
-                                type="text"
-                                name="category_name"
-                                value={newCategory.category_name}
-                                onChange={handleNewCategoryChange}
-                                className="border p-2 rounded-md w-full"
-                            />
-                            {errors.category_name && <small className="text-red-500 italic">{errors.category_name}</small>}
-                        </div>
-                        <div className="flex justify-end">
-                            <button
-                                className="bg-gray-500 text-white px-4 py-2 rounded-md mr-2"
-                                onClick={closeModalCreate}
-                            >
-                                Hủy
-                            </button>
-                            <button
-                                className="bg-green-500 text-white px-4 py-2 rounded-md"
-                                onClick={handleCreateCategory}
-                            >
-                                Tạo mới
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            )}
-
-            {isModalOpen && currentCategory && (
-                <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center">
-                    <div className="bg-white p-6 rounded-lg w-1/3">
-                        <h3 className="text-xl font-bold mb-4">Cập nhật chuyên mục</h3>
-                        <div className="mb-4">
-                            <label>ID:</label>
-                            <input
-                                type="text"
-                                value={currentCategory.id}
-                                disabled
-                                className="border p-2 rounded-md w-full"
-                            />
-                        </div>
-                        <div className="mb-4">
-                            <label>Tên chuyên mục:</label>
-                            <input
-                                type="text"
-                                name="category_name"
-                                value={currentCategory.category_name}
-                                onChange={handleInputChange}
-                                className="border p-2 rounded-md w-full"
-                            />
-                            {errors.category_name && <small className="text-red-500 italic">{errors.category_name}</small>}
-                        </div>
-                        <div className="flex justify-end">
-                            <button
-                                className="bg-gray-500 text-white px-4 py-2 rounded-md mr-2"
-                                onClick={closeModal}
-                            >
-                                Hủy
-                            </button>
-                            <button
-                                className="bg-green-500 text-white px-4 py-2 rounded-md"
-                                onClick={handleUpdateCategory}
-                            >
-                                Cập nhật
                             </button>
                         </div>
                     </div>

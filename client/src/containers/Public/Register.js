@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import * as actions from '../../store/actions';
 import { useDispatch, useSelector } from 'react-redux';
 import Swal from 'sweetalert2';
-
+import { Loading } from '../../components';
 const Register = () => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
@@ -17,6 +17,7 @@ const Register = () => {
         password: '',
     });
     const [invalidFields, setInvalidFields] = useState([]);
+    const [isLoading, setIsLoading] = useState(false);
 
 
 
@@ -76,6 +77,8 @@ const Register = () => {
             return;
         }
 
+        setIsLoading(true);
+
         try {
             const response = await dispatch(actions.register(payload));
             if (response?.err === 0) {
@@ -94,8 +97,15 @@ const Register = () => {
             } else {
                 Swal.fire('Oops !', 'Đã có lỗi xảy ra', 'error');
             }
+        } finally {
+            setIsLoading(false);
         }
     };
+
+
+    if (isLoading) {
+        return <Loading />;
+    }
 
     return (
         <div className='w-full flex items-center justify-center'>
