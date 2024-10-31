@@ -92,8 +92,8 @@ const findPostByAll = async (req, res) => {
     const minPrice = parseFloat(req.query.minPrice)
     const maxPrice = parseFloat(req.query.maxPrice)
     const location = req.query.location
-    const minAcreage = parseFloat(req.query.minAcreage)
-    const maxAcreage = parseFloat(req.query.maxAcreage)
+    const minAcreage = parseInt(req.query.minAcreage)
+    const maxAcreage = parseInt(req.query.maxAcreage)
     const categoryCode = parseInt(req.query.category)
     const page = parseInt(req.query.page)
     console.log('Page', page)
