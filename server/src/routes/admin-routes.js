@@ -24,8 +24,7 @@ router.delete("/deleteUsers", authentication.authenticateToken, authorization.ch
 router.get("/showDetailUser/:userId", authentication.authenticateToken, authorization.checkRoleAdmin, managerUserController.showDetailUser)
 // update user by id
 router.put("/updateUser/:userId", authentication.authenticateToken, authorization.checkRoleAdmin, managerUserController.updateUser)
-// change role user by id
-router.put("/changeRoleUser/:userId", authentication.authenticateToken, authorization.checkRoleAdmin, managerUserController.changeRoleUser)
+
 // delete user by id
 router.delete("/deleteUser/:userId", authentication.authenticateToken, authorization.checkRoleAdmin, managerUserController.deleteUser)
 // find user by name
@@ -34,6 +33,12 @@ router.get("/findUserByName", authentication.authenticateToken, authorization.ch
 router.get("/findUserByRole", authentication.authenticateToken, authorization.checkRoleAdmin, managerUserController.findUserByRole)
 // hiển thị các yêu cầu nâng cấp tài khoản
 router.get("/showAllUpgradeRequest", authentication.authenticateToken, authorization.checkRoleAdmin, managerUserController.showAllUpgradeRequest)
+//từ chối yêu cầu nâng cấp tài khoản
+router.put("/refuseUpgradeRequest/:userId", authentication.authenticateToken, authorization.checkRoleAdmin, managerUserController.refuseChangeRoleUser)
+// change role user lên ladnlord
+router.put("/changeRoleUser/:userId", authentication.authenticateToken, authorization.checkRoleAdmin, managerUserController.changeRoleUser)
+
+
 
 
 

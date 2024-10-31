@@ -2,6 +2,7 @@ const { User, Role, UpgradeRequest, sequelize } = require('../../models/index');
 const paginationHelper = require("../../helper/pagination");
 const { where } = require("sequelize");
 const { Op } = require('sequelize');
+const { Wallet } = require('../../models/index');
 
 
 // show all user
@@ -70,28 +71,112 @@ const updateUser = async (userId, data) => {
     }
 }
 // change role user by id
-const changeRoleUser = async (userId, role) => {
+const changeRoleUser = async (userId) => {
+    let transaction;
     try {
+        // Bắt đầu một transaction để đảm bảo các bước bên trong nó được thực hiện một cách đồng bộ.
+        transaction = await sequelize.transaction();
+
+        // Thử cập nhật vai trò của người dùng thành 'landlord' trong bảng Role.
+        // Tham số 'transaction' được truyền vào để đảm bảo thao tác này là một phần của transaction.
         const user = await Role.update({
-            type: role
+            type: 'ladnlord'
         }, {
             where: {
-                userId: userId
-            }
-        })
-        if (user) {
+                user_id: userId
+            },
+            transaction
+        });
+
+        // Kiểm tra xem có dòng nào bị ảnh hưởng bởi thao tác update hay không.
+        // Nếu không có dòng nào được cập nhật (user[0] === 0), có thể là người dùng không được tìm thấy hoặc vai trò không thay đổi.
+        // Trong trường hợp này, rollback transaction và trả về thông báo lỗi.
+        if (user[0] === 0) {
+            await transaction.rollback();
             return {
-                err: 0,
-                msg: 'change role user success',
+                err: 1,
+                msg: 'Không tìm thấy người dùng hoặc vai trò không thay đổi'
             };
         }
+
+        // Nếu vai trò của người dùng được cập nhật thành công, thêm một bản ghi vào bảng Wallet.
+        // Việc này sẽ tạo một ví cho người dùng với số dư mặc định là 0, trong cùng transaction.
+        const wallet = await Wallet.create({
+            user_id: userId,
+            balance: 0
+        }, { transaction });
+
+        // Update the status of the upgrade request to 1 (approved)
+        await UpgradeRequest.update({
+            status: 1
+        }, {
+            where: {
+                user_id: userId
+            },
+            transaction
+        });
+
+        // Commit transaction nếu cả hai thao tác cập nhật vai trò và tạo ví thành công.
+        // Điều này sẽ lưu tất cả thay đổi trong transaction vào cơ sở dữ liệu một cách vĩnh viễn.
+        await transaction.commit();
+
+        // Trả về thông báo thành công nếu toàn bộ quy trình hoàn thành mà không gặp lỗi.
+        return {
+            err: 0,
+            msg: 'Thay đổi vai trò người dùng thành công và ví đã được tạo',
+        };
     } catch (err) {
+        // Nếu có lỗi xảy ra ở bất kỳ bước nào trong khối try, rollback transaction để hoàn tác mọi thay đổi.
+        if (transaction) await transaction.rollback();
         return {
             err: 1,
-            msg: err
+            msg: err.message || 'Đã xảy ra lỗi'  // Trả về thông báo lỗi để hỗ trợ kiểm tra và ghi nhật ký.
         };
     }
-}
+};
+// Từ chối nâng cấp tài khoản 
+const refuseChangeRoleUser = async (userId) => {
+    let transaction;
+    try {
+        // Bắt đầu một transaction để đảm bảo các bước bên trong nó được thực hiện một cách đồng bộ.
+        transaction = await sequelize.transaction();
+
+        // Cập nhật trạng thái của yêu cầu nâng cấp thành 0
+        const upgradeRequest = await UpgradeRequest.update({
+            status: 0 // Giữ nguyên status là 0
+        }, {
+            where: {
+                user_id: userId
+            },
+            transaction
+        });
+
+        // Kiểm tra xem có dòng nào bị ảnh hưởng bởi thao tác update hay không.
+        if (upgradeRequest[0] === 0) {
+            await transaction.rollback();
+            return {
+                err: 1,
+                msg: 'Không tìm thấy yêu cầu nâng cấp cho người dùng'
+            };
+        }
+
+        // Commit transaction nếu thao tác cập nhật trạng thái thành công.
+        await transaction.commit();
+
+        // Trả về thông báo thành công nếu toàn bộ quy trình hoàn thành mà không gặp lỗi.
+        return {
+            err: 0,
+            msg: 'Trạng thái yêu cầu nâng cấp đã được cập nhật thành công',
+        };
+    } catch (err) {
+        // Nếu có lỗi xảy ra ở bất kỳ bước nào trong khối try, rollback transaction để hoàn tác mọi thay đổi.
+        if (transaction) await transaction.rollback();
+        return {
+            err: 1,
+            msg: err.message || 'Đã xảy ra lỗi'  // Trả về thông báo lỗi để hỗ trợ kiểm tra và ghi nhật ký.
+        };
+    }
+};
 // delete user by id
 const deleteUser = async (userId) => {
     try {
@@ -183,38 +268,58 @@ const findUserByRole = async (role) => {
 // hiển thị các yêu cầu nâng cấp tài khoản
 const showAllUpgradeRequest = async (page) => {
     try {
-        // pagination
-        const totalData = await UpgradeRequest.count();
+        // 1. Đếm tổng số yêu cầu nâng cấp có trạng thái '0' (chưa được phê duyệt)
+        const totalData = await UpgradeRequest.count({
+            where: {
+                status: 0 // Chỉ đếm các yêu cầu có status = 0
+            }
+        });
+
+        // 2. Thiết lập phân trang (pagination)
+        // Gọi hàm trợ giúp 'paginationHelper.pagination' để tính toán số trang và vị trí của dữ liệu dựa trên trang hiện tại.
+        // Các tham số bao gồm:
+        // - currentPage: trang hiện tại (mặc định là 1 nếu không có trang được truyền vào)
+        // - limitPage: số lượng yêu cầu nâng cấp hiển thị trên mỗi trang (ở đây là 5 yêu cầu mỗi trang)
+        // - page: trang mà người dùng yêu cầu (được truyền vào như đối số của hàm)
+        // - totalData: tổng số yêu cầu nâng cấp tính từ bước 1.
         const pagination = await paginationHelper.pagination(
             {
-                currentPage: 1,
-                limitPage: 5
+                currentPage: 1, // mặc định là trang 1
+                limitPage: 5    // số yêu cầu nâng cấp hiển thị trên mỗi trang
             },
             page,
             totalData
         );
-        const upgradeRequest = await UpgradeRequest.findAll({
+
+        // 3. Tìm tất cả các yêu cầu nâng cấp có trạng thái '0' (chưa được phê duyệt)
+        // Truy vấn này giới hạn số lượng kết quả dựa trên phân trang đã tính toán từ bước 2.
+        // Các yêu cầu nâng cấp được lấy với các thuộc tính cụ thể: 'user_id', 'full_name', 'date_of_birth', 'address', 'contact', 'citizen_id', 'id_card_image_url', và 'status'.
+        // Tham số 'limit' giới hạn số lượng bản ghi trả về mỗi trang, và 'offset' bỏ qua số lượng bản ghi cần thiết để truy cập trang mong muốn.
+        const upgradeRequests = await UpgradeRequest.findAll({
+            where: {
+                status: 0
+            },
             limit: pagination.limitPage,
             offset: pagination.skip,
-            attributes: ['user_id', 'full_name', 'date_of_birth', 'address', 'contact', "citizen_id ", 'id_card_image_url', 'status']
+            attributes: ['user_id', 'full_name', 'date_of_birth', 'address', 'contact', 'citizen_id', 'id_card_image_url', 'status']
         });
-        if (upgradeRequest) {
+
+        // 4. Nếu có yêu cầu nâng cấp được tìm thấy, trả về kết quả thành công với danh sách yêu cầu nâng cấp và thông tin phân trang
+        if (upgradeRequests) {
             return {
-                err: 0,
-                res: upgradeRequest,
-                pagination: pagination
+                err: 0,               // Không có lỗi (err = 0)
+                res: upgradeRequests,  // Danh sách yêu cầu nâng cấp
+                pagination: pagination // Thông tin phân trang
             };
         }
-    }
-    catch (err) {
+    } catch (err) {
+        // 5. Nếu có lỗi xảy ra trong quá trình thực thi, trả về thông báo lỗi
         return {
-            err: 1,
-            msg: err
+            err: 1,                // Đánh dấu có lỗi (err = 1)
+            msg: err.message || 'An error occurred' // Thông báo lỗi (nếu có)
         };
     }
-
-
-}
+};
 module.exports = {
     showAllUser,
     showDetailUser,
@@ -224,5 +329,7 @@ module.exports = {
     deleteUsers,
     findUserByEmail,
     findUserByRole,
-    showAllUpgradeRequest
+    showAllUpgradeRequest,
+    refuseChangeRoleUser
+
 }
