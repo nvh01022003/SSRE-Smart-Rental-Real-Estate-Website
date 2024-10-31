@@ -12,7 +12,10 @@ module.exports = (sequelize, DataTypes) => {
     static associate({ User, Post }) {
       // define association here
       this.hasOne(User, { foreignKey: "id" })
-      this.belongsTo(Post, { foreignKey: 'post_id' });
+      this.belongsTo(Post, {
+        foreignKey: 'post_id',
+        onDelete: 'CASCADE'
+      });
     }
   }
   Favourite.init({
