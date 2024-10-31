@@ -5,10 +5,11 @@ import { useSelector } from 'react-redux'
 import { useNavigate, createSearchParams } from 'react-router-dom'
 import { path } from '../../ultils/constant'
 import { apiGetPubliccitys } from '../../services/app';
+import { Loading } from '../../components'
 
 const { BsChevronRight, HiOutlineLocationMarker, TbReportMoney, RiCrop2Line, MdOutlineHouseSiding, FiSearch } = icons
 
-const Search = () => {
+const Search = ({ setSearchClicked }) => {
     const navigate = useNavigate()
     const [isShowModal, setIsShowModal] = useState(false)
     const [content, setContent] = useState([])
@@ -17,7 +18,7 @@ const Search = () => {
     const [arrMinMax, setArrMinMax] = useState({})
     const [defaultText, setDefaultText] = useState('')
     const [provinces, setProvinces] = useState([])  // State cho danh sách tỉnh
-
+    const [loading, setLoading] = useState(false);
     const { areas, prices, categories } = useSelector(state => state.app)
 
     // Fetch danh sách tỉnh từ API
@@ -57,7 +58,6 @@ const Search = () => {
                 value: area.area_range
             }));
         }
-        console.log('content', content)
         setContent(content)
         setName(name)
         setDefaultText(defaultText)
@@ -72,6 +72,8 @@ const Search = () => {
     }, [isShowModal, queries])
 
     const handleSearch = () => {
+        setSearchClicked(true); // Set the flag to true when the search button is clicked
+        setLoading(true); // Set loading to true when search starts
         const queryCodes = Object.entries(queries).filter(item => item[0].includes('Number') || item[0].includes('Code')).filter(item => item[1]);
         let queryCodesObj = {};
         queryCodes.forEach(item => { queryCodesObj[item[0]] = item[1] });
@@ -83,15 +85,15 @@ const Search = () => {
         // Map priceNumber to minPrice and maxPrice
         if (queries.priceNumber) {
             const [minPrice, maxPrice] = queries.priceNumber;
-            queryCodesObj.minPrice = minPrice !== undefined ? minPrice : 0; // Default minPrice to 0 if not provided
-            queryCodesObj.maxPrice = maxPrice;
+            queryCodesObj.minPrice = parseFloat(minPrice !== undefined ? minPrice : 0);// Default minPrice to 0 if not provided
+            queryCodesObj.maxPrice = parseFloat(maxPrice);
         }
 
         // Map areaNumber to minAcreage and maxAcreage
         if (queries.areaNumber) {
             const [minAcreage, maxAcreage] = queries.areaNumber;
-            queryCodesObj.minAcreage = minAcreage !== undefined ? minAcreage : 0; // Default minAcreage to 0 if not provided
-            queryCodesObj.maxAcreage = maxAcreage;
+            queryCodesObj.minAcreage = parseInt(minAcreage !== undefined ? minAcreage : 0); // Default minAcreage to 0 if not provided
+            queryCodesObj.maxAcreage = parseInt(maxAcreage);
         }
 
         // Map provinceCode to location
@@ -106,7 +108,7 @@ const Search = () => {
         if (queries.categoryCode && categories.length > 0) {
             const selectedCategory = categories.find(category => category.id === parseInt(queries.categoryCode[0]));
             if (selectedCategory) {
-                queryCodesObj.category = selectedCategory.id.toString(); // Ensure categoryCode is a string
+                queryCodesObj.category = selectedCategory.id
             }
         }
 
@@ -125,10 +127,15 @@ const Search = () => {
             pathname: path.SEARCH,
             search: createSearchParams(queryCodesObj).toString(),
         }, { state: { titleSearch } });
+
+        setLoading(false); // Set loading to false when search completes
     };
+
+    //if (loading) return <Loading />
 
     return (
         <>
+            {loading && <Loading />} {/* Display loading indicator */}
             <div className='p-[10px] w-full my-5 bg-[#febb02] rounded-lg flex-col lg:flex-row flex items-center justify-around gap-2' >
                 <span onClick={() => handleShowModal(categories, 'category', 'Tìm tất cả')} className='cursor-pointer flex-1 '>
                     <SearchItem IconBefore={<MdOutlineHouseSiding />} fontWeight IconAfter={<BsChevronRight color='rgb(156, 163, 175)' />} text={queries.category} defaultText={'Tìm tất cả'} />

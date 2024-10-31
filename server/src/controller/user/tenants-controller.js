@@ -89,13 +89,13 @@ const deletePostSaved = async (req, res) => {
 }
 // find post by all condition
 const findPostByAll = async (req, res) => {
-    const minPrice = parseFloat(req.query.minPrice)
-    const maxPrice = parseFloat(req.query.maxPrice)
+    const minPrice = req.query.minPrice
+    const maxPrice = req.query.maxPrice
     const location = req.query.location
-    const minAcreage = parseInt(req.query.minAcreage)
-    const maxAcreage = parseInt(req.query.maxAcreage)
-    const categoryCode = parseInt(req.query.category)
-    const page = parseInt(req.query.page)
+    const minAcreage = req.query.minAcreage
+    const maxAcreage = req.query.maxAcreage
+    const categoryCode = req.query.category
+    const page = req.query.page
     console.log('Page', page)
     console.log('1', minPrice)
     console.log('2', maxPrice)
@@ -183,6 +183,20 @@ const reqUpdateToLandlord = async (req, res) => {
     }
 }
 
+const totalPostSaved = async (req, res) => {
+    const userId = req.user.id
+    try {
+        const response = await tenanstService.totalPostSaved(userId)
+        return res.status(200).json(response)
+    } catch (error) {
+        return res.status(500).json({
+            err: -1,
+            msg: 'Fail at auth controller totalPostSaved: ' + error
+        })
+    }
+}
+
+
 module.exports = {
     showInfoUser,
     changeInfo,
@@ -195,5 +209,7 @@ module.exports = {
     totalPage,
     showDetailPost,
     showCategory,
-    reqUpdateToLandlord
+    reqUpdateToLandlord,
+    totalPostSaved
+
 }

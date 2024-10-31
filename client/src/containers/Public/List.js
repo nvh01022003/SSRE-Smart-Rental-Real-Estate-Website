@@ -4,15 +4,15 @@ import { getPostsLimit } from '../../store/actions/post';
 import { useDispatch, useSelector } from 'react-redux';
 import { useSearchParams } from 'react-router-dom';
 import { apiGetPubliccitys } from '../../services/app';
+import { Loading } from '../../components'
 
-const List = ({ categoryCode }) => {
+const List = ({ categoryCode, searchClicked }) => {
     const dispatch = useDispatch();
     const [searchParams] = useSearchParams();
     const { posts } = useSelector(state => state.post);
-    console.log(posts);
     const [provinces, setProvinces] = useState([]);  // State cho danh sách tỉnh
-
     const { categories } = useSelector(state => state.app);
+    const [loading, setLoading] = useState(false);
 
     // Fetch danh sách tỉnh từ API
     useEffect(() => {
@@ -46,16 +46,16 @@ const List = ({ categoryCode }) => {
         // Map priceNumber to minPrice and maxPrice
         if (searchParamsObject.priceNumber) {
             const [minPrice, maxPrice] = searchParamsObject.priceNumber;
-            searchParamsObject.minPrice = minPrice !== undefined ? minPrice : 0; // Default minPrice to 0 if not provided
-            searchParamsObject.maxPrice = maxPrice;
+            searchParamsObject.minPrice = parseFloat(minPrice !== undefined ? minPrice : 0); // Default minPrice to 0 if not provided
+            searchParamsObject.maxPrice = parseFloat(maxPrice);
             delete searchParamsObject.priceNumber;
         }
 
         // Map areaNumber to minAcreage and maxAcreage
         if (searchParamsObject.areaNumber) {
             const [minAcreage, maxAcreage] = searchParamsObject.areaNumber;
-            searchParamsObject.minAcreage = minAcreage !== undefined ? minAcreage : 0; // Default minAcreage to 0 if not provided
-            searchParamsObject.maxAcreage = maxAcreage;
+            searchParamsObject.minAcreage = parseInt(minAcreage !== undefined ? minAcreage : 0); // Default minAcreage to 0 if not provided
+            searchParamsObject.maxAcreage = parseInt(maxAcreage);
             delete searchParamsObject.areaNumber;
         }
 
@@ -72,7 +72,7 @@ const List = ({ categoryCode }) => {
         if (searchParamsObject.categoryCode) {
             const selectedCategory = categories.find(category => category.id === parseInt(searchParamsObject.categoryCode[0]));
             if (selectedCategory) {
-                searchParamsObject.category = selectedCategory.id.toString(); // Ensure categoryCode is a string
+                searchParamsObject.category = selectedCategory.id
             }
             delete searchParamsObject.categoryCode;
         }
@@ -80,9 +80,16 @@ const List = ({ categoryCode }) => {
         // Ensure all required parameters are included
         if (!searchParamsObject.page) searchParamsObject.page = 1; // Default to page 1 if not provided
 
-        dispatch(getPostsLimit(searchParamsObject));
-        console.log(searchParamsObject);
-    }, [searchParams, categoryCode, dispatch, provinces, categories]);
+        if (searchClicked) {
+            setLoading(true); // Set loading to true when search starts
+            dispatch(getPostsLimit(searchParamsObject)).finally(() => {
+                setLoading(false); // Set loading to false when API call completes
+            });
+        }
+        //console.log(searchParamsObject);
+    }, [searchParams, categoryCode, dispatch, provinces, categories, searchClicked]);
+
+    if (loading) return <Loading />; // Display loading indicator
 
     return (
         <div className='w-full bg-white shadow-md rounded-md'>

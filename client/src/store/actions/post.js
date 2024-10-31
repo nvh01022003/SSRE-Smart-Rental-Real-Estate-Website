@@ -117,3 +117,24 @@ export const deleteSavedPost = (token, id) => async (dispatch) => {
         });
     }
 };
+
+export const getTotalPostSaved = (token) => async (dispatch) => {
+    try {
+        const response = await axios.get('http://localhost:5000/api/v1/user/tenants/totalPostSaved', {
+            headers: {
+                'token': ` ${token}` // Include token in headers
+            }
+        });
+        if (response.data.err === 0) {
+            dispatch({
+                type: actionTypes.GET_TOTAL_POSTS_SAVED,
+                payload: response.data.msg
+            });
+        } else {
+            throw new Error(response.data.msg);
+        }
+    } catch (error) {
+        console.error('Error fetching total', error);
+        throw error;
+    }
+}

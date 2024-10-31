@@ -518,6 +518,28 @@ const reqUpdateToLandlord = async (userId, info, imgKYC) => {
     }
 
 }
+
+const totalPostSaved = async (userId) => {
+    try {
+        const total = await Favourite.count({
+            where: {
+                user_id: userId
+            }
+        });
+        return {
+            err: 0,
+            msg: total
+        }
+    } catch (err) {
+        return {
+            err: 1,
+            msg: err
+        }
+    }
+}
+
+
+
 module.exports = {
     getInfoUser,
     changeInfoUser,
@@ -529,6 +551,7 @@ module.exports = {
     listPostByPage,
     showDetailPost,
     showCategory,
-    reqUpdateToLandlord
+    reqUpdateToLandlord,
+    totalPostSaved
 
 };

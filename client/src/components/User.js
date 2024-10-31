@@ -51,10 +51,8 @@ import { useSelector } from 'react-redux';
 import axios from 'axios';
 
 const User = () => {
-    //const dispatch = useDispatch();
     const [currentData, setCurrentData] = useState(null);
     const isLoggedIn = useSelector((state) => state.auth.isLoggedIn); // Lấy isLoggedIn từ redux store
-
     const { token } = useSelector((state) => state.auth)
 
     useEffect(() => {
@@ -98,7 +96,7 @@ const User = () => {
     }
 
     return (
-        <div className='flex items-center gap-2'>
+        <div className='flex items-center gap-2 cursor-pointer' onClick={() => window.location.href = '/he-thong/thong-tin-ca-nhan'}>
             <img src={currentData.img_avt || anonAvatar} alt="avatar" className='w-12 object-cover rounded-full h-12 border-2 shadow-md border-white' />
             <div>
                 Xin chào,

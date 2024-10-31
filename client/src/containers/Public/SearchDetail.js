@@ -7,7 +7,6 @@ import { useLocation } from 'react-router-dom'
 const SearchDetail = () => {
     const { prices, areas } = useSelector(state => state.app)
     const location = useLocation()
-
     return (
         <div className='w-full flex flex-col gap-3' >
             <div>
@@ -16,7 +15,7 @@ const SearchDetail = () => {
             </div>
             <div className='w-full flex gap-4'>
                 <div className='w-[70%]'>
-                    <List />
+                    <List searchClicked={true} />
                     <Pagination />
                 </div>
                 <div className='w-[30%] flex flex-col gap-4 justify-start items-center mt-3'>

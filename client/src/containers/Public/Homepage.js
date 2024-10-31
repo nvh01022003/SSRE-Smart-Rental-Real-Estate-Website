@@ -1,4 +1,4 @@
-import React from 'react'
+import { React, useState } from 'react'
 import { text } from '../../ultils/constant'
 import { Province, ItemSidebar, RelatedPost } from '../../components'
 import { List, Pagination, Search } from './index'
@@ -8,7 +8,7 @@ import { useSelector } from 'react-redux'
 
 const Homepage = () => {
     const { categories, prices, areas } = useSelector(state => state.app)
-
+    const [searchClicked, setSearchClicked] = useState(false);
     return (
         <div className='w-full h-full flex flex-col gap-3 items-center justify-center'>
 
@@ -24,10 +24,10 @@ const Homepage = () => {
 
 
             <div className='w-full flex flex-col'>
-                <Search />
+                <Search setSearchClicked={setSearchClicked} />
                 <div className='w-full flex gap-4'>
                     <div className='w-[70%]'>
-                        <List />
+                        <List searchClicked={searchClicked} />
                         <Pagination />
                     </div>
                     <div className='w-[30%] flex flex-col gap-4 mt-3'>

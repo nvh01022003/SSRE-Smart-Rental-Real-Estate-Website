@@ -6,6 +6,7 @@ const initState = {
     count: 0,
     newPosts: [],
     savedPosts: [],
+    totalPostSaved: 0,
 }
 
 const postReducer = (state = initState, action) => {
@@ -59,6 +60,11 @@ const postReducer = (state = initState, action) => {
             return {
                 ...state,
                 error: action.payload
+            };
+        case actionTypes.GET_TOTAL_POSTS_SAVED:
+            return {
+                ...state,
+                totalPostSaved: action.payload
             };
         default:
             return state;
