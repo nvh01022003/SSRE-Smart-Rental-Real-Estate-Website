@@ -1,36 +1,17 @@
-import React, { useState } from "react"
-import Header from "../containers/System/Header"
-import { Link } from 'react-router-dom'
-
-// Define fake data
-const fakeData = [
-    {
-        date: '2023-10-01',
-        transactionId: 'TXN123456',
-        method: 'MOMO',
-        amount: '500,000đ',
-        promotion: '10%',
-        received: '550,000đ',
-        status: 'Completed',
-        note: 'Nạp thành công'
-    },
-    {
-        date: '2023-10-02',
-        transactionId: 'TXN123457',
-        method: 'Bank Transfer',
-        amount: '1,000,000đ',
-        promotion: '20%',
-        received: '1,200,000đ',
-        status: 'Pending',
-        note: 'Đang xử lý'
-    },
-    // Add more fake data as needed
-];
+import React, { useState, useEffect } from "react";
+import Header from "../containers/System/Header";
+import { Link } from 'react-router-dom';
+import axios from 'axios';
+import { useSelector } from 'react-redux';
 
 const DepositeHistory = () => {
     const [currentPage, setCurrentPage] = useState(1);
     const [itemsPerPage, setItemsPerPage] = useState(10);
-    const totalPages = Math.ceil(fakeData.length / itemsPerPage);
+    const [transactions, setTransactions] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const token = useSelector(state => state.auth.token);
+
+    const totalPages = Math.ceil(transactions.length / itemsPerPage);
 
     const handlePreviousPage = () => {
         if (currentPage > 1) {
@@ -44,16 +25,43 @@ const DepositeHistory = () => {
         }
     };
 
+    // Fetch deposit history from the API
+    useEffect(() => {
+        const fetchDepositHistory = async () => {
+            try {
+                const res = await axios.get('http://localhost:5000/api/v1/user/depositHistory', {
+                    headers: {
+                        'token': `${token}`,
+                    }
+                });
+                console.log(res)
+                if (res.data.err === 0) {
+                    setTransactions(res.data.transactions);
+                }
+            } catch (error) {
+                console.error('Error fetching deposit history:', error);
+            } finally {
+                setLoading(false);
+            }
+        };
+        fetchDepositHistory();
+    }, [token]);
+
     // Calculate the data to display on the current page
     const indexOfLastItem = currentPage * itemsPerPage;
     const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-    const currentItems = fakeData.slice(indexOfFirstItem, indexOfLastItem);
-
+    const currentItems = transactions.slice(indexOfFirstItem, indexOfLastItem);
+    console.log(currentItems);
+    console.log(transactions);
     // Function to format date
     const formatDate = (dateString) => {
-        const [year, month, day] = dateString.split('-');
-        return `${day}-${month}-${year}`;
+        const date = new Date(dateString);
+        return date.toLocaleDateString('vi-VN');
     };
+
+    if (loading) {
+        return <div>Loading...</div>;
+    }
 
     return (
         <div>
@@ -72,24 +80,17 @@ const DepositeHistory = () => {
                                     <th className="border border-gray-200 px-4 py-2">Mã giao dịch</th>
                                     <th className="border border-gray-200 px-4 py-2">Phương thức</th>
                                     <th className="border border-gray-200 px-4 py-2">Số tiền</th>
-                                    <th className="border border-gray-200 px-4 py-2">Khuyến mãi</th>
-                                    <th className="border border-gray-200 px-4 py-2">Thực nhận</th>
                                     <th className="border border-gray-200 px-4 py-2">Trạng thái</th>
-                                    <th className="border border-gray-200 px-4 py-2">Ghi chú</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 {currentItems.map((item, index) => (
                                     <tr key={index}>
-                                        <td className="border border-gray-200 px-4 py-2 text-center align-middle">{formatDate(item.date)}</td>
-                                        <td className="border border-gray-200 px-4 py-2 text-center align-middle">{item.transactionId}</td>
-                                        <td className="border border-gray-200 px-4 py-2 text-center align-middle">{item.method}</td>
+                                        <td className="border border-gray-200 px-4 py-2 text-center align-middle">{formatDate(item.createdAt)}</td>
+                                        <td className="border border-gray-200 px-4 py-2 text-center align-middle">{item.paycode}</td>
+                                        <td className="border border-gray-200 px-4 py-2 text-center align-middle">{item.paycode.startsWith('MOMO') ? 'MoMo' : 'Chuyển khoản'}</td>
                                         <td className="border border-gray-200 px-4 py-2 text-center align-middle">{item.amount}</td>
-                                        <td className="border border-gray-200 px-4 py-2 text-center align-middle">{item.promotion}</td>
-                                        <td className="border border-gray-200 px-4 py-2 text-center align-middle">{item.received}</td>
                                         <td className="border border-gray-200 px-4 py-2 text-center align-middle">{item.status}</td>
-                                        <td className="border border-gray-200 px-4 py-2 text-center align-middle">{item.note}</td>
-
                                     </tr>
                                 ))}
                             </tbody>
@@ -110,11 +111,11 @@ const DepositeHistory = () => {
                             </div>
                             <div className="flex items-center">
                                 <button onClick={handlePreviousPage} className="px-4 py-2 bg-gray-200 rounded-full mr-2" disabled={currentPage === 1}>
-                                    Previous
+                                    Trước
                                 </button>
-                                <span className="text-gray-500">{currentPage} of {totalPages} pages</span>
+                                <span className="text-gray-500">{currentPage} trên {totalPages} trang</span>
                                 <button onClick={handleNextPage} className="px-4 py-2 bg-gray-200 rounded-full ml-2" disabled={currentPage === totalPages}>
-                                    Next
+                                    Sau
                                 </button>
                             </div>
                         </div>
@@ -124,4 +125,5 @@ const DepositeHistory = () => {
         </div>
     );
 }
+
 export default DepositeHistory;

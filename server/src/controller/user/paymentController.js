@@ -1,48 +1,47 @@
 const { createPaymentRequest, updateWalletBalance, checkTransactionStatus } = require("../../services/auth/paymentService"); // Import service
+const { createPaymentPayos, updateWallet, checkTransaction } = require("../../services/auth/paymentPayOs"); // Import service
+
 const { Wallet, Transaction } = require('../../models'); // Import model Wallet
 
 // Tạo yêu cầu thanh toán
 const createPayment = async (req, res) => {
-    const amount = req.body.amount;
-    console.log('...',amount);
+    const { paymentMethod } = req.body; // Thêm `paymentMethod` để xác định MoMo hoặc PayOS
+    const amount = parseInt(req.body.amount);
     const userId = req.user.id;
-    console.log('...',userId);
+    console.log('Amount:', amount, 'User ID:', userId, 'Payment Method:', paymentMethod);
+
     try {
-        // Kiểm tra ví
-        const wallet = await Wallet.findOne({ where: { user_id: userId }, attributes: ['id']});
+        // Kiểm tra ví của người dùng
+        const wallet = await Wallet.findOne({ where: { user_id: userId }, attributes: ['id'] });
         if (!wallet) {
+            console.log('Wallet not found for user ID:', userId);
             return res.status(404).json({ message: 'Wallet not found' });
         }
-        console.log('vi',wallet)
-        const orderId = "MOMO" + new Date().getTime(); // Mã đơn hàng (unique)
 
-        // Tạo yêu cầu thanh toán và nhận URL từ MoMo
-        const paymentUrl = await createPaymentRequest(amount, orderId, wallet.id);
+        // Tạo mã đơn hàng với tiền tố để phân biệt MoMo hoặc PayOS
+        const orderId = (paymentMethod === "MoMo" ? "MOMO" : "PAYOS") + new Date().getTime();
 
-        // Trả về URL để người dùng thực hiện thanh toán
-        return res.status(200).json({ payUrl: paymentUrl, orderId: orderId, message: 'Payment request created, please proceed with the payment' });
+        // Gọi dịch vụ thanh toán phù hợp dựa trên `paymentMethod`
+        let paymentUrl;
+        if (paymentMethod === "MoMo") {
+            paymentUrl = await createPaymentRequest(amount, orderId, wallet.id); // Gọi MoMo service
+        } else if (paymentMethod === "payOS") {
+            paymentUrl = await createPaymentPayos(amount, wallet.id); // Gọi PayOS service
+        } else {
+            return res.status(400).json({ message: 'Invalid payment method' });
+        }
+
+        // Trả về URL thanh toán cho người dùng
+        return res.status(200).json({ payUrl: paymentUrl, message: 'Payment request created, please proceed with the payment' });
     } catch (error) {
+        console.error('Error creating payment request:', error.message);
         return res.status(500).json({ message: error.message });
     }
 };
-const showBalance = async (req, res) => {
-    const userId = req.user.id;
-    try {
-        const wallet = await Wallet.findOne({ where: { user_id: userId }, attributes: ['balance']});
-        if (!wallet) {
-            return res.status(404).json({ message: 'Wallet not found' });
-        }
-        return (
-            res.status(200).json({
-                err: 0,
-                msg: 'get balance success',
-                balance: wallet.balance
-            })
-        )
-    } catch (error) {
-        return res.status(500).json(error);
-    }
-};
+
+
+
+// dự phòng kiểm tra trạng thái thanh toán
 const checkPaymentStatus = async (req, res) => {
     const { orderId } = req.body;
 
@@ -76,6 +75,7 @@ const checkPaymentStatus = async (req, res) => {
         return res.status(500).json({ message: error.message });
     }
 };
+
 const handleMoMoCallback = async (req, res) => {
     // Nhận dữ liệu từ MoMo
     console.log("MoMo callback response:", req.body);
@@ -91,7 +91,7 @@ const handleMoMoCallback = async (req, res) => {
 
         if (transaction) {
             // Cập nhật số dư của ví tương ứng
-            await updateWalletBalance(transaction.wallet_id, amount);
+            await updateWalletBalance(transaction.wallet_id, amount, orderId);
 
             console.log(`Wallet balance updated for wallet_id: ${transaction.wallet_id}, amount: ${amount}`);
             return res.status(200).send("OK"); // Gửi phản hồi về cho MoMo
@@ -109,41 +109,78 @@ const handleMoMoCallback = async (req, res) => {
     }
 };
 
+// Xử lý callback từ PayOS khi giao dịch hoàn thành
+const handlePayOSCallback = async (req, res) => {
+    console.log("PayOS callback response:", req.body);
+
+    const { code, desc, data } = req.body;
+    // Kiểm tra nếu giao dịch thành công
+    if (code === '00') {
+        const { orderCode, amount } = data;
+        const transaction = await Transaction.findOne({ where: { paycode: orderCode } });
+
+        if (transaction) {
+            // Cập nhật số dư của ví tương ứng bằng hàm `updateWallet`
+            await updateWallet(transaction.wallet_id, amount, orderCode);
+            console.log(`Wallet balance updated for wallet_id: ${transaction.wallet_id}, amount: ${amount} (PayOS)`);
+            return res.status(200).send("OK"); // Phản hồi thành công về cho PayOS
+        } else {
+            console.log("Transaction not found in database.");
+            return res.status(404).json({ message: 'Transaction not found in database.' });
+        }
+    } else {
+        // Xử lý nếu giao dịch thất bại
+        console.log("Transaction failed:", message);
+        return res.status(400).json({
+            message: `Transaction failed with resultCode: ${resultCode}`,
+            error: message
+        });
+    }
+};
 
 
+const showBalance = async (req, res) => {
+    const userId = req.user.id;
+    try {
+        const wallet = await Wallet.findOne({ where: { user_id: userId }, attributes: ['balance'] });
+        if (!wallet) {
+            return res.status(404).json({ message: 'Wallet not found' });
+        }
+        return (
+            res.status(200).json({
+                err: 0,
+                msg: 'get balance success',
+                balance: wallet.balance
+            })
+        )
+    } catch (error) {
+        return res.status(500).json(error);
+    }
+};
+
+const showDepositHistory = async (req, res) => {
+    try {
+        const userId = req.user.id;
+
+        // Find the wallet associated with the user
+        const wallet = await Wallet.findOne({ where: { user_id: userId } });
+
+        if (!wallet) {
+            return res.status(404).json({ err: 1, msg: 'Wallet not found' });
+        }
+
+        // Find transactions associated with the wallet
+        const transactions = await Transaction.findAll({
+            where: { wallet_id: wallet.id },
+            attributes: ['paycode', 'createdAt', 'amount', 'status']
+        });
+
+        return res.status(200).json({ err: 0, transactions });
+    } catch (error) {
+        console.error('Error fetching deposit history:', error);
+        return res.status(500).json({ err: 1, msg: 'Internal server error' });
+    }
+};
 
 
-// Xử lý callback từ MoMo khi giao dịch hoàn thành
-// const momoCallback = async (req, res) => {
-//     console.log('------Callback data:', req.body);
-//     const { orderId, amount, id, resultCode } = req.body;
-//     try {
-//         if (resultCode === 0) {
-//             // Cập nhật số dư ví sau khi thanh toán thành công
-//             await updateWalletBalance(id, amount);
-
-//             // Cập nhật trạng thái giao dịch trong DB
-//             await Transaction.update(
-//                 { status: 'success' },
-//                 { where: { paycode: orderId } }
-//             );
-
-//             console.log('Updated Wallet:', await Wallet.findOne({ where: { id: id } }));
-
-//             return res.status(200).json({ message: 'Transaction successful, wallet updated' });
-//         } else {
-//             // Nếu giao dịch không thành công
-//             await Transaction.update(
-//                 { status: 'failed' },
-//                 { where: { paycode: orderId } }
-//             );
-//             return res.status(400).json({ message: 'Transaction failed or canceled' });
-//         }
-//     } catch (error) {
-//         return res.status(500).json({ message: 'Failed to update wallet balance', error: error.message });
-//     }
-// };
-
-
-
-module.exports = { createPayment, checkPaymentStatus, handleMoMoCallback, showBalance }; 
+module.exports = { showDepositHistory, createPayment, checkPaymentStatus, handleMoMoCallback, handlePayOSCallback, showBalance }; 

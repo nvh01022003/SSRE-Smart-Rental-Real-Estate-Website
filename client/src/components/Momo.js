@@ -1,12 +1,11 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 
 // const Momo = () => {
 //   const [selectedAmount, setSelectedAmount] = useState(50000);
 //   const [customAmount, setCustomAmount] = useState('');
-  
+
 //   const handleAmountChange = (event) => {
 //     const amount = Number(event.target.value);
 //     setSelectedAmount(amount);
@@ -70,7 +69,7 @@ import { useSelector } from 'react-redux';
 //         <span className="ml-2 text-gray-500">vnd</span>
 
 //       </div>
-              
+
 //       {renderAmountMessage()}
 //       <button className="bg-blue-500 text-white px-2 py-1 rounded-lg w-1/2 hover:bg-blue-600">
 //         Tiếp tục
@@ -94,7 +93,6 @@ const Momo = () => {
   const [selectedAmount, setSelectedAmount] = useState(50000);
   const [customAmount, setCustomAmount] = useState('');
   const token = useSelector(state => state.auth.token);
-  const navigate = useNavigate(); // Sử dụng navigate để điều hướng sau khi thanh toán
 
   const handleAmountChange = (event) => {
     const amount = Number(event.target.value);
@@ -112,7 +110,7 @@ const Momo = () => {
     const number = Number(amount);
     // Format the number as currency
     return number.toLocaleString('vi-VN') + ' đồng'; // {{ edit_1 }}
-};
+  };
 
   const renderAmountMessage = () => {
     const amountToDisplay = customAmount || selectedAmount;
@@ -129,13 +127,14 @@ const Momo = () => {
   const handleSubmitPayment = async () => {
     try {
       const amount = customAmount || selectedAmount;
-      
-      const response = await axios.post('http://localhost:5000/api/v1/user/payment', {amount},{
+      const paymentMethod = 'MoMo';
+
+      const response = await axios.post('http://localhost:5000/api/v1/user/payment', { amount, paymentMethod }, {
         headers: {
-            'token': `${token}`,
+          'token': `${token}`,
         }
-    });
-      
+      });
+
       if (response.status === 200) {
         // Điều hướng người dùng tới trang thanh toán MoMo
         window.location.href = response.data.payUrl;
@@ -178,7 +177,7 @@ const Momo = () => {
         />
         <span className="ml-2 text-gray-500">vnd</span>
       </div>
-              
+
       {renderAmountMessage()}
       <button className="bg-blue-500 text-white px-2 py-1 rounded-lg w-1/2 hover:bg-blue-600" onClick={handleSubmitPayment}>
         Tiếp tục

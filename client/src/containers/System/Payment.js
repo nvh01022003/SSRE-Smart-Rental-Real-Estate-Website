@@ -14,34 +14,36 @@ const Payment = () => {
     const [showMomoModal, setShowMomoModal] = useState(false);
     const token = useSelector(state => state.auth.token);
     const [balance, setBalance] = useState(null);
+
     const convertToWords = (amount) => {
         if (!amount) return '';
         const number = Number(amount);
         // Format the number as currency
-        return number.toLocaleString('vi-VN') + ' đồng'; 
+        return number.toLocaleString('vi-VN') + ' đồng';
     };
     const handleMomoClick = () => {
         setShowMomoModal(true);
     };
+
     useEffect(() => {
         const fetchBalance = async () => {
             try {
-                const res = await axios.get('http://localhost:5000/api/v1/user/showBalance',{
+                const res = await axios.get('http://localhost:5000/api/v1/user/showBalance', {
                     headers: {
                         'token': `${token}`,
                     }
                 });
-                console.log(res)
-                if(res.data.err===0){
+                //console.log(res)
+                if (res.data.err === 0) {
                     setBalance(res.data.balance)
                 }
             } catch (error) {
                 console.error('Error fetching user role:', error);
             }
         };
-            fetchBalance();
-
+        fetchBalance();
     }, [token]);
+
     return (
         <Routes>
             <Route path={path.DEPOSITE_HISTORY} element={<DepositeHistory />} />
