@@ -128,10 +128,12 @@ const Search = ({ setSearchClicked }) => {
             search: createSearchParams(queryCodesObj).toString(),
         }, { state: { titleSearch } });
 
+
         setLoading(false); // Set loading to false when search completes
     };
 
     //if (loading) return <Loading />
+
 
     return (
         <>

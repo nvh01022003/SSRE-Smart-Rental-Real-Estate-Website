@@ -16,7 +16,7 @@ const SearchDetail = () => {
             <div className='w-full flex gap-4'>
                 <div className='w-[70%]'>
                     <List searchClicked={true} />
-                    <Pagination />
+                    {/* <Pagination /> */}
                 </div>
                 <div className='w-[30%] flex flex-col gap-4 justify-start items-center mt-3'>
                     <ItemSidebar isDouble={true} type='priceCode' content={prices} title='Xem theo giá' />

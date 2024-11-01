@@ -28,7 +28,7 @@ const Homepage = () => {
                 <div className='w-full flex gap-4'>
                     <div className='w-[70%]'>
                         <List searchClicked={searchClicked} />
-                        <Pagination />
+                        {/* <Pagination /> */}
                     </div>
                     <div className='w-[30%] flex flex-col gap-4 mt-3'>
                         <ItemSidebar title='Danh sách cho thuê' items={categories} />

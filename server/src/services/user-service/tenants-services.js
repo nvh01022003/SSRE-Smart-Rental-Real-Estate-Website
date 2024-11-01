@@ -187,40 +187,18 @@ const deletePostSaved = async (userId, postId) => {
 }
 // FIND POST BY ALL
 const findPostByAll = async (minPrice, maxPrice, location, minAcreage, maxAcreage, categoryCode, page) => {
+    console.log("giá", minPrice, maxPrice);
     try {
         let whereCondition = {};
-        if (minPrice && !maxPrice) {
-            // TH1: Chỉ chọn giá tối thiểu, không chọn giá tối đa
-            whereCondition.price = {
-                [Op.gte]: minPrice
-            };
-        } else if (!minPrice && maxPrice) {
-            // TH2: Chỉ chọn giá tối đa, không chọn giá tối thiểu
-            whereCondition.price = {
-                [Op.lte]: maxPrice
-            };
-        } else if (minPrice && maxPrice) {
-            // TH3: Chọn cả giá tối thiểu và giá tối đa
+        if (minPrice && maxPrice) {
             whereCondition.price = {
                 [Op.between]: [minPrice, maxPrice]
-            };
+            }
         }
-
-        if (minAcreage && !maxAcreage) {
-            // TH1: Chỉ chọn diện tích tối thiểu, không chọn diện tích tối đa
-            whereCondition.acreage = {
-                [Op.gte]: minAcreage
-            };
-        } else if (!minAcreage && maxAcreage) {
-            // TH2: Chỉ chọn diện tích tối đa, không chọn diện tích tối thiểu
-            whereCondition.acreage = {
-                [Op.lte]: maxAcreage
-            };
-        } else if (minAcreage && maxAcreage) {
-            // TH3: Chọn cả diện tích tối thiểu và diện tích tối đa
+        if (minAcreage && maxAcreage) {
             whereCondition.acreage = {
                 [Op.between]: [minAcreage, maxAcreage]
-            };
+            }
         }
 
         if (location) {
@@ -255,6 +233,7 @@ const findPostByAll = async (minPrice, maxPrice, location, minAcreage, maxAcreag
             page,
             totalData
         )
+        console.log("điều kiện", whereCondition);
         const posts = await Post.findAll({
             where: whereCondition,
             limit: objectPagination.limitPage,
