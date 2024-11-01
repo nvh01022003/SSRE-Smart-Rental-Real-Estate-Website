@@ -42,8 +42,21 @@ const updateUser = async (req, res) => {
         })
     }
 }
-// change role user by id
+// change role user từ user lên ladnlord 
 const changeRoleUser = async (req, res) => {
+    const userId = req.params.userId
+    try {
+        const response = await managerUser.changeRoleUser(userId)
+        return res.status(200).json(response)
+    } catch (error) {
+        return res.status(500).json({
+            err: -1,
+            msg: 'Fail at auth controller changeRoleUser: ' + error
+        })
+    }
+}
+// từ chối yêu cầu nâng cấp tài khoản
+const refuseChangeRoleUser = async (req, res) => {
     const userId = req.params.userId
     try {
         const response = await managerUser.changeRoleUser(userId)
@@ -120,6 +133,8 @@ const showAllUpgradeRequest = async (req, res) => {
         })
     }
 }
+
+
 module.exports = {
     showAllUser,
     showDetailUser,
@@ -129,6 +144,7 @@ module.exports = {
     deleteUsers,
     findUserByEmail,
     findUserByRole,
-    showAllUpgradeRequest
+    showAllUpgradeRequest,
+    refuseChangeRoleUser
 
 }
