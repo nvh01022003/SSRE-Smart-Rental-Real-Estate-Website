@@ -40,7 +40,9 @@ const updateStatusPosts = async (req, res) => {
 const updatePost = async (req, res) => {
     try {
         const postId = req.params.id;
+        console.log('postId', postId)
         const dataUpdae = req.body;
+        console.log('dataUpdae', dataUpdae)
         const response = await ladnlordServices.updatePost(postId, dataUpdae);
         return res.status(200).json(response)
     } catch (error) {

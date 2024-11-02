@@ -22,6 +22,8 @@ import DepositeHistory from './components/DepositeHistory';
 import Payment from './containers/System/Payment';
 import Momo from './components/Momo';
 import BankTransfer from './components/BankTransfer';
+import ManagePost from '../src/containers/System/ManagePost';
+
 function App() {
 
   const dispatch = useDispatch()
@@ -81,6 +83,8 @@ function App() {
 
 
         <Route path={path.SYSTEM} element={<System />} >
+
+          <Route path={path.MANAGE_POST} element={<ManagePost />} />
 
           <Route path={path.CREATE_POST} element={<CreatePost />} />
 
