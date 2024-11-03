@@ -4,11 +4,10 @@ import { useNavigate } from 'react-router-dom';
 import { formatVietnameseToString } from '../ultils/Common/formatVietnameseToString';
 import { FaMapMarkerAlt, FaDollarSign } from 'react-icons/fa';
 import axios from 'axios';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import Swal from 'sweetalert2';
 import styled from 'styled-components';
-
-
+import { getTotalPostSaved, fetchSavedPosts } from '../store/actions/post';
 
 const { RiCrop2Line } = icons;
 const { GrStar, BsBookmarkStarFill } = icons;
@@ -44,11 +43,12 @@ const IconContainer = styled.div`
     }
 `;
 
-const Item = ({ images, user, title, star, description, attributes, address, id, starred, onToggleStar }) => {
-    const [isStarred, setIsStarred] = useState(false);
+const Item = ({ images, user, title, star, description, attributes, address, id, starred }) => {
+    const [isStarred, setIsStarred] = useState(starred);
     const [isHovered, setIsHovered] = useState(false);
     const { token } = useSelector(state => state.auth);
     const navigate = useNavigate();
+    const dispatch = useDispatch();
 
     useEffect(() => {
         // Khôi phục trạng thái từ localStorage
@@ -65,22 +65,16 @@ const Item = ({ images, user, title, star, description, attributes, address, id,
     };
 
     const handleClick = async () => {
-        setIsStarred(!isStarred);
-        localStorage.setItem(`starred-${id}`, !isStarred); // Lưu trạng thái vào localStorage
+        const newStarredState = !isStarred;
+        setIsStarred(newStarredState);
+        localStorage.setItem(`starred-${id}`, newStarredState); // Lưu trạng thái vào localStorage
 
-        if (isStarred) {
-            try {
-                await axios.delete(`http://localhost:5000/api/v1/user/tenants/deletePostSaved/${id}`, {
-                    headers: { 'token': `${token}` }
-                });
-            } catch (error) {
-                console.error('Error deleting post:', error);
-            }
-        } else {
+        if (newStarredState) {
             try {
                 await axios.post(`http://localhost:5000/api/v1/user/tenants/savePost/${id}`, {}, {
                     headers: { 'token': `${token}` }
                 });
+                dispatch(getTotalPostSaved(token)); // Update total posts saved
             } catch (error) {
                 console.error('Error saving post:', error);
                 if (error.response?.data?.err === 1) {
@@ -95,7 +89,18 @@ const Item = ({ images, user, title, star, description, attributes, address, id,
                     });
                 }
             }
+        } else {
+            try {
+                await axios.delete(`http://localhost:5000/api/v1/user/tenants/deletePostSaved/${id}`, {
+                    headers: { 'token': `${token}` }
+                });
+                dispatch(getTotalPostSaved(token)); // Update total posts saved
+                dispatch(fetchSavedPosts(token, 1)); // Fetch the updated list of saved posts with page 1
+            } catch (error) {
+                console.error('Error deleting post:', error);
+            }
         }
+
     };
 
     const formatPrice = (price) => {

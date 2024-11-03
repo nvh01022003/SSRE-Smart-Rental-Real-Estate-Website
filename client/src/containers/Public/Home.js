@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import Header from './Header'
 import { Outlet } from 'react-router-dom'
 import { Navigation } from './index'
@@ -14,6 +14,7 @@ const Home = () => {
     console.log('role', role)
 
     const dispatch = useDispatch();
+    const [searchClicked, setSearchClicked] = useState(false);
 
     useEffect(() => {
         const fetchUserRole = async () => {
@@ -33,7 +34,7 @@ const Home = () => {
     if (!isLoggedIn || !token) {
         return (<div className='w-full flex gap-6 flex-col items-center h-full'>
             <Header />
-            <Navigation />
+            <Navigation searchClicked={searchClicked} />
             {/* {isLoggedIn && <Search />} */}
             <div className='w-4/5 lg:w-4/5 flex flex-col items-start justify-start mt-3 container mx-auto'>
                 <Outlet />
@@ -54,7 +55,7 @@ const Home = () => {
             ) : (
                 <div className='w-full flex gap-6 flex-col items-center h-full'>
                     <Header />
-                    <Navigation />
+                    <Navigation searchClicked={searchClicked} />
                     {/* {isLoggedIn && <Search />} */}
                     <div className='w-full lg:w-4/5 flex flex-col items-start justify-start mt-3 container mx-auto'>
                         <Outlet />

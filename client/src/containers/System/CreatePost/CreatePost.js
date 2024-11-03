@@ -4,11 +4,13 @@ import icons from '../../../ultils/icons';
 import axios from 'axios';
 import Swal from 'sweetalert2';
 import { useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
 
 
 const { BsCameraFill, ImBin } = icons;
 
 const CreatePost = () => {
+    const navigate = useNavigate();
     const [payload, setPayload] = useState({
         category_id: '',
         title: '',
@@ -98,7 +100,6 @@ const CreatePost = () => {
             images: prev.images?.filter(item => item !== image)
         }));
     };
-    //hehe
 
     const handleSubmit = async () => {
         setIsLoading(true);
@@ -264,9 +265,12 @@ const CreatePost = () => {
             {role === 'tenant' ? (
                 <div className='px-6 h-min-screen'>
                     <h1 className='text-3xl font-medium py-4 border-b border-gray-200'>Đăng tin mới</h1>
-                    <div className='flex gap-4'>
-                        <p className='text-gray-500'>Chức năng này chỉ dành cho nhà cho thuê</p>
-                        <p>Hãy đăng kí làm nhà cho thuê theo đường link này</p>
+                    <div className='flex gap-2 mt-10 font-medium text-lg'>
+                        <p className='text-gray-500'>Chức năng này chỉ dành cho nhà cho thuê :</p>
+                        <p
+                            className='text-blue-500 hover:text-red-500 hover:underline underline cursor-pointer'
+                            onClick={() => window.location.href = '/he-thong/nang-cap-tai-khoan'}
+                        >Nâng cấp tài khoản theo đường link này !</p>
                     </div>
                 </div>
             ) : (

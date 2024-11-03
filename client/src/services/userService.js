@@ -14,3 +14,4 @@ export const getPersonalInfo = async (token) => {
         throw error;
     }
 };
+

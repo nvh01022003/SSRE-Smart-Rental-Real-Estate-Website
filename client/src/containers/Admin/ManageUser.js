@@ -129,108 +129,6 @@ const ManageUser = () => {
         return Object.keys(newErrors).length === 0;
     };
 
-    // const handleDeleteUser = async (userId) => {
-    //     const result = await Swal.fire({
-    //         title: 'Bạn có chắc muốn xóa người dùng này ?',
-    //         showCancelButton: true,
-    //         confirmButtonText: 'Có',
-    //         cancelButtonText: 'Không',
-    //         buttonsStyling: false, // Tắt kiểu mặc định của SweetAlert2
-    //         customClass: {
-    //             confirmButton: 'custom-confirm',
-    //             cancelButton: 'custom-cancel',
-    //         },
-    //         didOpen: () => {
-    //             const confirmButton = Swal.getConfirmButton();
-    //             const cancelButton = Swal.getCancelButton();
-
-    //             // Áp dụng CSS trực tiếp cho nút Xác nhận
-    //             confirmButton.style.backgroundColor = 'red';
-    //             confirmButton.style.color = 'white';
-    //             confirmButton.style.padding = '8px 16px';
-    //             confirmButton.style.marginRight = '20px'; // Tạo khoảng cách giữa hai nút
-    //             confirmButton.style.borderRadius = '4px';
-    //             confirmButton.style.border = 'none';
-    //             confirmButton.style.cursor = 'pointer';
-
-    //             // Áp dụng CSS trực tiếp cho nút Hủy
-    //             cancelButton.style.backgroundColor = 'gray';
-    //             cancelButton.style.color = 'white';
-    //             cancelButton.style.padding = '8px 16px';
-    //             cancelButton.style.borderRadius = '4px';
-    //             cancelButton.style.border = 'none';
-    //             cancelButton.style.cursor = 'pointer';
-    //         },
-    //         customClass: {
-    //             title: 'custom-title',  // Tùy chỉnh CSS cho tiêu đề
-    //         },
-    //         html: `
-    //             <style>
-    //                 .custom-title {
-    //                     font-size: 20px;
-    //                     font-weight: bold;
-    //                 }
-    //                 .swal2-popup {
-    //                     width: 300px; /* Kích thước nhỏ gọn */
-    //                 }
-    //             </style>
-    //         `,
-    //     });
-
-    //     if (result.isConfirmed) {
-    //         try {
-    //             await dispatch(deleteUser(userId, token));
-    //             Swal.fire({
-    //                 title: 'Xóa người dùng thành công !',
-    //                 text: 'Người dùng đã được xóa',
-    //                 icon: 'success',
-    //                 buttonsStyling: false,
-    //                 didOpen: () => {
-    //                     const confirmButton = Swal.getConfirmButton();
-    //                     confirmButton.style.backgroundColor = 'green';
-    //                     confirmButton.style.color = 'white';
-    //                     confirmButton.style.padding = '8px 16px';
-    //                     confirmButton.style.borderRadius = '4px';
-    //                     confirmButton.style.border = 'none';
-    //                     confirmButton.style.cursor = 'pointer';
-    //                 },
-    //                 html: `
-    //                     <style>
-    //                         .swal2-popup {
-    //                             width: 300px;
-    //                         }
-    //                     </style>
-    //                 `,
-    //             });
-    //             setTimeout(() => {
-    //                 dispatch(fetchUsers(token)); // Refresh user list after deletion
-    //             }, 1);
-    //         } catch (error) {
-    //             Swal.fire({
-    //                 title: 'Error',
-    //                 text: 'Xóa người dùng thất bại',
-    //                 icon: 'error',
-    //                 buttonsStyling: false,
-    //                 didOpen: () => {
-    //                     const confirmButton = Swal.getConfirmButton();
-    //                     confirmButton.style.backgroundColor = 'darkred';
-    //                     confirmButton.style.color = 'white';
-    //                     confirmButton.style.padding = '8px 16px';
-    //                     confirmButton.style.borderRadius = '4px';
-    //                     confirmButton.style.border = 'none';
-    //                     confirmButton.style.cursor = 'pointer';
-    //                 },
-    //                 html: `
-    //                     <style>
-    //                         .swal2-popup {
-    //                             width: 300px;
-    //                         }
-    //                     </style>
-    //                 `,
-    //             });
-    //         }
-    //     }
-    // };
     const handleDeleteUser = async (userId, email) => {
         const { value: reasonDeleteUser } = await Swal.fire({
             title: 'Lí do xóa người dùng',
@@ -439,12 +337,12 @@ const ManageUser = () => {
                                     >
                                         <FaEye />
                                     </button>
-                                    <button
+                                    {/* <button
                                         className="bg-yellow-500 text-white px-2 py-1 rounded-md mr-2"
                                         onClick={() => openModal(user)} // Open modal with user data
                                     >
                                         <FaEdit />
-                                    </button>
+                                    </button> */}
                                     <button
                                         className="bg-red-500 text-white px-2 py-1 rounded-md"
                                         onClick={() => handleDeleteUser(user.id, user.email)} // Delete user logic

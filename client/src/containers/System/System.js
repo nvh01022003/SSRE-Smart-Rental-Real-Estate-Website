@@ -1,29 +1,4 @@
-// import React from 'react'
-// import { useSelector } from 'react-redux'
-// import { Navigate, Outlet } from 'react-router-dom'
-// import { path } from '../../ultils/constant'
-// import { Sidebar } from './'
-
-// const System = () => {
-//     const { isLoggedIn } = useSelector(state => state.auth)
-
-//     if (!isLoggedIn) return <Navigate to={`/${path.LOGIN}`} replace={true} />
-//     return (
-//         <div className='w-full h-screen flex flex-col items-center container mx-auto'>
-//             {/* <Header /> */}
-//             <div className='flex w-full flex-auto'>
-//                 <Sidebar />
-//                 <div className='flex-auto bg-white shadow-md h-auto p-4'>
-//                     <Outlet />
-//                 </div>
-//             </div>
-//         </div>
-//     )
-// }
-
-// export default System
-
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import { Navigate, Outlet } from 'react-router-dom';
 import { path } from '../../ultils/constant';
@@ -31,10 +6,31 @@ import { Sidebar } from './';
 import { FiMenu, FiX } from 'react-icons/fi';
 import logo from '../../assets/logo.png';
 import { Link } from 'react-router-dom';
+import axios from 'axios';
 
 const System = () => {
-    const { isLoggedIn } = useSelector(state => state.auth);
+    const { isLoggedIn, token } = useSelector(state => state.auth);
     const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+    const [role, setRole] = useState(null);
+
+    const fetchRole = async () => {
+        try {
+            const res = await axios.post('http://localhost:5000/api/v1/auth/checkRole', {}, {
+                headers: {
+                    'token': `${token}`,
+                }
+            });
+            if (res.data.err === 0) {
+                setRole(res.data.msg);
+            }
+        } catch (error) {
+            console.error('Error fetching user role:', error);
+        }
+    };
+
+    useEffect(() => {
+        fetchRole();
+    }, [token]);
 
     if (!isLoggedIn) return <Navigate to={`/${path.LOGIN}`} replace={true} />;
 
@@ -62,7 +58,7 @@ const System = () => {
                         {isSidebarOpen ? <FiX /> : <FiMenu />}
                     </button>
                 </div>
-                <Sidebar isSidebarOpen={isSidebarOpen} />s
+                <Sidebar isSidebarOpen={isSidebarOpen} role={role} />
             </div>
             <div className="flex-auto bg-white shadow-md h-auto p-4 overflow-auto">
                 <Outlet />
@@ -72,4 +68,3 @@ const System = () => {
 };
 
 export default System;
-

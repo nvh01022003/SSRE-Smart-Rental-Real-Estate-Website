@@ -22,15 +22,16 @@ export const path = {
     SYSTEM: '/he-thong/*',
     CREATE_POST: 'tao-moi-bai-dang',
     PERSONAL_INFO: 'thong-tin-ca-nhan',
+    MANAGE_POST: 'quan-ly-bai-dang',
     CHANGE_PASS: 'doi-mat-khau',
     LIST_POSTS_SAVED: 'tin-da-luu',
     UPGRADE_ACCOUNT: 'nang-cap-tai-khoan',
-    PAYMENT:'nap-tien/*',
+    PAYMENT: 'nap-tien/*',
     HISTORY_PAYMENT: 'lich-su-thanh-toan',
     DEPOSITE_HISTORY: 'lich-su-nap-tien',
-    MOMO:'momo',
-    SAVE_POST:'tin-da-luu',
-    BANK_TRANSFER:'thong-tin-chuyen-khoan',
+    MOMO: 'momo',
+    SAVE_POST: 'tin-da-luu',
+    BANK_TRANSFER: 'chuyen-khoan',
 
 }
 
