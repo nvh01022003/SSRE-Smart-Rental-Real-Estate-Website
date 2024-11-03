@@ -12,13 +12,15 @@ const createPaymentRequest = async (amount, orderId, id) => {
     const requestId = orderId;
     const orderInfo = "Thanh toán với MoMo";
     const redirectUrl = "https://webhook.site/redirect/success";
-    const ipnUrl = "https://9bd4-113-174-174-63.ngrok-free.app/api/v1/user/callback";
+    const ipnUrl = "https://e04b-2402-800-629c-d80e-b1b6-81cb-a1da-12a.ngrok-free.app/api/v1/user/callbackMOMO";
+    const expireTime = Math.floor(Date.now() / 1000) + 5 * 60;
+
 
     const rawSignature = `accessKey=${accessKey}&amount=${amount}&extraData=&ipnUrl=${ipnUrl}&orderId=${orderId}&orderInfo=${orderInfo}&partnerCode=${partnerCode}&redirectUrl=${redirectUrl}&requestId=${requestId}&requestType=${requestType}`;
     const signature = crypto.createHmac('sha256', secretKey).update(rawSignature).digest('hex');
 
     const requestBody = {
-        partnerCode,
+        partnerCode: partnerCode,
         partnerName: "MoMo Test",
         storeId: "MomoTestStore",
         requestId,
@@ -45,7 +47,9 @@ const createPaymentRequest = async (amount, orderId, id) => {
             // Lưu giao dịch vào DB
             await Transaction.create({
                 wallet_id: id,
-                paycode: orderId,  // hoặc sử dụng một mã code trả về từ MoMo
+                paycode: orderId,  // hoặc sử dụng một mã code trả về từ MoMo,
+                amount: amount,
+                status: 'Đang thanh toán bằng MoMo',
                 created_at: new Date(),
                 updated_at: new Date()
             });
@@ -103,13 +107,19 @@ const checkTransactionStatus = async (orderId) => {
 
 
 // Cập nhật số dư của ví
-async function updateWalletBalance(id, amount) {
+async function updateWalletBalance(id, amount, orderId) {
 
     const wallet = await Wallet.findOne({ where: { id: id } });
 
     if (wallet) {
         wallet.balance = parseFloat(wallet.balance) + parseFloat(amount);
         await wallet.save();
+
+        // Cập nhật status giao dịch
+        await Transaction.update(
+            { status: 'Thanh Toán Momo thành công' },
+            { where: { wallet_id: id, paycode: orderId } }
+        );
 
     }
 

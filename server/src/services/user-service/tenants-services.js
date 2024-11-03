@@ -187,6 +187,7 @@ const deletePostSaved = async (userId, postId) => {
 }
 // FIND POST BY ALL
 const findPostByAll = async (minPrice, maxPrice, location, minAcreage, maxAcreage, categoryCode, page) => {
+    console.log("giá", minPrice, maxPrice);
     try {
         let whereCondition = {};
         if (minPrice && maxPrice) {
@@ -221,6 +222,7 @@ const findPostByAll = async (minPrice, maxPrice, location, minAcreage, maxAcreag
             page,
             totalData
         )
+        console.log("điều kiện", whereCondition);
         const posts = await Post.findAll({
             where: whereCondition,
             limit: objectPagination.limitPage,

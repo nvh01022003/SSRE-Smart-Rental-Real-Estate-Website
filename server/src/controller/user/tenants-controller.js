@@ -1,5 +1,6 @@
 const tenanstService = require("../../services/user-service/tenants-services")
 const helperService = require("../../services/tools/userSearches-service")
+const Decimal = require('decimal.js');
 const jwt = require("jsonwebtoken");
 // show info user
 const showInfoUser = async (req, res) => {
@@ -88,12 +89,12 @@ const deletePostSaved = async (req, res) => {
 }
 // find post by all condition
 const findPostByAll = async (req, res) => {
-    const minPrice = req.body.minPrice
-    const maxPrice = req.body.maxPrice
-    const location = req.body.location
-    const minAcreage = req.body.minAcreage
-    const maxAcreage = req.body.maxAcreage
-    const categoryCode = req.body.category
+    const minPrice = req.query.minPrice ? new Decimal(req.query.minPrice) : null;
+    const maxPrice = req.query.maxPrice ? new Decimal(req.query.maxPrice) : null;
+    const location = req.query.location || null;
+    const minAcreage = req.query.minAcreage ? new Decimal(req.query.minAcreage) : null;
+    const maxAcreage = req.query.maxAcreage ? new Decimal(req.query.maxAcreage) : null;
+    const categoryCode = req.query.category
     const page = parseInt(req.query.page)
     console.log('Page', page)
     try {

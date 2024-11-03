@@ -2,41 +2,10 @@ const { User, Role, UpgradeRequest, sequelize } = require('../../models/index');
 const paginationHelper = require("../../helper/pagination");
 const { where } = require("sequelize");
 const { Op } = require('sequelize');
+const { Wallet } = require('../../models/index');
 
 
-// show all user
-// const showAllUser = async () => {
-//     try {
-//         console.log('showAllUser');
-//         const users = await User.findAll({
-//             attributes: ['id', 'firstName', 'lastName', 'email', 'phone', 'img_avt'],
-//             include: [{
-//                 model: Role,
-//                 attributes: ['type'],
-//                 where: {
-//                     type: {
-//                         [Op.ne]: 'admin' // Loại trừ người dùng có vai trò 'admin'
-//                     }
-//                 },
-//                 required: true // Đảm bảo chỉ lấy người dùng có vai trò
-//             }]
-//         });
 
-//         if (users) {
-//             return {
-//                 err: 0,
-//                 msg: 'get info user success',
-//                 info_user: users,
-//             };
-//         }
-//     } catch (err) {
-//         console.log('error show', err);  // Ghi log lỗi để dễ dàng debug
-//         return {
-//             err: 1,
-//             msg: err
-//         };
-//     }
-// };
 
 // show detail user by id
 const showAllUser = async () => {
@@ -116,44 +85,6 @@ const showDetailUser = async (userId) => {
     }
 }
 // update user by id
-// const showDetailUser = async (userId) => {
-//     try {
-//         // Fetch the user details
-//         const user = await User.findOne({
-//             where: {
-//                 id: userId,
-//             },
-//             attributes: ['id', 'firstName', 'lastName', 'email', 'phone', 'img_avt']
-//         });
-
-//         // Fetch the role for the user using Promise.all
-//         const [role] = await Promise.all([
-//             Role.findOne({
-//                 where: {
-//                     user_id: user.id
-//                 },
-//                 attributes: ['type']
-//             })
-//         ]);
-
-//         return {
-//             err: 0,
-//             msg: 'get info user success',
-//             info_user: {
-//                 ...user.dataValues,
-//                 role: role ? role.type : null
-//             },
-//         };
-//     } catch (err) {
-//         console.log('error show', err);  // Log the error for easier debugging
-//         return {
-//             err: 1,
-//             msg: err
-//         };
-//     }
-// };
-
-// update user by id
 const updateUser = async (userId, data) => {
     try {
         const user = await User.update(data, {
@@ -174,36 +105,8 @@ const updateUser = async (userId, data) => {
         };
     }
 }
-// change role user by id and create wallet for user base on id
-// Update user by ID and optionally change the role
-// const updateUser = async (userId, data) => {
-//     try {
-//         const user = await User.update(data, {
-//             where: {
-//                 id: userId
-//             }
-//         });
-//         if (data.role) {
-//             await Role.update(
-//                 { type: data.role },  // Set the new role type
-//                 { where: { user_id: userId } }  // Condition to find the correct role
-//             );
-//         }
-//         if (user) {
-//             return {
-//                 err: 0,
-//                 msg: 'Update user success',
-//             };
-//         }
-//     } catch (err) {
-//         return {
-//             err: 1,
-//             msg: err
-//         };
-//     }
-// };
 
-const { Wallet } = require('../../models/index');
+// change role user by id
 const changeRoleUser = async (userId) => {
     let transaction;
     try {
@@ -267,34 +170,51 @@ const changeRoleUser = async (userId) => {
         };
     }
 };
+// Từ chối nâng cấp tài khoản
+const refuseChangeRoleUser = async (userId) => {
+    let transaction;
+    try {
+        // Bắt đầu một transaction để đảm bảo các bước bên trong nó được thực hiện một cách đồng bộ.
+        transaction = await sequelize.transaction();
 
+        // Cập nhật trạng thái của yêu cầu nâng cấp thành 0
+        const upgradeRequest = await UpgradeRequest.update({
+            status: 0 // Giữ nguyên status là 0
+        }, {
+            where: {
+                user_id: userId
+            },
+            transaction
+        });
 
-// const changeRoleUser = async (userId) => {
-//     try {
-//         const user = await Role.update({
-//             type: 'ladnlord'
-//         }, {
-//             where: {
-//                 userId: userId
-//             }
-//         })
-//         if (user) {
-//             return {
-//                 err: 0,
-//                 msg: 'change role user success',
-//             };
-//         }
-//     } catch (err) {
-//         return {
-//             err: 1,
-//             msg: err
-//         };
-//     }
-// }
+        // Kiểm tra xem có dòng nào bị ảnh hưởng bởi thao tác update hay không.
+        if (upgradeRequest[0] === 0) {
+            await transaction.rollback();
+            return {
+                err: 1,
+                msg: 'Không tìm thấy yêu cầu nâng cấp cho người dùng'
+            };
+        }
+
+        // Commit transaction nếu thao tác cập nhật trạng thái thành công.
+        await transaction.commit();
+
+        // Trả về thông báo thành công nếu toàn bộ quy trình hoàn thành mà không gặp lỗi.
+        return {
+            err: 0,
+            msg: 'Trạng thái yêu cầu nâng cấp đã được cập nhật thành công',
+        };
+    } catch (err) {
+        // Nếu có lỗi xảy ra ở bất kỳ bước nào trong khối try, rollback transaction để hoàn tác mọi thay đổi.
+        if (transaction) await transaction.rollback();
+        return {
+            err: 1,
+            msg: err.message || 'Đã xảy ra lỗi'  // Trả về thông báo lỗi để hỗ trợ kiểm tra và ghi nhật ký.
+        };
+    }
+};
+
 // delete user by id
-
-
-
 const deleteUser = async (userId) => {
     try {
         const user = await User.destroy({
@@ -437,8 +357,6 @@ const showAllUpgradeRequest = async (page) => {
         };
     }
 };
-
-
 module.exports = {
     showAllUser,
     showDetailUser,
@@ -448,5 +366,7 @@ module.exports = {
     deleteUsers,
     findUserByEmail,
     findUserByRole,
-    showAllUpgradeRequest
+    showAllUpgradeRequest,
+    refuseChangeRoleUser
+
 }
