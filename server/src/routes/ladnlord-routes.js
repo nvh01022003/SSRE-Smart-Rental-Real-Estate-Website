@@ -8,6 +8,7 @@ const img = require("../middleware/upload/uploadImg")
 const multer = require('multer');
 const storage = multer.memoryStorage();
 const upload = multer({ storage });
+const uploadmemoryStorage = multer({ storage: multer.memoryStorage() });
 const router = express.Router()
 
 
@@ -16,7 +17,7 @@ router.post("/createPost", authentication.authenticateToken, authorization.check
 // change status post
 router.post("/changestatus/:id", authentication.authenticateToken, authorization.checkRoleUser, ladnlordController.updateStatusPost)
 // update post by id
-router.post("/updatePost/:id", authentication.authenticateToken, authorization.checkRoleUser, ladnlordController.updatePost)
+router.post("/updatePost/:id", authentication.authenticateToken, authorization.checkRoleUser, uploadmemoryStorage.array('images', 10), ladnlordController.updatePost)
 // delete post by id
 router.delete("/deletePost/:id", authentication.authenticateToken, authorization.checkRoleUser, ladnlordController.deletePost)
 // show list post

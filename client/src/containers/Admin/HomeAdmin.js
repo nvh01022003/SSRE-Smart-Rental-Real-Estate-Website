@@ -24,6 +24,7 @@ const HomeAdmin = () => {
         { name: "Quản lý chuyên mục", icon: <FiFolder /> },
         { name: "Quản lý tin đăng", icon: <FiFileText /> },
         { name: "Quản lý yêu cầu", icon: <FiUserCheck /> },
+        { name: "Quản lý giao dịch", icon: <AiOutlineLogout /> },
         { name: "Đăng xuất", icon: <AiOutlineLogout />, action: "logout" }
     ];
 
@@ -102,6 +103,9 @@ const HomeAdmin = () => {
                         <ManagePost />
                     )}
                     {activeTab === "Tổng quan" && (
+                        <Dashboard />
+                    )}
+                    {activeTab === "Quản lý giao dịch" && (
                         <Dashboard />
                     )}
                 </div>

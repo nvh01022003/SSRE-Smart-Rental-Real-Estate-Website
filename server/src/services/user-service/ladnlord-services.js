@@ -6,6 +6,15 @@ const paginationHelper = require("../../helper/pagination");
 const { Post, Address, Category, Image, Overview, Coordinates, sequelize } = require("../../models/index");
 const middleware = require("../../middleware/upload/uploadImg")
 const { response } = require("express");
+const multer = require('multer');
+const upload = multer({ storage: multer.memoryStorage() });
+// sử dụng cloudinary
+const cloudinary = require('cloudinary').v2;
+cloudinary.config({
+    cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+    api_key: process.env.CLOUDINARY_API_KEY,
+    api_secret: process.env.CLOUDINARY_API_SECRET,
+});
 
 
 // TAO CODE NGAU NHIEN THEO TIME
@@ -109,26 +118,84 @@ const updateStatusPosts = async (postIds, status) => {
     }
 }
 // UPDATE POST
-const updatePost = async (postId, dataUpdae) => {
+const updatePost = async (postId, dataUpdate, files) => {
+    const { address_id, Address: addressData, Category: categoryData, Overview: overviewData, overview_id, img_id, Image: imageData, ...postData } = dataUpdate;
+    const city = addressData.city;
+    const district = addressData.district;
+    const detail_address = addressData.detail_address;
+    const category_name = categoryData.category_name;
+    const target = overviewData.target;
+
     try {
-        const resPost = await Post.update(dataUpdae, {
+        // Upload images to Cloudinary
+        const imageUrls = [];
+        for (const file of files) {
+            const result = await new Promise((resolve, reject) => {
+                cloudinary.uploader.upload_stream({ resource_type: 'image' }, (error, result) => {
+                    if (error) {
+                        reject(error);
+                    } else {
+                        resolve(result);
+                    }
+                }).end(file.buffer);
+            });
+            imageUrls.push(result.secure_url);
+        }
+
+        // Update img_url_list in Image table
+        if (img_id) {
+            const image = await Image.findOne({ where: { id: img_id } });
+            if (image) {
+                await image.update({ img_url_list: JSON.stringify(imageUrls) });
+            }
+        }
+
+        // Update Address
+        if (address_id) {
+            const address = await Address.findOne({ where: { id: address_id } });
+            if (address) {
+                await address.update({ city, district, detail_address });
+            }
+        }
+
+        // Update Category
+        if (category_name) {
+            const category = await Category.findOne({ where: { category_name } });
+            if (category) {
+                postData.category_id = category.id;
+            }
+        }
+
+        // Update Overview target
+        if (overview_id) {
+            const overview = await Overview.findOne({ where: { id: overview_id } });
+            if (overview) {
+                await overview.update({ target });
+            }
+        }
+
+        // Update Post
+        const resPost = await Post.update(postData, {
             where: {
                 id: postId
             }
-        })
+        });
+
         return {
             err: 0,
             msg: 'Update post success',
             post: resPost
-        }
+        };
     } catch (error) {
-        console.log(error)
+        console.log(error);
         return {
             err: 1,
-            msg: error
-        }
+            msg: error.message
+        };
     }
-}
+};
+
+
 // DELETE POST
 const deletePost = async (postId) => {
     try {

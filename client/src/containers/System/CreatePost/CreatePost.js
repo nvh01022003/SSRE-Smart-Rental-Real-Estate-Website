@@ -100,7 +100,6 @@ const CreatePost = () => {
             images: prev.images?.filter(item => item !== image)
         }));
     };
-    //hehe
 
     const handleSubmit = async () => {
         setIsLoading(true);
