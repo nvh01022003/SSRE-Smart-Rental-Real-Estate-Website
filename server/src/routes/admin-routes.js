@@ -8,6 +8,7 @@ const authorization = require("../middleware/authorize/check-role")
 const managerUserController = require("../controller/admin/manager-user-controller")
 const managerCategoryController = require("../controller/admin/manager-category-controller.js")
 const managerPostController = require("../controller/admin/manager-post-controller.js")
+const transactionController = require('../controller/admin/manager-transaction-controller.js');
 const img = require("../middleware/upload/uploadImg")
 const multer = require('multer');
 const storage = multer.memoryStorage();
@@ -63,4 +64,9 @@ router.delete("/deletePosts", authentication.authenticateToken, authorization.ch
 router.get("/showDetailPost/:postId", authentication.authenticateToken, authorization.checkRoleAdmin, managerPostController.showDetailPost)
 // delete post by id
 router.delete("/deletePost/:postId", authentication.authenticateToken, authorization.checkRoleAdmin, managerPostController.deletePost, managerPostController.sendMailReasonDeletePost)
+
+// MANAGE TRANSACTION
+router.get("/showAllDepositHistory", authentication.authenticateToken, authorization.checkRoleAdmin, transactionController.showAllDepositHistory);
+
+
 module.exports = router

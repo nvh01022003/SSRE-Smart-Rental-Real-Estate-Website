@@ -11,7 +11,7 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate({ Wallet }) {
       // define association here
-      this.hasOne(Wallet, { foreignKey: "id" })
+      this.belongsTo(Wallet, { foreignKey: 'wallet_id' });
     }
   }
   Transaction.init({
