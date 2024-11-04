@@ -156,6 +156,9 @@ import { logout } from '../../store/actions/auth';
 import { AiOutlineAppstore, AiOutlinePlusCircle, AiOutlineLogout } from 'react-icons/ai';
 import { BsBookmarkStarFill } from 'react-icons/bs';
 import { getTotalPostSaved } from '../../store/actions/post';
+import { HiOutlineExclamationCircle } from 'react-icons/hi';
+
+
 
 const Header = () => {
     const navigate = useNavigate();
@@ -167,6 +170,12 @@ const Header = () => {
     const { role, token } = useSelector(state => state.auth);
     const { totalPostSaved } = useSelector(state => state.post);
     const [totalPostsSaved, setTotalPostsSaved] = useState(0);
+
+    const email = process.env.REACT_APP_SYSTEM_EMAIL || 'ssresystem@gmail.com';
+    const subject = encodeURIComponent("Báo cáo hệ thống Smart Rental Real Estate");
+    const body = encodeURIComponent("Hãy mô tả báo cáo của bạn cho hệ thống Smart Rental Real Estate ở đây.");
+
+    const mailtoLink = `mailto:${email}?subject=${subject}&body=${body}`;
 
     const navigateTo = useCallback((path) => {
         navigate(path);
@@ -269,6 +278,12 @@ const Header = () => {
                                             {item.text}
                                         </Link>
                                     ))}
+                                    <span className='cursor-pointer hover:text-orange-500 text-blue-500 py-2 flex items-center gap-2'>
+                                        <HiOutlineExclamationCircle />
+                                        <a href={mailtoLink} className="flex items-center gap-2">
+                                            Báo cáo hệ thống
+                                        </a>
+                                    </span>
                                     <span
                                         className='cursor-pointer hover:text-orange-500 text-blue-500 py-2 flex items-center gap-2'
                                         onClick={() => {
