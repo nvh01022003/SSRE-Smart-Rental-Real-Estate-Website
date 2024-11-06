@@ -1,13 +1,15 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { getPersonalInfo } from '../../../services/userService';
 import axios from 'axios';
 import './PersonalInfo.css';
 import Swal from 'sweetalert2';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import { Loading } from '../../../components';
+import * as actions from '../../../store/actions';
 
 const PersonalInfo = () => {
-    const [personalInfo, setPersonalInfo] = useState(null);
+    const dispatch = useDispatch();
+    const { user } = useSelector((state) => state.user);
+    console.log(user);
     const { token } = useSelector(state => state.auth);
 
     const [isLoading, setIsLoading] = useState(false);
@@ -26,46 +28,25 @@ const PersonalInfo = () => {
 
     const initialFormData = useRef(formData);
 
-    //const token = localStorage.getItem('token');
+    const fetchPersonalInfo = async () => {
+        if (!user) {
+            return;
+        }
+
+        initialFormData.current = {
+            id: user.id,
+            firstName: user.firstName,
+            lastName: user.lastName,
+            email: user.email,
+            phone: user.phone,
+            img_avt: user.img_avt
+        };
+        setFormData(initialFormData.current);
+    };
 
     useEffect(() => {
-
-        const fetchPersonalInfo = async () => {
-
-            try {
-                console.log('Token on fetch:', token); // Debug log
-
-                const data = await getPersonalInfo(token);
-                if (data.err === 0) {
-                    setPersonalInfo(data.info_user);
-                    initialFormData.current = {
-                        id: data.info_user.id,
-                        firstName: data.info_user.firstName,
-                        lastName: data.info_user.lastName,
-                        email: data.info_user.email,
-                        phone: data.info_user.phone,
-                        img_avt: data.info_user.img_avt
-                    };
-                    setFormData(initialFormData.current);
-                    console.log('Personal information:', data.info_user);
-                } else {
-                    console.error('Error fetching personal information:', data.msg);
-                    Swal.fire('Error', data.msg || 'Error fetching personal information', 'error');
-                }
-            } catch (error) {
-                console.error('Error fetching personal information:', error);
-                Swal.fire('Error', 'Error fetching personal information', 'error');
-            }
-        };
-
-        if (token) {
-            const timer = setTimeout(() => {
-                fetchPersonalInfo();
-            }, 1); // Delay 0.001 giây
-
-            return () => clearTimeout(timer); // Dọn dẹp bộ đếm thời gian khi component unmount hoặc trước khi chạy lại useEffect
-        }
-    }, [token]);
+        fetchPersonalInfo();
+    }, [user]);
 
     const handleChange = (event) => {
         const { name, value } = event.target;
@@ -113,9 +94,6 @@ const PersonalInfo = () => {
             return;
         }
         try {
-            console.log('Token on update:', token); // Debug log
-            console.log('Sending data:', formData); // Debug log
-
             const response = await axios.post('http://localhost:5000/api/v1/user/tenants/changeInfo', formData, {
                 headers: {
                     'token': `${token}`
@@ -127,11 +105,8 @@ const PersonalInfo = () => {
             if (response.data.err === 0) {
                 Swal.fire('Success', 'Cập nhật thành công!', 'success');
 
-                // Cập nhật lại giá trị user trong localStorage
-                //localStorage.setItem('user', JSON.stringify(response.data.user));
-
-                // Optionally, refetch personal info to ensure data consistency
-                // fetchPersonalInfo();
+                // Update the Redux store with the new user information
+                dispatch(actions.setUserInfo(token));
             }
         } catch (error) {
             if (error.response.data.err === 1) {
@@ -189,8 +164,8 @@ const PersonalInfo = () => {
                     img_avt: finalImgUrl
                 }));
 
-                // Cập nhật lại giá trị user trong localStorage
-                //localStorage.setItem('user', JSON.stringify(response.data.user));
+                // Update the Redux store with the new user information
+                dispatch(actions.setUserInfo(token));
 
             } else {
                 Swal.fire('Error', response.data.msg || 'Failed to upload image', 'error');
@@ -204,7 +179,7 @@ const PersonalInfo = () => {
         }
     };
 
-    if (isLoading || !personalInfo) {
+    if (isLoading || !user) {
         return <Loading />;
     }
 

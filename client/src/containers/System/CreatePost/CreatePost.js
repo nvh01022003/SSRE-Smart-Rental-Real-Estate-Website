@@ -4,13 +4,10 @@ import icons from '../../../ultils/icons';
 import axios from 'axios';
 import Swal from 'sweetalert2';
 import { useSelector } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
-
 
 const { BsCameraFill, ImBin } = icons;
 
 const CreatePost = () => {
-    const navigate = useNavigate();
     const [payload, setPayload] = useState({
         category_id: '',
         title: '',
@@ -35,7 +32,7 @@ const CreatePost = () => {
     });
     const [imagesPreview, setImagesPreview] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
-    const { token, isLoggedIn } = useSelector(state => state.auth);
+    const { token } = useSelector(state => state.auth);
 
     const [errorMessages, setErrorMessages] = useState({
         title: '',
@@ -50,7 +47,7 @@ const CreatePost = () => {
     const addressRef = useRef();
     const overviewRef = useRef();
 
-    const [role, setRole] = useState(null);
+    const { role } = useSelector(state => state.auth);
 
     const handleInputChange = (name, value) => {
         setPayload(prev => ({ ...prev, [name]: value }));
@@ -141,20 +138,9 @@ const CreatePost = () => {
             // Append all fields to formData
             formData.append('contentPost', JSON.stringify(contentPost));
 
-            // Append all fields to formData
-            // formData.append('contentPost', JSON.stringify(payload));
-            // const user = localStorage.getItem('user');
-            // formData.append('user', user);
-
             payload.images.forEach(image => {
                 formData.append('imageUrls', image); // Thêm từng URL hình ảnh
             });
-
-            // Append image files to formData
-            // for (let i = 0; i < payload.images.length; i++) {
-            //     const file = document.getElementById('file').files[i];
-            //     formData.append('files', file);
-            // }
 
             // Lấy file từ input và append vào formData với tên 'imgPost'
             const fileInput = document.getElementById('file');
@@ -234,27 +220,6 @@ const CreatePost = () => {
             setIsLoading(false);
         }
     };
-
-    //checkRole để show UI theo role
-    useEffect(() => {
-        const fetchUserRole = async () => {
-            try {
-                const res = await axios.post('http://localhost:5000/api/v1/auth/checkRole', {}, {
-                    headers: {
-                        'token': `${token}`,
-                    }
-                });
-                setRole(res.data.msg);
-            } catch (error) {
-                console.error('Error fetching user role:', error);
-            }
-        };
-
-        if (isLoggedIn) {
-            fetchUserRole();
-        }
-
-    }, [isLoggedIn, token]);
 
     if (isLoading) {
         return <Loading />;

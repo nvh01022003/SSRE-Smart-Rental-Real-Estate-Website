@@ -1,6 +1,4 @@
 import React, { useState, useEffect } from "react";
-import Header from "../containers/System/Header";
-import { Link } from 'react-router-dom';
 import axios from 'axios';
 import { useSelector } from 'react-redux';
 

@@ -136,11 +136,6 @@ const ManagePost = () => {
         setIsModalOpen(false);
     };
 
-    const getCityNameById = (cityId) => {
-        const city = cities.find(city => city.province_id === cityId);
-        return city ? city.province_name : '';
-    };
-
     const handleSave = async () => {
         if (isEditing) {
             setIsActionLoading(true); // Set loading state to true
@@ -219,14 +214,6 @@ const ManagePost = () => {
     const handleCategoryChange = (e) => {
         setSelectedCategory(e.target.value);
     };
-    const handleCityChange = async (e) => {
-        const cityId = e.target.value;
-        const selectedCity = cities.find(city => city.province_id === cityId);
-        const provinceName = selectedCity ? selectedCity.province_name : '';
-
-        setSelectedPost(prev => ({ ...prev, Address: { ...prev.Address, city: provinceName, district: '' } })); // Reset district when city changes
-        await fetchDistricts(cityId);
-    };
 
     const handleView = async (post) => {
         await fetchCities(); // Fetch cities when opening the modal
@@ -240,8 +227,11 @@ const ManagePost = () => {
         setIsEditing(true);
         setIsModalOpen(true);
 
+        const selectedCity = cities.find(city => city.province_name === post.Address.city);
+        const cityId = selectedCity ? selectedCity.province_id : '';
+
         await fetchCities(); // Fetch cities when opening the modal
-        await fetchDistricts(post.Address.city); // Fetch districts when opening the modal
+        await fetchDistricts(cityId); // Fetch districts when opening the modal
 
         setSelectedPost({
             ...post,
@@ -287,6 +277,9 @@ const ManagePost = () => {
         setImageUrls(prev => prev.filter(url => url !== image)); // Update the URLs state
         setSelectedImages(prev => prev.filter((file, index) => imageUrls[index] !== image)); // Use the URLs for comparison
     };
+
+    console.log(selectedPost);
+    if (selectedPost) console.log(selectedPost.Address.city);
 
     return (
         <div className='container mx-auto px-4 py-8'>
@@ -551,12 +544,17 @@ const ManagePost = () => {
                                             {isEditing ? (
                                                 <select
                                                     value={selectedPost.Address.city}
-                                                    onChange={handleCityChange}
+                                                    onChange={(e) =>
+                                                        setSelectedPost({
+                                                            ...selectedPost,
+                                                            Address: { ...selectedPost.Address, city: e.target.value }
+                                                        })
+                                                    }
                                                     className="w-full border border-gray-300 rounded px-3 py-2"
                                                 >
                                                     <option value="">Chọn tỉnh/thành phố</option>
                                                     {cities.map((city) => (
-                                                        <option key={city.province_id} value={city.province_id}>
+                                                        <option key={city.province_id} value={city.province_name}>
                                                             {city.province_name}
                                                         </option>
                                                     ))}
@@ -564,7 +562,7 @@ const ManagePost = () => {
                                             ) : (
                                                 <input
                                                     type="text"
-                                                    value={getCityNameById(selectedPost.Address.city)}
+                                                    value={selectedPost.Address.city}
                                                     className="w-full border border-gray-300 rounded px-3 py-2"
                                                     disabled
                                                 />
