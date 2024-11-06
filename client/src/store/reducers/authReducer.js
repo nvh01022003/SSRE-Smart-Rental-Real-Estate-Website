@@ -4,7 +4,6 @@ import actionTypes from "../actions/actionTypes";
 const initState = {
     isLoggedIn: false,
     token: null,
-    user: null,
     error: null,
     role: null,
 }
@@ -30,7 +29,6 @@ const authReducer = (state = initState, action) => {
                 ...state,
                 isLoggedIn: true,
                 token: action.token,
-                //user: action.data.user,
                 error: null,
             }
         case actionTypes.REGISTER_FAIL:

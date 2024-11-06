@@ -2,11 +2,7 @@ import React, { useState, useEffect, useImperativeHandle, forwardRef } from 'rea
 import { SelectCategory, InputReadOnly, InputFormV2, SelectTargets } from './';
 import InputFormV3 from './InputFormV3.js';
 import { useSelector, useDispatch } from 'react-redux';
-import { getPersonalInfo } from '../services/userService';
 import { getCategories } from '../store/actions/app.js';
-
-import DatePicker from 'react-datepicker';
-import 'react-datepicker/dist/react-datepicker.css';
 
 const targets = [
     { code: '0', value: 'Tất cả' },
@@ -21,11 +17,8 @@ const Overview = forwardRef(({ payload, setPayload, handleInputChange }, ref) =>
     useEffect(() => {
         dispatch(getCategories());
     }, [dispatch]);
-    //console.log(categories);
 
-    const { token } = useSelector(state => state.auth);
-
-    const [personalInfo, setPersonalInfo] = useState(null);
+    const { user } = useSelector((state) => state.user);
 
     const [errorMessages, setErrorMessages] = useState({
         title: '',
@@ -37,12 +30,17 @@ const Overview = forwardRef(({ payload, setPayload, handleInputChange }, ref) =>
         expire: '',
     });
 
-    const [selectedDate, setSelectedDate] = useState(null);
+    const [selectedDate, setSelectedDate] = useState('');
 
-    // Hàm xử lý khi người dùng chọn ngày hết hạn
-    const handleDateChange = (date) => {
-        setSelectedDate(date);
-        const formattedDate = date ? date.toISOString() : '';
+    const handleDateChange = (e) => {
+        const dateString = e.target.value;
+        const date = new Date(dateString);
+
+        setSelectedDate(dateString);
+
+        // Định dạng ngày thành yyyy-MM-dd
+        const formattedDate = date ? date.toISOString().split("T")[0] : '';
+
         setPayload((prev) => ({ ...prev, expire: formattedDate }));
         handleInputChange('expire', formattedDate);
 
@@ -53,20 +51,8 @@ const Overview = forwardRef(({ payload, setPayload, handleInputChange }, ref) =>
         }));
     };
 
-    useEffect(() => {
-        const fetchPersonalInfo = async () => {
-            try {
-                const data = await getPersonalInfo(token);
-                setPersonalInfo(data.info_user);
-            } catch (error) {
-                console.error('Error fetching personal information:', error);
-            }
-        };
 
-        fetchPersonalInfo();
-    }, [token]);
-
-    const fullName = personalInfo ? `${personalInfo.firstName} ${personalInfo.lastName}`.trim() : '';
+    const fullName = user ? `${user.firstName} ${user.lastName}`.trim() : '';
 
     // Hàm định dạng số thành dạng có dấu phẩy
     const formatNumberWithCommas = (value) => {
@@ -252,7 +238,7 @@ const Overview = forwardRef(({ payload, setPayload, handleInputChange }, ref) =>
                 </div>
                 <div className='w-1/2 flex flex-col gap-4 mt-5'>
                     <InputReadOnly label='Thông tin liên hệ' value={fullName} />
-                    <InputReadOnly label='Điện thoại' value={personalInfo?.phone} />
+                    <InputReadOnly label='Điện thoại' value={user?.phone} />
                     {/* Giá cho thuê */}
                     <div className='relative'>
                         <InputFormV2
@@ -286,14 +272,6 @@ const Overview = forwardRef(({ payload, setPayload, handleInputChange }, ref) =>
                         )}
                     </div>
                     <div className='relative mt-5'>
-                        {/* <Select
-                            value={payload.target}
-                            setValue={(value) => handleInputChangeWithValidation('target', value)}
-                            name='target'
-                            options={targets}
-                            label='Đối tượng cho thuê'
-                        /> */}
-
                         <SelectTargets
                             value={String(payload.target || '')} // Đảm bảo đây là chuỗi
                             setValue={(value) => handleInputChangeWithValidation('target', value)} // Gọi hàm cập nhật
@@ -315,15 +293,11 @@ const Overview = forwardRef(({ payload, setPayload, handleInputChange }, ref) =>
                     <div className='relative mt-5'>
                         <div className='flex-col'>
                             <label htmlFor="expire" className='font-medium align-center block mb-2' >Ngày hết hạn bài đăng</label>
-                            <DatePicker
-                                selected={selectedDate}
+                            <input
+                                type="date"
+                                value={selectedDate}
                                 onChange={handleDateChange}
-                                showTimeSelect
-                                timeFormat="HH:mm"
-                                timeIntervals={15}
-                                dateFormat="Pp"
-                                className='w-[87%] rounded-md outline-none border border-gray-300 p-2 cursor-pointer'
-                                placeholderText="Chọn ngày và giờ"
+                                className='mt-1 p-2 border border-gray-300 rounded-md w-full'
                             />
                         </div>
                         {errorMessages.expire && (

@@ -28,13 +28,16 @@ const generateRandomCode = () => {
 const createNewPost = async (userId, contentPost, files) => {
     contentPost = JSON.parse(contentPost)  //ép kiểu qua kiểu json vì bên client gửi lên dạng string
     const imageUrls = files;
-    const { title, address, price, description, overview, category_id, acreage } = contentPost
+    const { title, address, price, description, overview, category_id, acreage, target, expire } = contentPost
+    console.log('contentPost', contentPost)
     const addressData = address
     const overviewData = {
         ...overview,
         code: generateRandomCode(),
         area: address.city,
-        type: category_id
+        type: category_id,
+        target: target,
+        expire: expire,
     }
     let addressStr = addressData.detail_address + ", " + addressData.district + ", " + addressData.city
     const resCoordinates = await helper.getGeocodingData(addressStr)
