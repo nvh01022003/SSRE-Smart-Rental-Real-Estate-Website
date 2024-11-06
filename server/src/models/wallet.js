@@ -11,15 +11,8 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate({ User, Transaction, UpgradeRequest }) {
       // define association here
-      this.hasOne(User, { foreignKey: "id" })
+      this.belongsTo(User, { foreignKey: 'user_id' });
       this.hasMany(Transaction, { foreignKey: "wallet_id" })
-
-
-      // Define association with UpgradeRequest model
-      // this.belongsTo(UpgradeRequest, {
-      //   foreignKey: 'user_id',
-      //   targetKey: 'user_id'
-      // });
     }
   }
   Wallet.init({

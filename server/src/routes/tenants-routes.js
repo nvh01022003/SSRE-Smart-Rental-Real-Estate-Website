@@ -24,6 +24,8 @@ router.delete("/deletePostSaved/:id", authentication.authenticateToken, tenantsC
 // report post
 router.post("/reportPost/:id", authentication.authenticateToken, tenantsController.reportPost)
 
+// total number of posts saved
+router.get("/totalPostSaved", authentication.authenticateToken, tenantsController.totalPostSaved)
 // find post by price and acreage and location and category 
 router.get("/findPostByAll", tenantsController.findPostByAll)
 // show detail post
