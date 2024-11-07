@@ -8,7 +8,7 @@ const getGeocodingData = async (address) => {
         if (response.data.status === 'OK') {
             const result = response.data.results[0];
             const { lat, lng } = result.geometry.location;
-
+            console.log('lat:', lat, 'lng:', lng);
             return {
                 err: 0,
                 lat,

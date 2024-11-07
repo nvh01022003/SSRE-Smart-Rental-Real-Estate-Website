@@ -11,12 +11,16 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate({ Category, Image, Overview, User, Coordinates, Address }) {
       // define association here
-      this.belongsTo(Category, { foreignKey: 'category_id' });
-      this.belongsTo(Image, { foreignKey: 'img_id' });
-      this.belongsTo(User, { foreignKey: 'user_id' })
-      this.hasOne(Coordinates, { foreignKey: 'coordinates_id' })
-      this.belongsTo(Address, { foreignKey: 'address_id' });
-      this.belongsTo(Overview, { foreignKey: 'overview_id' });
+      this.belongsTo(Category, { foreignKey: 'category_id' })
+
+      //this.hasMany(Image, { foreignKey: 'id' })
+
+      this.belongsTo(Category, { foreignKey: 'category_id', onDelete: 'CASCADE' });
+      this.belongsTo(Image, { foreignKey: 'img_id', onDelete: 'CASCADE' });
+      this.belongsTo(User, { foreignKey: 'user_id', onDelete: 'CASCADE' });
+      this.belongsTo(Coordinates, { foreignKey: 'coordinates_id', onDelete: 'CASCADE' });
+      this.belongsTo(Address, { foreignKey: 'address_id', onDelete: 'CASCADE' });
+      this.belongsTo(Overview, { foreignKey: 'overview_id', onDelete: 'CASCADE' });
     }
   }
   Post.init({
@@ -38,6 +42,21 @@ module.exports = (sequelize, DataTypes) => {
   }, {
     sequelize,
     modelName: 'Post',
+    hooks: {
+      beforeDestroy: async (posts, options) => {
+        const { Image, Address, Overview, Coordinates } = sequelize.models;
+        try {
+          console.log('Deleting related records:', posts);
+          await Image.destroy({ where: { id: posts.img_id } });
+          await Address.destroy({ where: { id: posts.address_id } });
+          await Overview.destroy({ where: { id: posts.overview_id } });
+          await Coordinates.destroy({ where: { id: posts.coordinates_id } });
+        } catch (error) {
+          console.log('Error deleting related records:', error);
+          throw error;
+        }
+      }
+    }
   });
   return Post;
 };

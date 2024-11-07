@@ -40,11 +40,13 @@ const createNewPost = async (userId, contentPost, files) => {
         expire: expire,
     }
     let addressStr = addressData.detail_address + ", " + addressData.district + ", " + addressData.city
+    console.log('addressStr', addressStr)
     const resCoordinates = await helper.getGeocodingData(addressStr)
     const coordinatesData = {
         lat: resCoordinates.lat,
         lon: resCoordinates.lng
     }
+    console.log('coordinatesData', coordinatesData)
 
     try {
         const [resAddress, resOverview, resCoordinates, resImage] = await Promise.all([
@@ -201,23 +203,51 @@ const updatePost = async (postId, dataUpdate, files) => {
 
 // DELETE POST
 const deletePost = async (postId) => {
+    // try {
+    //     const resPost = await Post.destroy({
+    //         where: {
+    //             id: postId
+    //         }
+    //     })
+    //     return {
+    //         err: 0,
+    //         msg: 'Delete post success',
+    //         post: resPost
+    //     }
+    // } catch (error) {
+    //     console.log(error)
+    //     return {
+    //         err: 1,
+    //         msg: error
+    //     }
+    // }
     try {
-        const resPost = await Post.destroy({
+        // Tìm bài viết theo ID
+        const post = await Post.findOne({
             where: {
                 id: postId
             }
-        })
+        });
+        if (!post) {
+            return {
+                err: 1,
+                msg: 'Post not found'
+            };
+        }
+        // Xóa bài viết, phương thức này sẽ kích hoạt hook beforeDestroy
+        await post.destroy();
+
         return {
             err: 0,
             msg: 'Delete post success',
-            post: resPost
-        }
+            post: post
+        };
     } catch (error) {
-        console.log(error)
+        console.log(error);
         return {
             err: 1,
-            msg: error
-        }
+            msg: error.message
+        };
     }
 }
 // DELETE LIST POST BY LIST ID POST

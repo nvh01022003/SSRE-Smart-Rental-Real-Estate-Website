@@ -11,11 +11,7 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate({ Post }) {
       // define association here
-      this.hasOne(Post, { foreignKey: 'coordinates_id' },
-        {
-          onUpdate: 'CASCADE',
-          onDelete: 'CASCADE'
-        }
+      this.hasOne(Post, { foreignKey: 'coordinates_id' }
       )
     }
   }
