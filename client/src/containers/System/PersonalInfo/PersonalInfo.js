@@ -70,18 +70,18 @@ const PersonalInfo = () => {
     const validate = () => {
         const newErrors = {};
         if (!formData.firstName.trim()) {
-            newErrors.firstName = 'Không để trống';
+            newErrors.firstName = 'Tên không được để trống';
         }
         if (!formData.lastName.trim()) {
-            newErrors.lastName = 'Không để trống';
+            newErrors.lastName = 'Họ không được để trống';
         }
         if (!formData.email.trim()) {
-            newErrors.email = 'Không được để trống';
+            newErrors.email = 'Email không được để trống';
         } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
             newErrors.email = 'Email không đúng định dạng';
         }
         if (!formData.phone.trim()) {
-            newErrors.phone = 'Không được để trống';
+            newErrors.phone = 'Số điện thoại không được để trống';
         } else if (!/^\d{10}$/.test(formData.phone)) {
             newErrors.phone = 'Số điện thoại không hợp lệ';
         }
@@ -191,9 +191,9 @@ const PersonalInfo = () => {
                 </h1>
 
                 <div className="flex flex-col md:flex-row justify-between pt-6">
-                    <div className="flex-1 space-y-6 md:space-y-0">
+                    <div className="flex-1 space-y-6 md:space-y-4">
                         <div className="flex flex-col md:flex-row items-center gap-6">
-                            <div className="w-full md:w-1/2">
+                            <div className="w-full md:w-1/2 relative">
                                 <label className="text-sm text-gray-700 font-medium">HỌ, TÊN ĐỆM:</label>
                                 <input
                                     className="input-firstName w-full p-3 border rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500"
@@ -204,11 +204,11 @@ const PersonalInfo = () => {
                                     placeholder="First Name"
                                 />
                                 {errors.firstName && (
-                                    <small className="text-red-500 italic">{errors.firstName}</small>
+                                    <small className="text-red-500 italic absolute top-full left-0">{errors.firstName}</small>
                                 )}
                             </div>
 
-                            <div className="w-full md:w-1/2">
+                            <div className="w-full md:w-1/2 relative">
                                 <label className="text-sm text-gray-700 font-medium">TÊN:</label>
                                 <input
                                     className="input-lastName w-full p-3 border rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500"
@@ -219,12 +219,12 @@ const PersonalInfo = () => {
                                     placeholder="Last Name"
                                 />
                                 {errors.lastName && (
-                                    <small className="text-red-500 italic">{errors.lastName}</small>
+                                    <small className="text-red-500 italic absolute top-full left-0">{errors.lastName}</small>
                                 )}
                             </div>
                         </div>
 
-                        <div>
+                        <div className="relative">
                             <label className="text-sm text-gray-700 font-medium">EMAIL:</label>
                             <input
                                 className="input-email w-full p-3 border rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500"
@@ -234,10 +234,10 @@ const PersonalInfo = () => {
                                 onChange={handleChange}
                                 placeholder="Email"
                             />
-                            {errors.email && <small className="text-red-500 italic">{errors.email}</small>}
+                            {errors.email && <small className="text-red-500 italic absolute top-full left-0">{errors.email}</small>}
                         </div>
 
-                        <div>
+                        <div className="relative">
                             <label className="text-sm text-gray-700 font-medium">SỐ ĐIỆN THOẠI:</label>
                             <input
                                 className="input-phone w-full p-3 border rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500"
@@ -247,17 +247,20 @@ const PersonalInfo = () => {
                                 onChange={handleChange}
                                 placeholder="Phone"
                             />
-                            {errors.phone && <small className="text-red-500 italic">{errors.phone}</small>}
+                            {errors.phone && <small className="text-red-500 italic absolute top-full left-0">{errors.phone}</small>}
                         </div>
-                        <div className="flex justify-center">
+                        <div className="flex justify-center items-center mt-4">
                             <button
-                                className="btn-update w-full md:w-auto bg-blue-500 text-white font-bold py-3 px-6 rounded-lg hover:bg-gray-300 transition duration-200"
+                                className="btn-update w-full md:w-auto bg-gray-200 text-gray-700 font-bold py-3 px-6 rounded-lg hover:bg-gray-300 transition duration-200"
                                 onClick={handleUpdate}
                             >
                                 Cập Nhật
                             </button>
                         </div>
+
+
                     </div>
+
 
                     <div className="flex flex-col items-center mt-6 md:mt-0 md:ml-8">
                         <img

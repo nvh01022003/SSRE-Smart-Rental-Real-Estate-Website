@@ -14,7 +14,7 @@ const ChangePass = () => {
     const validate = () => {
         const newErrors = {};
         if (!oldPass) {
-            newErrors.oldPass = 'Mật khâu hiện tại không được để trống';
+            newErrors.oldPass = 'Mật khẩu hiện tại không được để trống';
         }
         if (!newPass) {
             newErrors.newPass = 'Mật khẩu mới không được để trống';
@@ -73,9 +73,9 @@ const ChangePass = () => {
                         className="bg-white p-8 md:p-10 rounded-2xl shadow-lg w-full max-w-md"
                         onSubmit={handleSubmit}
                     >
-                        <div className="mb-6">
+                        <div className="mb-12 md:mb-6 relative">
                             <label
-                                className="text-sm md:text-base text-gray-700 font-medium"
+                                className="text-sm md:text-xl text-gray-700 font-medium"
                                 htmlFor="oldPass"
                             >
                                 Mật khẩu hiện tại
@@ -89,13 +89,13 @@ const ChangePass = () => {
                                 placeholder="Nhập mật khẩu hiện tại"
                             />
                             {errors.oldPass && (
-                                <p className="text-red-500 text-xs mt-1">{errors.oldPass}</p>
+                                <p className="text-red-500 text-sm absolute top-full left-0 mt-1">{errors.oldPass}</p>
                             )}
                         </div>
 
-                        <div className="mb-6">
+                        <div className="mb-12 md:mb-6 relative">
                             <label
-                                className="text-sm md:text-base text-gray-700 font-medium"
+                                className="text-sm md:text-xl text-gray-700 font-medium"
                                 htmlFor="newPass"
                             >
                                 Nhập mật khẩu mới
@@ -109,13 +109,13 @@ const ChangePass = () => {
                                 placeholder="Nhập mật khẩu mới"
                             />
                             {errors.newPass && (
-                                <p className="text-red-500 text-xs mt-1">{errors.newPass}</p>
+                                <p className="text-red-500 text-sm absolute top-full left-0 mt-1">{errors.newPass}</p>
                             )}
                         </div>
 
-                        <div className="mb-6">
+                        <div className="mb-12 md:mb-6 relative">
                             <label
-                                className="text-sm md:text-base text-gray-700 font-medium"
+                                className="text-sm md:text-xl text-gray-700 font-medium"
                                 htmlFor="confirmPass"
                             >
                                 Nhập lại mật khẩu mới
@@ -129,14 +129,14 @@ const ChangePass = () => {
                                 placeholder="Nhập lại mật khẩu mới"
                             />
                             {errors.confirmPass && (
-                                <p className="text-red-500 text-xs mt-1">{errors.confirmPass}</p>
+                                <p className="text-red-500 text-sm absolute top-full left-0 mt-1">{errors.confirmPass}</p>
                             )}
                         </div>
 
-                        <div className="flex items-center justify-center mt-10">
+                        <div className="flex items-center justify-center mt-14 md:mt-10">
                             <button
                                 type="submit"
-                                className="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-3 px-6 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 transition duration-200 w-full md:w-auto"
+                                className="text-xl bg-blue-500 hover:bg-blue-600 text-white font-semibold py-3 px-6 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 transition duration-200 w-full md:w-auto"
                             >
                                 Đổi mật khẩu
                             </button>

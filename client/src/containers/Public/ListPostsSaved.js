@@ -196,13 +196,13 @@ const ListPostsSaved = () => {
         // Ensure all required parameters are included
         if (!searchParamsObject.page) searchParamsObject.page = 1; // Default to page 1 if not provided
 
-        console.log(searchParamsObject);
+        //console.log(searchParamsObject);
     }, [searchParams, dispatch, token]);
 
     if (loading) {
         return <Loading />; // Hiện loading indicator
     }
-
+    console.log(savedPosts);
     return (
         <div className="w-full flex flex-col items-center h-full mx-auto">
             <Header />
@@ -232,6 +232,7 @@ const ListPostsSaved = () => {
                                 }}
                                 id={post.Post.id}
                                 starred={true}
+                                updatedAt={post.updatedAt}
                             />
                         ))
                     ) : (

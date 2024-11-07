@@ -45,15 +45,18 @@ export const location = [
         id: 'hcm',
         name: 'Hồ Chí Minh',
         image: hcm,
+        path: 'http://localhost:3000/tim-kiem?provinceCode=79',
     },
     {
         name: 'Hà Nội',
         image: hn,
         id: 'hn',
+        path: 'http://localhost:3000/tim-kiem?provinceCode=01',
     },
     {
         name: 'Đà nẵng',
         image: dn,
         id: 'dn',
+        path: 'http://localhost:3000/tim-kiem?provinceCode=48',
     },
 ]

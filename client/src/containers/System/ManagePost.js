@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { FaSearch, FaPlus, FaTrash, FaUndo } from 'react-icons/fa';
+import { FaSearch, FaPlus } from 'react-icons/fa';
 import axios from 'axios';
 import { useSelector, useDispatch } from 'react-redux';
 import { toast } from 'react-toastify';
@@ -12,14 +12,11 @@ const ManagePost = () => {
     const dispatch = useDispatch();
     const [posts, setPosts] = useState([]);
     const [search, setSearch] = useState("");
+    const [errors, setErrors] = useState({});
     const [selectedImages, setSelectedImages] = useState([]);
-    const [deletedPosts, setDeletedPosts] = useState([]);
     const [selectedPost, setSelectedPost] = useState(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isEditing, setIsEditing] = useState(false);
-    const [showDeleted, setShowDeleted] = useState(false);
-    const [currentPage, setCurrentPage] = useState(1);
-    const [postsPerPage] = useState(5);
     const [imagesPreview, setImagesPreview] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
     const [isActionLoading, setIsActionLoading] = useState(false);
@@ -33,6 +30,33 @@ const ManagePost = () => {
 
     const [district, setDistrict] = useState('');
     const [ward, setWard] = useState('');
+
+    const [currentPage, setCurrentPage] = useState(1);
+    const [itemsPerPage, setItemsPerPage] = useState(4);
+
+    const filteredPosts = posts.filter(post =>
+        (selectedCategory === "all" || post.Category.category_name === selectedCategory) &&
+        post.title.toLowerCase().includes(search.toLowerCase())
+    );
+
+    const totalPages = Math.ceil(filteredPosts.length / itemsPerPage);
+
+    const handlePreviousPage = () => {
+        if (currentPage > 1) {
+            setCurrentPage(currentPage - 1);
+        }
+    };
+
+    const handleNextPage = () => {
+        if (currentPage < totalPages) {
+            setCurrentPage(currentPage + 1);
+        }
+    };
+
+    // Get current posts
+    const indexOfLastPost = currentPage * itemsPerPage;
+    const indexOfFirstPost = indexOfLastPost - itemsPerPage;
+    const currentPosts = filteredPosts.slice(indexOfFirstPost, indexOfLastPost);
 
     useEffect(() => {
         dispatch(fetchCategories()); // Fetch categories when the component mounts
@@ -134,59 +158,93 @@ const ManagePost = () => {
         setSelectedPost(null);
         setIsEditing(false);
         setIsModalOpen(false);
+        setErrors({}); // Clear errors when closing the modal
     };
 
-    const handleSave = async () => {
-        if (isEditing) {
-            setIsActionLoading(true); // Set loading state to true
+    const handleSave = async (e) => {
+        e.preventDefault();
 
-            // Prepare FormData with images
-            const formData = new FormData();
-            if (selectedImages.length > 0) {
-                selectedImages.forEach(file => {
-                    formData.append('images', file);
-                });
-            } else {
-                // Keep old images if no new images are uploaded
-                formData.append('images', JSON.stringify(selectedPost.Image.img_url_list));
-            }
+        const newErrors = {};
 
-            // Add other post data to formData
-            formData.append('post', JSON.stringify(selectedPost));
-
-            try {
-                const response = await handleUpdatePost(selectedPost.id, formData); // Call the update function with postId
-                if (response.data.err === 0) {
-                    // Update the selectedPost state with the new image URLs
-                    const updatedPost = {
-                        ...selectedPost,
-                        Image: {
-                            img_url_list: response.data.updatedPost.Image.img_url_list
-                        }
-                    };
-                    setSelectedPost(updatedPost);
-                    setImagesPreview([]); // Clear the images preview
-                    setSelectedImages([]); // Clear the selected images
-                }
-            } catch (error) {
-                console.error('Error updating post:', error);
-                //Swal.fire('Lỗi!', 'Đã xảy ra lỗi khi cập nhật bài đăng. Vui lòng thử lại sau.', 'error');
-            } finally {
-                setIsActionLoading(false); // Set loading state to false
-            }
-        } else {
-            // Logic to add a new post
+        if (!selectedPost.title || selectedPost.title.length < 20) {
+            newErrors.title = 'Tiêu đề phải có ít nhất 20 kí tự';
         }
-        handleCloseModal();
+
+        if (!selectedPost.description || selectedPost.description.length < 100) {
+            newErrors.description = 'Mô tả phải có ít nhất 100 kí tự';
+        }
+
+        if (!selectedPost.price || isNaN(selectedPost.price)) {
+            newErrors.price = 'Giá phải là số';
+        }
+
+        if (!selectedPost.acreage || isNaN(selectedPost.acreage)) {
+            newErrors.acreage = 'Diện tích phải là số';
+        }
+
+        if (!selectedPost.Address.city) {
+            newErrors.city = 'Không được để trống';
+        }
+
+        if (!selectedPost.Address.district) {
+            newErrors.district = 'Không được để trống';
+        }
+
+        if (!selectedPost.Address.detail_address) {
+            newErrors.detail_address = 'Không được để trống';
+        }
+
+        setErrors(newErrors);
+
+        if (Object.keys(newErrors).length === 0) {
+            if (isEditing) {
+                setIsActionLoading(true); // Set loading state to true
+
+                // Prepare FormData with images
+                const formData = new FormData();
+                if (selectedImages.length > 0) {
+                    selectedImages.forEach(file => {
+                        formData.append('images', file);
+                    });
+                } else {
+                    // Keep old images if no new images are uploaded
+                    formData.append('images', JSON.stringify(selectedPost.Image.img_url_list));
+                }
+
+                // Add other post data to formData
+                formData.append('post', JSON.stringify(selectedPost));
+
+                try {
+                    const response = await handleUpdatePost(selectedPost.id, formData); // Call the update function with postId
+                    if (response.data.err === 0) {
+                        // Update the selectedPost state with the new image URLs
+                        const updatedPost = {
+                            ...selectedPost,
+                            Image: {
+                                img_url_list: response.data.updatedPost.Image.img_url_list
+                            }
+                        };
+                        setSelectedPost(updatedPost);
+                        setImagesPreview([]); // Clear the images preview
+                        setSelectedImages([]); // Clear the selected images
+                    }
+                } catch (error) {
+                    console.error('Error updating post:', error);
+                    //Swal.fire('Lỗi!', 'Đã xảy ra lỗi khi cập nhật bài đăng. Vui lòng thử lại sau.', 'error');
+                } finally {
+                    setIsActionLoading(false); // Set loading state to false
+                }
+            } else {
+                // Logic to add a new post
+            }
+            handleCloseModal();
+        }
     };
 
     const handleSearch = (e) => {
         setSearch(e.target.value);
         setCurrentPage(1);
     };
-
-    // Thay đổi trang
-    const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
     const handleUpdatePost = async (postId, updatedPost) => {
         try {
@@ -246,11 +304,6 @@ const ManagePost = () => {
         setIsLoading(false);
     };
 
-    const filteredPosts = posts.filter(post =>
-        (selectedCategory === "all" || post.Category.category_name === selectedCategory) &&
-        post.title.toLowerCase().includes(search.toLowerCase())
-    );
-
     const parseImageUrls = (img_url_list) => {
         try {
             return JSON.parse(img_url_list);
@@ -259,17 +312,41 @@ const ManagePost = () => {
             return [];
         }
     };
+    const handlePriceChange = (e) => {
+        const value = e.target.value.replace(/\D/g, '');
+        setSelectedPost({ ...selectedPost, price: value.replace(/\B(?=(\d{3})+(?!\d))/g, '.') });
+    };
 
+    const handleAcreageChange = (e) => {
+        const value = e.target.value.replace(/\D/g, '');
+        setSelectedPost({ ...selectedPost, acreage: value.replace(/\B(?=(\d{3})+(?!\d))/g, '.') });
+    };
+    // const handleFiles = (e) => {
+    //     const files = Array.from(e.target.files);
+    //     const previewUrls = files.map(file => URL.createObjectURL(file));
+    //     setSelectedImages(files);
+    //     setImagesPreview(previewUrls);
+    //     setImageUrls(previewUrls); // Store the URLs
+    //     setSelectedPost(prev => ({
+    //         ...prev,
+    //         Image: { img_url_list: [] } // Clear old images from the form
+    //     }));
+    // };
     const handleFiles = (e) => {
         const files = Array.from(e.target.files);
-        const previewUrls = files.map(file => URL.createObjectURL(file));
-        setSelectedImages(files);
-        setImagesPreview(previewUrls);
-        setImageUrls(previewUrls); // Store the URLs
-        setSelectedPost(prev => ({
-            ...prev,
-            Image: { img_url_list: [] } // Clear old images from the form
-        }));
+        const validFiles = files.filter(file => /(\.jpeg|\.jpg|\.png|\.gif)$/i.test(file.name));
+        if (validFiles.length !== files.length) {
+            alert('Chỉ được chọn các file có định dạng .jpeg, .jpg, .png, .gif');
+        } else {
+            const previewUrls = validFiles.map(file => URL.createObjectURL(file));
+            setSelectedImages(validFiles);
+            setImagesPreview(previewUrls);
+            setImageUrls(previewUrls); // Store the URLs
+            setSelectedPost(prev => ({
+                ...prev,
+                Image: { img_url_list: [] } // Clear old images from the form
+            }));
+        }
     };
 
     const handleDeleteImage = (image) => {
@@ -278,12 +355,15 @@ const ManagePost = () => {
         setSelectedImages(prev => prev.filter((file, index) => imageUrls[index] !== image)); // Use the URLs for comparison
     };
 
-    console.log(selectedPost);
-    if (selectedPost) console.log(selectedPost.Address.city);
+    // Function to format date
+    const formatDate = (dateString) => {
+        const date = new Date(dateString);
+        return date.toLocaleDateString('vi-VN');
+    };
 
     return (
         <div className='container mx-auto px-4 py-8'>
-            <div className='mb-8 flex items-center justify-between'>
+            <div className='mb-10 flex items-center justify-between'>
                 <h1 className='text-3xl font-bold text-gray-800'>Quản lý tin đăng</h1>
                 <div className='flex items-center'>
                     <div className='relative mr-4'>
@@ -296,13 +376,27 @@ const ManagePost = () => {
                         />
                         <FaSearch className='absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400' />
                     </div>
-                    <button
+                    {/* <button
                         onClick={() => setShowDeleted(!showDeleted)}
                         className="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded transition duration-300 flex items-center mr-4"
                     >
                         {showDeleted ? <FaUndo className="mr-2" /> : <FaTrash className="mr-2" />}
                         {showDeleted ? 'Tin đang hiển thị' : 'Tin đã xóa'}
-                    </button>
+                    </button> */}
+
+                    {/* Dropdown cho danh mục */}
+                    <div className='mr-4'>
+                        <select
+                            value={selectedCategory}
+                            onChange={handleCategoryChange}
+                            className='px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500'
+                        >
+                            <option value="all">Tất cả danh mục</option>
+                            {categories.map(category => (
+                                <option key={category.id} value={category.category_name}>{category.category_name}</option>
+                            ))}
+                        </select>
+                    </div>
                     <button
                         onClick={() => window.location.href = '/he-thong/tao-moi-bai-dang'}
                         className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded transition duration-300 flex items-center"
@@ -311,55 +405,54 @@ const ManagePost = () => {
                     </button>
                 </div>
             </div>
-            {/* Dropdown cho danh mục */}
-            <div className='mb-4'>
-                <label className='mr-2'>Chọn danh mục:</label>
-                <select
-                    value={selectedCategory}
-                    onChange={handleCategoryChange}
-                    className='px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500'
-                >
-                    <option value="all">Tất cả danh mục</option>
-                    {categories.map(category => (
-                        <option key={category.id} value={category.category_name}>{category.category_name}</option>
-                    ))}
-                </select>
-            </div>
-            <div className="overflow-x-auto bg-white shadow-md rounded-lg">
-                <table className="min-w-full bg-white shadow-md rounded-lg">
-                    <thead className="bg-gray-200">
+
+            <div className="overflow-x-auto bg-white shadow-md rounded-lg mt-5">
+                <table className="min-w-full border-collapse border border-gray-200">
+                    <thead>
                         <tr>
-                            <th className='py-3 px-4 text-left'>Mã tin</th>
-                            <th className='py-3 px-4 text-left'>Tiêu đề</th>
-                            <th className='py-3 px-4 text-left'>Giá</th>
-                            <th className='py-3 px-4 text-left'>Ngày đăng</th>
-                            <th className='py-3 px-4 text-left'>Ảnh</th>
-                            <th className='py-3 px-4 text-left'>Danh mục</th>
-                            <th className='py-3 px-4 text-left'>Hành động</th>
+                            <th className='border border-gray-200 py-2 '>Mã tin</th>
+                            <th className='border border-gray-200 px-4 py-2 '>Tiêu đề</th>
+                            <th className='border border-gray-200  py-2'>
+                                <div className="flex flex-col">
+                                    <span>Giá thuê</span>
+                                    <span>(VNĐ/tháng)</span>
+                                </div>
+                            </th>
+                            <th className='border border-gray-200  py-2'>
+                                <div className="flex flex-col">
+                                    <span>Diện tích</span>
+                                    <span>(m²)</span>
+                                </div>
+                            </th>
+                            <th className='border border-gray-200 px-4 py-2 '>Ngày đăng</th>
+                            <th className='border border-gray-200  px-4 py-2 '>Ảnh</th>
+                            <th className='border border-gray-200 px-4 py-2 '>Danh mục</th>
+                            <th className='border border-gray-200 px-4 py-2 '>Chức năng</th>
                         </tr>
                     </thead>
                     <tbody className="divide-y divide-gray-300">
                         {isLoading && <div className="text-center">Đang tải...</div>}
-                        {filteredPosts.length === 0 ? (
+                        {currentPosts.length === 0 ? (
                             <tr>
                                 <td colSpan="7" className="text-center py-4">Không có tin đăng nào</td>
                             </tr>
                         ) : (
-                            filteredPosts.map(post => (
+                            currentPosts.map(post => (
                                 <tr key={post.id} className="hover:bg-gray-50 transition duration-300">
-                                    <td className='py-4 px-4'>{post.id}</td>
-                                    <td className='py-4 px-4'>{post.title}</td>
-                                    <td className='py-4 px-4'>{post.price}</td>
-                                    <td className='py-4 px-4'>{post.createdAt.slice(0, 10)}</td>
-                                    <td className='py-4 px-4'>
+                                    <td className='border border-gray-200 py-2 text-center align-middle'>{post.id}</td>
+                                    <td className='border border-gray-200 px-4 py-2 truncate max-w-xs'>{post.title}</td> {/* Title truncation */}
+                                    <td className='border border-gray-200 py-2 text-center align-middle'>{post.price}</td>
+                                    <td className='border border-gray-200  py-2 text-center align-middle'>{post.acreage}</td>
+                                    <td className='border border-gray-200 px-4 py-2 text-center align-middle'>{formatDate(post.createdAt)}</td>
+                                    <td className='border border-gray-200 px-4 py-2 text-center align-middle'>
                                         <img
                                             src={JSON.parse(post.Image.img_url_list)[0]}
                                             alt={post.title}
                                             className="w-20 h-20 object-cover rounded"
                                         />
                                     </td>
-                                    <td className='py-4 px-4'>{post.Category.category_name || 'Không có danh mục'}</td>
-                                    <td className='py-4 px-4'>
+                                    <td className='border border-gray-200  py-2 text-center align-middle'>{post.Category.category_name || 'Không có danh mục'}</td>
+                                    <td className='border border-gray-200  py-2 text-center align-middle'>
                                         <button onClick={() => handleView(post)} className="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded mr-2 transition duration-300">Xem</button>
                                         <button onClick={() => handleEdit(post)} className="bg-yellow-500 hover:bg-yellow-600 text-white px-3 py-1 rounded mr-2 transition duration-300">Sửa</button>
                                         <button onClick={() => handleDelete(post.id)} className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded transition duration-300">Xóa</button>
@@ -371,42 +464,110 @@ const ManagePost = () => {
                 </table>
             </div>
 
-            {/* Phân trang */}
-            <div className="mt-4 flex justify-between items-center">
-                <span>Tổng số: {filteredPosts.length} tin đăng</span>
-                <div>
-                    {Array.from({ length: Math.ceil((showDeleted ? deletedPosts : filteredPosts).length / postsPerPage) }).map((_, index) => (
-                        <button
-                            key={index}
-                            onClick={() => paginate(index + 1)}
-                            className={`mx-1 px-3 py-1 rounded ${currentPage === index + 1 ? 'bg-blue-500 text-white' : 'bg-gray-200'}`}
-                        >
-                            {index + 1}
-                        </button>
-                    ))}
+            {/* Pagination */}
+            <div className="flex flex-col md:flex-row justify-between items-center mt-4">
+                <div className="flex items-center mb-4 md:mb-0">
+                    <label className="mr-2 text-gray-500">Hiển thị</label>
+                    <select
+                        value={itemsPerPage}
+                        onChange={(e) => {
+                            setItemsPerPage(Number(e.target.value));
+                            setCurrentPage(1); // Reset to the first page when items per page changes
+                        }}
+                        className="border border-gray-300 rounded px-2 py-1"
+                    >
+                        <option value={4}>4</option>
+                        <option value={8}>8</option>
+                        <option value={16}>16</option>
+                    </select>
+                    <span className="ml-2 text-gray-500">giao dịch mỗi trang</span>
+                </div>
+                <div className="flex items-center">
+                    <button onClick={handlePreviousPage} className="px-4 py-2 bg-gray-200 rounded-full mr-2" disabled={currentPage === 1}>
+                        Trước
+                    </button>
+                    <span className="text-gray-500">{currentPage} trên {totalPages} trang</span>
+                    <button onClick={handleNextPage} className="px-4 py-2 bg-gray-200 rounded-full ml-2" disabled={currentPage === totalPages}>
+                        Sau
+                    </button>
                 </div>
             </div>
 
             {isModalOpen && (
                 <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full flex items-center justify-center">
-                    <div className="bg-white p-8 rounded-lg shadow-xl w-full max-w-5xl">
-                        <h3 className="text-2xl font-bold mb-6 text-gray-800">{isEditing ? 'Chỉnh sửa bài đăng' : 'Xem bài đăng'}</h3>
+                    <div className="bg-white p-4 md:p-8 rounded-lg shadow-xl w-full max-w-6xl">
+                        <h3 className="text-xl md:text-2xl font-bold mb-4 md:mb-6 text-gray-800">{isEditing ? 'Chỉnh sửa bài đăng' : 'Chi tiết bài đăng'}</h3>
                         {isLoading ? (
                             <div><Loading /></div>
                         ) : (
                             selectedPost && (
-                                <div className="space-y-4">
-                                    <div>
-                                        <label className="block text-sm font-medium text-gray-700 mb-1">Mã tin</label>
-                                        <input
-                                            type="text"
-                                            value={selectedPost.id}
-                                            onChange={(e) => setSelectedPost({ ...selectedPost, id: e.target.value })}
-                                            className="w-full border border-gray-300 rounded px-3 py-2"
-                                            disabled
-                                        />
+                                <form onSubmit={handleSave} className="space-y-4">
+                                    <div className="grid grid-cols-1 md:grid-cols-6 gap-4">
+                                        <div className="relative col-span-1 md:col-span-1">
+                                            <label className="block text-sm font-medium text-gray-700 mb-1">Mã tin</label>
+                                            <input
+                                                type="text"
+                                                value={selectedPost.id}
+                                                onChange={(e) => setSelectedPost({ ...selectedPost, id: e.target.value })}
+                                                className="w-full border border-gray-300 rounded px-3 py-2"
+                                                disabled
+                                            />
+                                        </div>
+                                        <div className="relative col-span-1 md:col-span-1">
+                                            <label className="block text-sm font-medium text-gray-700 mb-1">Giá (VNĐ / tháng)</label>
+                                            <input
+                                                type="text"
+                                                value={selectedPost.price}
+                                                onChange={(e) => handlePriceChange(e)}
+                                                className="w-full border border-gray-300 rounded px-3 py-2"
+                                                disabled={!isEditing}
+                                            />
+                                            {errors.price && (
+                                                <p className="text-red-500 text-xs absolute top-full left-0 mt-1">{errors.price}</p>
+                                            )}
+                                        </div>
+                                        <div className="relative col-span-1 md:col-span-1">
+                                            <label className="block text-sm font-medium text-gray-700 mb-1">Diện tích (m²)</label>
+                                            <input
+                                                type="text"
+                                                value={selectedPost.acreage}
+                                                onChange={(e) => handleAcreageChange(e)}
+                                                className="w-full border border-gray-300 rounded px-3 py-2"
+                                                disabled={!isEditing}
+                                            />
+                                            {errors.acreage && (
+                                                <p className="text-red-500 text-xs absolute top-full left-0 mt-1">{errors.acreage}</p>
+                                            )}
+                                        </div>
+                                        <div className="relative col-span-1 md:col-span-1">
+                                            <label className="block text-sm font-medium text-gray-700 mb-1">Ngày đăng</label>
+                                            <input
+                                                type="text"
+                                                value={new Date(selectedPost.createdAt).toLocaleDateString('vi-VN')}
+                                                className="w-full border border-gray-300 rounded px-3 py-2"
+                                                disabled
+                                            />
+                                        </div>
+                                        <div className="relative col-span-1 md:col-span-1">
+                                            <label className="block text-sm font-medium text-gray-700 mb-1">Ngày cập nhật</label>
+                                            <input
+                                                type="text"
+                                                value={new Date(selectedPost.updatedAt).toLocaleDateString('vi-VN')}
+                                                className="w-full border border-gray-300 rounded px-3 py-2"
+                                                disabled
+                                            />
+                                        </div>
+                                        <div className="relative col-span-1 md:col-span-1">
+                                            <label className="block text-sm font-medium text-gray-700 mb-1">Ngày hết hạn</label>
+                                            <input
+                                                type="text"
+                                                value={new Date(selectedPost.Overview.expire).toLocaleDateString('vi-VN')}
+                                                className="w-full border border-gray-300 rounded px-3 py-2"
+                                                disabled
+                                            />
+                                        </div>
                                     </div>
-                                    <div>
+                                    <div className="relative">
                                         <label className="block text-sm font-medium text-gray-700 mb-1">Tiêu đề</label>
                                         <input
                                             type="text"
@@ -415,131 +576,87 @@ const ManagePost = () => {
                                             className="w-full border border-gray-300 rounded px-3 py-2"
                                             disabled={!isEditing}
                                         />
+                                        {errors.title && (
+                                            <p className="text-red-500 text-xs absolute top-full left-0 mt-1">{errors.title}</p>
+                                        )}
                                     </div>
-                                    <div>
-                                        <label className="block text-sm font-medium text-gray-700 mb-1">Giá (VNĐ / tháng)</label>
-                                        <input
-                                            type="text"
-                                            value={selectedPost.price}
-                                            onChange={(e) => setSelectedPost({ ...selectedPost, price: e.target.value })}
-                                            className="w-full border border-gray-300 rounded px-3 py-2"
-                                            disabled={!isEditing}
-                                        />
-                                    </div>
-                                    <div>
-                                        <label className="block text-sm font-medium text-gray-700 mb-1">Diện tích ( mét vuông )</label>
-                                        <input
-                                            type="text"
-                                            value={selectedPost.acreage}
-                                            onChange={(e) => setSelectedPost({ ...selectedPost, acreage: e.target.value })}
-                                            className="w-full border border-gray-300 rounded px-3 py-2"
-                                            disabled={!isEditing}
-                                        />
-                                    </div>
-                                    <div>
+                                    <div className="relative">
                                         <label className="block text-sm font-medium text-gray-700 mb-1">Mô tả</label>
                                         <textarea
                                             value={selectedPost.description}
                                             onChange={(e) => setSelectedPost({ ...selectedPost, description: e.target.value })}
                                             className="w-full border border-gray-300 rounded px-3 py-2"
-                                            rows="5"
+                                            rows="3"
                                             disabled={!isEditing}
                                         />
-                                    </div>
-
-                                    <div>
-                                        <label className="block text-sm font-medium text-gray-700 mb-1">Ngày đăng</label>
-                                        <input
-                                            type="text"
-                                            value={new Date(selectedPost.createdAt).toLocaleDateString('vi-VN')}
-                                            className="w-full border border-gray-300 rounded px-3 py-2"
-                                            disabled
-                                        />
-                                    </div>
-                                    <div>
-                                        <label className="block text-sm font-medium text-gray-700 mb-1">Ngày cập nhật</label>
-                                        <input
-                                            type="text"
-                                            value={new Date(selectedPost.updatedAt).toLocaleDateString('vi-VN')}
-                                            className="w-full border border-gray-300 rounded px-3 py-2"
-                                            disabled
-                                        />
-                                    </div>
-                                    <div>
-                                        <label className="block text-sm font-medium text-gray-700 mb-1">Ngày hết hạn</label>
-                                        <input
-                                            type="text"
-                                            value={new Date(selectedPost.Overview.expire).toLocaleDateString('vi-VN')}
-                                            className="w-full border border-gray-300 rounded px-3 py-2"
-                                            disabled
-                                        />
-                                    </div>
-
-                                    <div>
-                                        <label className="block text-sm font-medium text-gray-700 mb-1">Danh mục</label>
-                                        {isEditing ? (
-                                            <select
-                                                value={selectedPost?.Category?.category_name || ''} // Sử dụng category_name từ selectedPost, thêm kiểm tra null
-                                                onChange={(e) => {
-                                                    const updatedCategory = e.target.value;
-                                                    setSelectedPost(prev => ({
-                                                        ...prev,
-                                                        Category: {
-                                                            ...prev.Category,
-                                                            category_name: updatedCategory
-                                                        }
-                                                    })); // Cập nhật giá trị
-                                                }}
-                                                className="w-full border border-gray-300 rounded px-3 py-2"
-                                            >
-                                                {categories.map(category => (
-                                                    <option key={category.id} value={category.category_name}>{category.category_name}</option>
-                                                ))}
-                                            </select>
-                                        ) : (
-                                            <input
-                                                type="text"
-                                                value={selectedPost?.Category?.category_name || ''}
-                                                className="w-full border border-gray-300 rounded px-3 py-2"
-                                                disabled
-                                            />
+                                        {errors.description && (
+                                            <p className="text-red-500 text-xs absolute top-full left-0 mt-1">{errors.description}</p>
                                         )}
                                     </div>
-                                    <div>
-                                        <label className="block text-sm font-medium text-gray-700 mb-1">Đối tượng cho thuê</label>
-                                        {isEditing ? (
-                                            <select
-                                                value={selectedPost.Overview.target}
-                                                onChange={(e) =>
-                                                    setSelectedPost({
-                                                        ...selectedPost,
-                                                        Overview: { ...selectedPost.Overview, target: Number(e.target.value) }
-                                                    })
-                                                }
-                                                className="w-full border border-gray-300 rounded px-3 py-2"
-                                            >
-                                                <option value="0">Tất cả</option>
-                                                <option value="1">Nam</option>
-                                                <option value="2">Nữ</option>
-                                            </select>
-                                        ) : (
-                                            <input
-                                                type="text"
-                                                value={
-                                                    selectedPost.Overview.target === "0"
-                                                        ? "Tất cả"
-                                                        : selectedPost.Overview.target === "1"
-                                                            ? "Nam"
-                                                            : "Nữ"
-                                                }
-                                                className="w-full border border-gray-300 rounded px-3 py-2"
-                                                disabled
-                                            />
-                                        )}
-                                    </div>
-
-                                    <div className='flex gap-5'>
-                                        <div className='w-[28%]'>
+                                    <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
+                                        <div className="relative col-span-1 md:col-span-1">
+                                            <label className="block text-sm font-medium text-gray-700 mb-1">Danh mục</label>
+                                            {isEditing ? (
+                                                <select
+                                                    value={selectedPost?.Category?.category_name || ''}
+                                                    onChange={(e) => {
+                                                        const updatedCategory = e.target.value;
+                                                        setSelectedPost(prev => ({
+                                                            ...prev,
+                                                            Category: {
+                                                                ...prev.Category,
+                                                                category_name: updatedCategory
+                                                            }
+                                                        }));
+                                                    }}
+                                                    className="w-full border border-gray-300 rounded px-3 py-2"
+                                                >
+                                                    {categories.map(category => (
+                                                        <option key={category.id} value={category.category_name}>{category.category_name}</option>
+                                                    ))}
+                                                </select>
+                                            ) : (
+                                                <input
+                                                    type="text"
+                                                    value={selectedPost?.Category?.category_name || ''}
+                                                    className="w-full border border-gray-300 rounded px-3 py-2"
+                                                    disabled
+                                                />
+                                            )}
+                                        </div>
+                                        <div className="relative col-span-1 md:col-span-1">
+                                            <label className="block text-sm font-medium text-gray-700 mb-1">Đối tượng cho thuê</label>
+                                            {isEditing ? (
+                                                <select
+                                                    value={selectedPost.Overview.target}
+                                                    onChange={(e) =>
+                                                        setSelectedPost({
+                                                            ...selectedPost,
+                                                            Overview: { ...selectedPost.Overview, target: Number(e.target.value) }
+                                                        })
+                                                    }
+                                                    className="w-full border border-gray-300 rounded px-3 py-2"
+                                                >
+                                                    <option value="0">Tất cả</option>
+                                                    <option value="1">Nam</option>
+                                                    <option value="2">Nữ</option>
+                                                </select>
+                                            ) : (
+                                                <input
+                                                    type="text"
+                                                    value={
+                                                        selectedPost.Overview.target === "0"
+                                                            ? "Tất cả"
+                                                            : selectedPost.Overview.target === "1"
+                                                                ? "Nam"
+                                                                : "Nữ"
+                                                    }
+                                                    className="w-full border border-gray-300 rounded px-3 py-2"
+                                                    disabled
+                                                />
+                                            )}
+                                        </div>
+                                        <div className="relative col-span-1 md:col-span-1">
                                             <label className="block text-sm font-medium text-gray-700 mb-1">Tỉnh/Thành phố</label>
                                             {isEditing ? (
                                                 <select
@@ -567,9 +684,11 @@ const ManagePost = () => {
                                                     disabled
                                                 />
                                             )}
+                                            {errors.city && (
+                                                <p className="text-red-500 text-xs absolute top-full left-0 mt-1">{errors.city}</p>
+                                            )}
                                         </div>
-
-                                        <div className='w-[28%]'>
+                                        <div className="relative col-span-1 md:col-span-1">
                                             <label className="block text-sm font-medium text-gray-700 mb-1">Quận/Huyện</label>
                                             {isEditing ? (
                                                 <select
@@ -597,9 +716,11 @@ const ManagePost = () => {
                                                     disabled
                                                 />
                                             )}
+                                            {errors.district && (
+                                                <p className="text-red-500 text-xs absolute top-full left-0 mt-1">{errors.district}</p>
+                                            )}
                                         </div>
-
-                                        <div className='w-[39%]'>
+                                        <div className="relative col-span-1 md:col-span-1">
                                             <label className="block text-sm font-medium text-gray-700 mb-1">Số nhà, đường</label>
                                             <input
                                                 type="text"
@@ -613,14 +734,15 @@ const ManagePost = () => {
                                                 className="w-full border border-gray-300 rounded px-3 py-2"
                                                 disabled={!isEditing}
                                             />
+                                            {errors.detail_address && (
+                                                <p className="text-red-500 text-xs absolute top-full left-0 mt-1">{errors.detail_address}</p>
+                                            )}
                                         </div>
                                     </div>
-
-                                    <div>
+                                    <div className="relative col-span-3">
                                         <label className="block text-sm font-medium text-gray-700 mb-1">Hình ảnh</label>
                                         {isEditing ? (
                                             <div>
-                                                {/* Display Current Images */}
                                                 <div className="grid grid-cols-4 gap-4 mb-4">
                                                     {imagesPreview.length > 0 ? (
                                                         imagesPreview.map((url, index) => (
@@ -628,7 +750,7 @@ const ManagePost = () => {
                                                                 <img
                                                                     src={url}
                                                                     alt={`Selected Image ${index + 1}`}
-                                                                    className="w-full h-auto rounded-lg shadow-md transition-transform transform hover:scale-105"
+                                                                    className="w-[70px] h-[70px] rounded-lg shadow-md transition-transform transform hover:scale-105"
                                                                 />
                                                                 <button
                                                                     type="button"
@@ -645,13 +767,11 @@ const ManagePost = () => {
                                                                 key={index}
                                                                 src={url}
                                                                 alt={`Post Image ${index + 1}`}
-                                                                className="w-full h-auto rounded-lg shadow-md"
+                                                                className="w-[70px] h-[70px] rounded-lg shadow-md"
                                                             />
                                                         ))
                                                     )}
                                                 </div>
-
-                                                {/* Image Upload Button */}
                                                 <input
                                                     type="file"
                                                     id="file"
@@ -659,6 +779,7 @@ const ManagePost = () => {
                                                     onChange={handleFiles}
                                                     className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100 transition-colors"
                                                     multiple
+                                                    accept=".jpeg,.jpg,.png,.gif"
                                                 />
                                             </div>
                                         ) : (
@@ -668,30 +789,28 @@ const ManagePost = () => {
                                                         key={index}
                                                         src={url}
                                                         alt={`Post Image ${index + 1}`}
-                                                        className="w-full h-auto rounded-lg shadow-md transition-transform transform hover:scale-105"
+                                                        className="w-[140px] h-[140px] rounded-lg shadow-md transition-transform transform hover:scale-105"
                                                     />
                                                 ))}
                                             </div>
                                         )}
                                     </div>
-
-
-                                </div>
+                                    <div className="mt-8 flex justify-end">
+                                        <button onClick={handleCloseModal} className="bg-gray-300 hover:bg-gray-400 text-gray-800 px-6 py-2 rounded transition duration-300">Đóng</button>
+                                        {isEditing && (
+                                            isActionLoading ? (
+                                                <div className="flex items-center">
+                                                    <Loading /> {/* Replace this with your actual Loading component */}
+                                                    <span className="ml-2">Đang cập nhật...</span>
+                                                </div>
+                                            ) : (
+                                                <button type="submit" className="bg-green-500 hover:bg-green-600 text-white px-6 py-2 rounded transition duration-300 ml-4">Cập Nhật</button>
+                                            )
+                                        )}
+                                    </div>
+                                </form>
                             )
                         )}
-                        <div className="mt-8 flex justify-end">
-                            <button onClick={handleCloseModal} className="bg-gray-300 hover:bg-gray-400 text-gray-800 px-6 py-2 rounded transition duration-300">Đóng</button>
-                            {isEditing && (
-                                isActionLoading ? (
-                                    <div className="flex items-center">
-                                        <Loading /> {/* Replace this with your actual Loading component */}
-                                        <span className="ml-2">Đang cập nhật...</span>
-                                    </div>
-                                ) : (
-                                    <button onClick={handleSave} className="bg-green-500 hover:bg-green-600 text-white px-6 py-2 rounded transition duration-300 ml-4">Cập Nhật</button>
-                                )
-                            )}
-                        </div>
                     </div>
                 </div>
             )}
