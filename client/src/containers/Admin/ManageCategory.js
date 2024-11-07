@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchCategories, createCategory, updateCategory, deleteCategory } from "../../store/actions/admin";
-import { FaTrashAlt, FaEdit, FaEye } from "react-icons/fa";
 import Swal from "sweetalert2";
 
 const ManageCategory = () => {
@@ -45,10 +44,25 @@ const ManageCategory = () => {
     };
 
     const handleDeleteSelected = () => {
-        selectedCategories.forEach(categoryId => dispatch(deleteCategory(categoryId, token)));
-        dispatch(fetchCategories(token));
-        Swal.fire('Success', 'Xóa toàn bộ chuyên mục thành công !', 'success');
-        setSelectedCategories([]);
+        Swal.fire({
+            title: 'Bạn có chắc chắn muốn xóa các chuyên mục này?',
+            text: "Hành động này không thể hoàn tác!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#3085d6',
+            confirmButtonText: 'Có, xóa!',
+            cancelButtonText: 'Không, hủy!'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                selectedCategories.forEach(categoryId => dispatch(deleteCategory(categoryId, token)));
+                setTimeout(() => {
+                    dispatch(fetchCategories(token));
+                }, 1);
+                Swal.fire('', 'Xóa toàn bộ chuyên mục thành công!', 'success');
+                setSelectedCategories([]);
+            }
+        });
     };
 
     const openModal = (category) => {
@@ -289,7 +303,7 @@ const ManageCategory = () => {
 
 
     return (
-        <div className="p-4 md:p-6 bg-white rounded-lg shadow-lg">
+        <div className="p-4 md:p-6 bg-white rounded-lg shadow-lg h-full">
             <h2 className="text-2xl font-bold mb-4">Quản lý chuyên mục</h2>
 
             {/* Search and Create Button */}
@@ -329,56 +343,56 @@ const ManageCategory = () => {
             </div>
 
             {/* Category Table */}
-            <div className="overflow-x-auto">
-                <table className="table-auto w-full text-left">
+            <div className="overflow-x-auto bg-white shadow-md rounded-lg mt-5">
+                <table className="min-w-full border-collapse border border-gray-200">
                     <thead>
-                        <tr className="bg-gray-100">
-                            <th className="p-2">
+                        <tr className="bg-gray-100 font-semibold text-gray-700 uppercase tracking-wider">
+                            <th className='border border-gray-200 px-4 py-2 '>
                                 <input
                                     type="checkbox"
                                     checked={selectedCategories.length === categories.length}
                                     onChange={toggleSelectAllCategories}
                                 />
                             </th>
-                            <th className="p-2">ID</th>
-                            <th className="p-2">Tên chuyên mục</th>
-                            <th className="p-2">Ngày đăng</th>
-                            <th className="p-2">Ngày cập nhật</th>
-                            <th className="p-2">Chức năng</th>
+                            <th className='border border-gray-200 px-4 py-2 '>ID</th>
+                            <th className='border border-gray-200 px-4 py-2 '>Tên chuyên mục</th>
+                            <th className='border border-gray-200 px-4 py-2 '>Ngày đăng</th>
+                            <th className='border border-gray-200 px-4 py-2 '>Ngày cập nhật</th>
+                            <th className='border border-gray-200 px-4 py-2 '>Chức năng</th>
                         </tr>
                     </thead>
                     <tbody>
                         {filteredCategories.map((category) => (
                             <tr key={category.id} className="border-b">
-                                <td className="p-2">
+                                <td className='border border-gray-200 px-4 py-2 text-center align-middle'>
                                     <input
                                         type="checkbox"
                                         checked={selectedCategories.includes(category.id)}
                                         onChange={() => toggleSelectCategory(category.id)}
                                     />
                                 </td>
-                                <td className="p-2">{category.id}</td>
-                                <td className="p-2">{category.category_name}</td>
-                                <td className="p-2">{formatDate(category.createdAt)}</td>
-                                <td className="p-2">{formatDate(category.updatedAt)}</td>
-                                <td className="p-2">
+                                <td className='border border-gray-200 px-4 py-2 text-center align-middle'>{category.id}</td>
+                                <td className='border border-gray-200 px-4 py-2 text-center align-middle'>{category.category_name}</td>
+                                <td className='border border-gray-200 px-4 py-2 text-center align-middle'>{formatDate(category.createdAt)}</td>
+                                <td className='border border-gray-200 px-4 py-2 text-center align-middle'>{formatDate(category.updatedAt)}</td>
+                                <td className='border border-gray-200 px-4 py-2 text-center align-middle'>
                                     <button
-                                        className="bg-blue-500 text-white px-2 py-1 rounded-md mr-2"
+                                        className="bg-blue-500 hover:bg-blue-600 text-white px-2 py-1 rounded-md mr-2"
                                         onClick={() => openModalView(category)}
                                     >
-                                        <FaEye />
+                                        Xem
                                     </button>
                                     <button
-                                        className="bg-yellow-500 text-white px-2 py-1 rounded-md mr-2"
+                                        className="bg-yellow-500 hover:bg-yellow-600 text-white px-2 py-1 rounded-md mr-2"
                                         onClick={() => openModal(category)}
                                     >
-                                        <FaEdit />
+                                        Sửa
                                     </button>
                                     <button
-                                        className="bg-red-500 text-white px-2 py-1 rounded-md"
+                                        className="bg-red-500 hover:bg-red-600 text-white px-2 py-1 rounded-md"
                                         onClick={() => handleDeleteCategory(category.id)}
                                     >
-                                        <FaTrashAlt />
+                                        Xóa
                                     </button>
                                 </td>
                             </tr>
@@ -393,7 +407,7 @@ const ManageCategory = () => {
                     <div className="bg-white p-6 rounded-lg w-11/12 md:w-1/3">
                         <h3 className="text-xl font-bold mb-4">Tạo mới chuyên mục</h3>
                         <div className="mb-4">
-                            <label>Tên chuyên mục:</label>
+                            <label className="font-semibold">Tên chuyên mục:</label>
                             <input
                                 type="text"
                                 name="category_name"
@@ -427,44 +441,44 @@ const ManageCategory = () => {
                     <div className="bg-white p-6 rounded-lg w-11/12 md:w-1/3">
                         <h3 className="text-xl font-bold mb-4">Chi tiết chuyên mục</h3>
                         <div className="mb-4">
-                            <label>ID:</label>
+                            <label className="font-semibold">ID:</label>
                             <input
                                 type="text"
                                 value={currentCategory.id}
                                 disabled
-                                className="border p-2 rounded-md w-full"
+                                className="border p-2 rounded-md w-full mt-1"
                             />
                         </div>
                         <div className="mb-4">
-                            <label>Tên chuyên mục:</label>
+                            <label className="font-semibold">Tên chuyên mục:</label>
                             <input
                                 type="text"
                                 value={currentCategory.category_name}
                                 disabled
-                                className="border p-2 rounded-md w-full"
+                                className="border p-2 rounded-md w-full mt-1"
                             />
                         </div>
                         <div className="mb-4">
-                            <label>Ngày tạo:</label>
+                            <label className="font-semibold">Ngày tạo:</label>
                             <input
                                 type="text"
                                 value={formatDate(currentCategory.createdAt)}
                                 disabled
-                                className="border p-2 rounded-md w-full"
+                                className="border p-2 rounded-md w-full mt-1"
                             />
                         </div>
                         <div className="mb-4">
-                            <label>Ngày cập nhật:</label>
+                            <label className="font-semibold">Ngày cập nhật:</label>
                             <input
                                 type="text"
                                 value={formatDate(currentCategory.updatedAt)}
                                 disabled
-                                className="border p-2 rounded-md w-full"
+                                className="border p-2 rounded-md w-full mt-1"
                             />
                         </div>
                         <div className="flex justify-end">
                             <button
-                                className="bg-gray-500 text-white px-4 py-2 rounded-md"
+                                className="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-md"
                                 onClick={closeModalView}
                             >
                                 Đóng
@@ -479,34 +493,34 @@ const ManageCategory = () => {
                     <div className="bg-white p-6 rounded-lg w-1/3">
                         <h3 className="text-xl font-bold mb-4">Cập nhật chuyên mục</h3>
                         <div className="mb-4">
-                            <label>ID:</label>
+                            <label className="font-semibold">ID:</label>
                             <input
                                 type="text"
                                 value={currentCategory.id}
                                 disabled
-                                className="border p-2 rounded-md w-full"
+                                className="border p-2 rounded-md w-full mt-1"
                             />
                         </div>
                         <div className="mb-4">
-                            <label>Tên chuyên mục:</label>
+                            <label className="font-semibold">Tên chuyên mục:</label>
                             <input
                                 type="text"
                                 name="category_name"
                                 value={currentCategory.category_name}
                                 onChange={handleInputChange}
-                                className="border p-2 rounded-md w-full"
+                                className="border p-2 rounded-md w-full mt-1"
                             />
                             {errors.category_name && <small className="text-red-500 italic">{errors.category_name}</small>}
                         </div>
                         <div className="flex justify-end">
                             <button
-                                className="bg-gray-500 text-white px-4 py-2 rounded-md mr-2"
+                                className="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-md mr-2"
                                 onClick={closeModal}
                             >
                                 Hủy
                             </button>
                             <button
-                                className="bg-green-500 text-white px-4 py-2 rounded-md"
+                                className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-md"
                                 onClick={handleUpdateCategory}
                             >
                                 Cập nhật

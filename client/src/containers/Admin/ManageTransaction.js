@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { FiUsers, FiFolder } from 'react-icons/fi';
-import { FaEye } from 'react-icons/fa';
+import { FiCreditCard, FiDollarSign } from 'react-icons/fi';
 import axios from 'axios';
 import { useSelector } from 'react-redux';
 import Loading from '../../components/Loading';
@@ -64,7 +63,7 @@ const ManageTransaction = () => {
         };
 
         const [currentPage, setCurrentPage] = useState(1);
-        const [itemsPerPage, setItemsPerPage] = useState(10);
+        const [itemsPerPage, setItemsPerPage] = useState(5);
         const totalPages = Math.ceil(filterDepositHistory().length / itemsPerPage);
 
         const handlePreviousPage = () => {
@@ -143,8 +142,8 @@ const ManageTransaction = () => {
                                     <td className="border border-gray-200 px-4 py-2 text-center">{item.amount}</td>
                                     <td className="border border-gray-200 px-4 py-2 text-center">{item.status}</td>
                                     <td className="border border-gray-200 px-4 py-2 text-center">
-                                        <button className="bg-blue-500 text-white px-2 py-1 rounded-md" onClick={() => openModalView(item)}>
-                                            <FaEye />
+                                        <button className="bg-blue-500 hover:bg-blue-600 text-white px-2 py-1 rounded-md transition duration-300" onClick={() => openModalView(item)}>
+                                            Xem
                                         </button>
                                     </td>
                                 </tr>
@@ -381,16 +380,16 @@ const ManageTransaction = () => {
             <div className="flex space-x-4 mb-6">
                 <button
                     onClick={() => setActiveTab("DepositeHistory")}
-                    className={`flex items-center space-x-2 px-4 py-2 rounded-lg ${activeTab === "DepositeHistory" ? "bg-blue-500 text-white" : "bg-white"}`}
+                    className={`transition duration-300 flex items-center space-x-1 px-4 py-2 rounded-lg ${activeTab === "DepositeHistory" ? "bg-blue-500 hover:bg-blue-600 text-white" : "bg-white"}`}
                 >
-                    <FiUsers />
+                    <FiDollarSign />
                     <span>Lịch sử nạp tiền</span>
                 </button>
                 <button
                     onClick={() => setActiveTab("HistoryPayment")}
-                    className={`flex items-center space-x-2 px-4 py-2 rounded-lg ${activeTab === "HistoryPayment" ? "bg-blue-500 text-white" : "bg-white"}`}
+                    className={`transition duration-300 flex items-center space-x-2 px-4 py-2 rounded-lg ${activeTab === "HistoryPayment" ? "bg-blue-500 hover:bg-blue-600 text-white" : "bg-white"}`}
                 >
-                    <FiFolder />
+                    <FiCreditCard />
                     <span>Lịch sử thanh toán</span>
                 </button>
             </div>
