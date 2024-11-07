@@ -2,7 +2,7 @@ import React, { memo, useState, useEffect } from 'react';
 import icons from '../ultils/icons';
 import { useNavigate } from 'react-router-dom';
 import { formatVietnameseToString } from '../ultils/Common/formatVietnameseToString';
-import { FaMapMarkerAlt, FaDollarSign } from 'react-icons/fa';
+import { FaMapMarkerAlt, FaDollarSign, FaClock } from 'react-icons/fa';
 import axios from 'axios';
 import { useSelector, useDispatch } from 'react-redux';
 import Swal from 'sweetalert2';
@@ -10,7 +10,7 @@ import styled from 'styled-components';
 import { getTotalPostSaved, fetchSavedPosts } from '../store/actions/post';
 
 const { RiCrop2Line } = icons;
-const { GrStar, BsBookmarkStarFill } = icons;
+const { BsBookmarkStarFill } = icons;
 
 const ItemContainer = styled.div`
     width: 100%;
@@ -34,16 +34,18 @@ const ItemContainer = styled.div`
 const IconContainer = styled.div`
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 30px;
     color: #FF8C00;
 
     @media (max-width: 768px) {
-        flex-direction: column;
-        align-items: flex-start;
+        flex-direction: row;
+        flex-wrap: wrap;
+        gap: 10px;
+        font-size: 0.875rem; /* Smaller text size */
     }
 `;
 
-const Item = ({ images, user, title, star, description, attributes, address, id, starred }) => {
+const Item = ({ images, user, title, star, description, attributes, address, id, starred, updatedAt }) => {
     const [isStarred, setIsStarred] = useState(starred);
     const [isHovered, setIsHovered] = useState(false);
     const { token } = useSelector(state => state.auth);
@@ -56,24 +58,16 @@ const Item = ({ images, user, title, star, description, attributes, address, id,
         setIsStarred(savedStarredState === 'true'); // Chuyển đổi chuỗi thành boolean
     }, [id]);
 
-    const handleStar = (star) => {
-        let stars = [];
-        for (let i = 1; i <= +star; i++) {
-            stars.push(<GrStar className='star-item' size={20} color='#FFB300' />);
-        }
-        return stars;
-    };
-
     const handleClick = async () => {
         const newStarredState = !isStarred;
-        setIsStarred(newStarredState);
-        localStorage.setItem(`starred-${id}`, newStarredState); // Lưu trạng thái vào localStorage
 
         if (newStarredState) {
             try {
                 await axios.post(`http://localhost:5000/api/v1/user/tenants/savePost/${id}`, {}, {
                     headers: { 'token': `${token}` }
                 });
+                setIsStarred(newStarredState); // Update state only after successful API call
+                localStorage.setItem(`starred-${id}`, newStarredState); // Save state to localStorage
                 dispatch(getTotalPostSaved(token)); // Update total posts saved
             } catch (error) {
                 console.error('Error saving post:', error);
@@ -94,13 +88,14 @@ const Item = ({ images, user, title, star, description, attributes, address, id,
                 await axios.delete(`http://localhost:5000/api/v1/user/tenants/deletePostSaved/${id}`, {
                     headers: { 'token': `${token}` }
                 });
+                setIsStarred(newStarredState); // Update state only after successful API call
+                localStorage.setItem(`starred-${id}`, newStarredState); // Save state to localStorage
                 dispatch(getTotalPostSaved(token)); // Update total posts saved
                 dispatch(fetchSavedPosts(token, 1)); // Fetch the updated list of saved posts with page 1
             } catch (error) {
                 console.error('Error deleting post:', error);
             }
         }
-
     };
 
     const formatPrice = (price) => {
@@ -113,6 +108,30 @@ const Item = ({ images, user, title, star, description, attributes, address, id,
             return priceNumber.toLocaleString('vi-VN', { minimumFractionDigits: 0 }) + ' đồng'; // Đơn vị đồng, với dấu phẩy
         }
     };
+
+    // Hàm tính khoảng thời gian cập nhật
+    const calculateTimeDifference = (updatedAt) => {
+        const updatedDate = new Date(updatedAt);
+        const now = new Date();
+        const diffInMs = now - updatedDate;
+
+        const diffInMinutes = Math.floor(diffInMs / 60000);
+        const diffInHours = Math.floor(diffInMinutes / 60);
+        const diffInDays = Math.floor(diffInHours / 24);
+
+        if (diffInDays > 0) {
+            return `${diffInDays} ngày trước`;
+        } else if (diffInHours > 0) {
+            return `${diffInHours} giờ trước`;
+        } else if (diffInMinutes > 0) {
+            return `${diffInMinutes} phút trước`;
+        } else {
+            return 'Vừa cập nhật';
+        }
+    };
+
+    // Kiểm tra nếu có dữ liệu updatedAt thì tính toán khoảng thời gian
+    const timeDiff = updatedAt ? calculateTimeDifference(updatedAt) : '';
 
     return (
         <ItemContainer>
@@ -131,46 +150,54 @@ const Item = ({ images, user, title, star, description, attributes, address, id,
             </div>
 
             <div className='w-full md:w-3/5'>
-                <div className='flex justify-between gap-4 w-full mb-2'>
-                    <div className='flex-wrap'>
-                        {handleStar(+star).length > 0 && handleStar(+star).map((star, number) => (
-                            <span key={number} className='h-5'>{star}</span>
-                        ))}
-                        <span className='text-red-600 font-medium cursor-pointer hover:underline text-lg' onClick={() => navigate(`/chi-tiet/${formatVietnameseToString(title)}/${id}`)}>
+                <div className='flex justify-between w-full mb-2'>
+                    <div className='flex-wrap '>
+                        <span className='text-red-600 font-medium cursor-pointer hover:underline text-xs md:text-2xl uppercase overflow-hidden  text-ellipsis' onClick={() => navigate(`/chi-tiet/${formatVietnameseToString(title)}/${id}`)}>
                             {title}
                         </span>
                     </div>
-                    <div className='w-[10%] justify-end '>
+                    <div className='justify-end '>
                         <button className='hover:bg-red-50 p-1 rounded-full' onMouseEnter={() => setIsHovered(true)} onMouseLeave={() => setIsHovered(false)} onClick={handleClick}>
                             <BsBookmarkStarFill size={30} color={isStarred || isHovered ? 'red' : 'orange'} />
                         </button>
                     </div>
                 </div>
-                <div className='my-2 flex items-center gap-6'>
+                <div className='my-2 flex items-center gap-6 text-xl'>
                     <IconContainer>
-                        <span className='font-bold text-green-600 flex items-center gap-1'>
-                            <FaDollarSign className="inline-block " />
-                            <p className='text-lg'>{formatPrice(attributes?.price)}/tháng</p>
+                        <span className='font-bold text-green-600 flex items-center'>
+                            <FaDollarSign className="inline-block" />
+                            <p className="ml-1">{formatPrice(attributes?.price)}/tháng</p>
                         </span>
                         <span className='flex items-center gap-1'>
                             <RiCrop2Line className="inline-block" /> {attributes?.acreage} m²
                         </span>
+                        <span className='flex text-gray-500 items-center gap-1'>
+                            <FaClock className="inline-block" /> {timeDiff}
+                        </span>
                     </IconContainer>
                 </div>
-                <div className='text-gray-500 mb-3'>
-                    <FaMapMarkerAlt className="inline-block" />
+                <div className='text-gray-500 mb-3 mt-1 md:text-xl'>
+                    <FaMapMarkerAlt className="inline-block mb-1" />
                     {address}
                 </div>
-                <p className='text-gray-500 h-[82px] overflow-hidden' style={{ display: '-webkit-box', WebkitLineClamp: 3, WebkitBoxOrient: 'vertical' }}>
+                <p className='text-gray-500 h-[82px] w-full overflow-hidden text-lg'
+                    style={{
+                        display: '-webkit-box',
+                        WebkitLineClamp: 3, // Số dòng tối đa trước khi cắt bớt
+                        WebkitBoxOrient: 'vertical',
+                        textOverflow: 'ellipsis'
+                    }}
+                >
                     {description}
                 </p>
+
                 <div className='flex items-center mt-5 justify-between'>
                     <div className='flex items-center'>
                         <img src={user?.img_avt} alt="avatar" className='w-[30px] h-[30px] object-cover rounded-full mr-2' />
-                        <p className='text-gray-500'>{user?.name}</p>
+                        <p className='text-gray-500 text-xs md:text-xl'>{user?.name}</p>
                     </div>
                     <div className='flex items-center gap-1'>
-                        <p className='text-gray-500'>Liên hệ :</p>
+                        <p className='text-blue-500 text-xs md:text-xl'>Liên hệ :</p>
                         <button type='button' className='px-2 py-1 rounded-md font-medium border border-blue-500 text-blue-500 bg-white hover:bg-blue-500 hover:text-white transition-all duration-300'>
                             {user?.phone}
                         </button>
