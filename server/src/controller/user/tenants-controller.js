@@ -2,6 +2,7 @@ const tenanstService = require("../../services/user-service/tenants-services")
 const helperService = require("../../services/tools/userSearches-service")
 const Decimal = require('decimal.js');
 const jwt = require("jsonwebtoken");
+const authentication = require("../auth/auth")
 // show info user
 const showInfoUser = async (req, res) => {
     const userId = req.user.id
@@ -99,6 +100,21 @@ const findPostByAll = async (req, res) => {
     console.log('Page', page)
     try {
         const response = await tenanstService.findPostByAll(minPrice, maxPrice, location, minAcreage, maxAcreage, categoryCode, page)
+        if (response.msg.listPost.length === 0) {
+            try {
+                console.log('Save user searches')
+                const token = req.headers["token"];
+                console.log('Token', token)
+                // authentication.authenticateToken(req, res, next)
+                // console.log('Save user searches 11')
+                await helperService.saveUserSearches(minPrice, maxPrice, location, minAcreage, maxAcreage, categoryCode)
+            } catch (error) {
+                return res.status(500).json({
+                    err: -1,
+                    msg: 'Fail at auth controller saveUserSearches: ' + error
+                })
+            }
+        }
         return res.status(200).json(response)
     } catch (error) {
         return res.status(500).json({
