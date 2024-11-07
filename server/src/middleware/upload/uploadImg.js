@@ -41,7 +41,7 @@ const checkFileTypeImg = (req, res, next) => {
     }
 
     // Kiểm tra loại tệp cho từng file
-    const filetypes = /jpeg|jpg|png|gif/;
+    const filetypes = /jpeg|jpg|png|gif|webp/;
     for (let file of files) {
         const mimetype = filetypes.test(file.mimetype);
         const extname = filetypes.test(file.originalname.split('.').pop().toLowerCase());

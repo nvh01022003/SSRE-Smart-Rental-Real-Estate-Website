@@ -115,23 +115,22 @@ const Address = forwardRef(({ setPayload, handleInputChange, resetForm }, ref) =
     }, [resetForm]);
 
     return (
-        <div>
-            <h2 className='font-semibold text-xl py-4'>Địa chỉ cho thuê</h2>
+        <div className="p-4 md:p-6">
+            <h2 className='font-semibold text-2xl md:text-xl py-4'>Địa chỉ cho thuê</h2>
             <div className='flex flex-col gap-4'>
-                <div className='flex items-center gap-6'>
-                    <div className='w-[28%] relative'>
+                <div className='flex flex-col md:flex-row gap-4'>
+                    <div className='w-full md:w-[28%] relative'>
                         <Select
                             type='city'
                             value={city || ''}
                             setValue={(value) => {
                                 setcity(value);
                                 handleInputChange('city', value);
-                                setcityError(''); // Xóa lỗi khi người dùng chọn giá trị hợp lệ
+                                setcityError('');
                             }}
-
                             options={citys.map(city => ({
-                                code: city.province_id, // ID của chuyên mục
-                                value: city.province_name // Tên hiển thị của chuyên mục
+                                code: city.province_id,
+                                value: city.province_name
                             }))}
                             label='Tỉnh/Thành phố'
                         />
@@ -141,7 +140,7 @@ const Address = forwardRef(({ setPayload, handleInputChange, resetForm }, ref) =
                             </p>
                         )}
                     </div>
-                    <div className='w-[24%] relative'>
+                    <div className='w-full md:w-[24%] relative'>
                         <Select
                             reset={resetDistrict}
                             type='district'
@@ -149,11 +148,11 @@ const Address = forwardRef(({ setPayload, handleInputChange, resetForm }, ref) =
                             setValue={(value) => {
                                 setDistrict(value);
                                 handleInputChange('district', value);
-                                setDistrictError(''); // Xóa lỗi khi người dùng chọn giá trị hợp lệ
+                                setDistrictError('');
                             }}
                             options={districts.map(district => ({
-                                code: district.district_id, // ID của chuyên mục
-                                value: district.district_name // Tên hiển thị của chuyên mục
+                                code: district.district_id,
+                                value: district.district_name
                             }))}
                             label='Quận/Huyện'
                         />
@@ -163,7 +162,7 @@ const Address = forwardRef(({ setPayload, handleInputChange, resetForm }, ref) =
                             </p>
                         )}
                     </div>
-                    <div className='w-[23%] relative'>
+                    <div className='w-full md:w-[23%] relative'>
                         <Select
                             reset={resetWard}
                             type='ward'
@@ -171,11 +170,11 @@ const Address = forwardRef(({ setPayload, handleInputChange, resetForm }, ref) =
                             setValue={(value) => {
                                 setWard(value);
                                 handleInputChange('ward', value);
-                                setWardError(''); // Xóa lỗi khi người dùng chọn giá trị hợp lệ
+                                setWardError('');
                             }}
                             options={wards.map(ward => ({
-                                code: ward.ward_id, // ID của chuyên mục
-                                value: ward.ward_name // Tên hiển thị của chuyên mục
+                                code: ward.ward_id,
+                                value: ward.ward_name
                             }))}
                             label='Phường/Xã'
                         />
@@ -187,14 +186,14 @@ const Address = forwardRef(({ setPayload, handleInputChange, resetForm }, ref) =
                     </div>
                 </div>
 
-                <div className='w-[28%] pt-5'>
+                <div className='w-full md:w-[28%] pt-5'>
                     <InputFormNumberHouse
                         label={<span className="text-base font-medium text-gray-800">Số nhà, tên đường</span>}
                         value={detail_address || ''}
                         setValue={(e) => {
                             setdetail_address(e.target.value);
                             handleInputChange('detail_address', e.target.value);
-                            setdetail_addressError(''); // Xóa lỗi khi người dùng nhập giá trị hợp lệ
+                            setdetail_addressError('');
                         }}
                     />
                     {detail_addressError && <p className='text-red-500 text-sm'>{detail_addressError}</p>}

@@ -2,7 +2,7 @@ import React from 'react'
 import * as actions from '../../store/actions'
 import { logout } from '../../store/actions/auth'
 import { useDispatch } from 'react-redux'
-import { AiOutlineLogout } from 'react-icons/ai'
+import { AiOutlineLogout, AiOutlineCreditCard } from 'react-icons/ai'
 import { useState } from "react";
 import { FiHome, FiUsers, FiFolder, FiFileText, FiUserCheck, FiMenu, FiX } from "react-icons/fi";
 import logo from '../../assets/logo.png'
@@ -11,6 +11,7 @@ import ManageCategory from './ManageCategory';
 import ManageRequest from './ManageRequest';
 import ManagePost from './ManagePost';
 import Dashboard from './Dashboard';
+import ManageTransaction from './ManageTransaction';
 
 const HomeAdmin = () => {
     const dispatch = useDispatch();
@@ -24,7 +25,7 @@ const HomeAdmin = () => {
         { name: "Quản lý chuyên mục", icon: <FiFolder /> },
         { name: "Quản lý tin đăng", icon: <FiFileText /> },
         { name: "Quản lý yêu cầu", icon: <FiUserCheck /> },
-        { name: "Quản lý giao dịch", icon: <AiOutlineLogout /> },
+        { name: "Quản lý giao dịch", icon: <AiOutlineCreditCard /> },
         { name: "Đăng xuất", icon: <AiOutlineLogout />, action: "logout" }
     ];
 
@@ -106,7 +107,7 @@ const HomeAdmin = () => {
                         <Dashboard />
                     )}
                     {activeTab === "Quản lý giao dịch" && (
-                        <Dashboard />
+                        <ManageTransaction />
                     )}
                 </div>
             </div>

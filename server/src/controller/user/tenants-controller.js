@@ -3,6 +3,7 @@ const helperService = require("../../services/tools/userSearches-service")
 const Decimal = require('decimal.js');
 const jwt = require("jsonwebtoken");
 const authentication = require("../auth/auth")
+const { json } = require("sequelize");
 // show info user
 const showInfoUser = async (req, res) => {
     const userId = req.user.id
@@ -98,6 +99,12 @@ const findPostByAll = async (req, res) => {
     const categoryCode = req.query.category
     const page = parseInt(req.query.page)
     console.log('Page', page)
+    console.log('1', minPrice)
+    console.log('2', maxPrice)
+    console.log('3', location)
+    console.log('4', minAcreage)
+    console.log('5', maxAcreage)
+    console.log('6', categoryCode)
     try {
         const response = await tenanstService.findPostByAll(minPrice, maxPrice, location, minAcreage, maxAcreage, categoryCode, page)
         if (response.msg.listPost.length === 0) {
@@ -193,6 +200,20 @@ const reqUpdateToLandlord = async (req, res) => {
     }
 }
 
+const totalPostSaved = async (req, res) => {
+    const userId = req.user.id
+    try {
+        const response = await tenanstService.totalPostSaved(userId)
+        return res.status(200).json(response)
+    } catch (error) {
+        return res.status(500).json({
+            err: -1,
+            msg: 'Fail at auth controller totalPostSaved: ' + error
+        })
+    }
+}
+
+
 module.exports = {
     showInfoUser,
     changeInfo,
@@ -205,5 +226,7 @@ module.exports = {
     totalPage,
     showDetailPost,
     showCategory,
-    reqUpdateToLandlord
+    reqUpdateToLandlord,
+    totalPostSaved
+
 }

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Routes, Route } from 'react-router-dom'
 import { Home, Login, Rental, Homepage, DetailPost, SearchDetail } from './containers/Public'
 import { path } from './ultils/constant'
@@ -6,7 +6,6 @@ import { CreatePost } from '../src/containers/System'
 import { System } from '../src/containers/System'
 import * as actions from './store/actions'
 import { useDispatch, useSelector } from 'react-redux'
-import { useEffect } from 'react'
 import Register from './containers/Public/Register'
 import Verify from './containers/Public/Verify'
 import PersonalInfo from './containers/System/PersonalInfo/PersonalInfo'
@@ -24,17 +23,29 @@ import Momo from './components/Momo';
 import BankTransfer from './components/BankTransfer';
 import ManagePost from '../src/containers/System/ManagePost';
 
+
 function App() {
 
   const dispatch = useDispatch()
 
-  const { isLoggedIn } = useSelector(state => state.auth)
+  const { isLoggedIn, token } = useSelector(state => state.auth)
 
   useEffect(() => {
     // Clear localStorage items related to authentication
     localStorage.removeItem('persist:auth');
     localStorage.removeItem('persist:root');
-  }, [isLoggedIn, dispatch])
+
+    // Set a timeout to dispatch setUserInfo after 1 second
+    const timer = setTimeout(() => {
+      //const token = localStorage.getItem('token');
+      if (isLoggedIn && token) {
+        dispatch(actions.setUserInfo(token)); // Dispatch the action to update the Redux store
+      }
+    }, 1000); // 1 second timeout
+
+    // Cleanup the timer on component unmount or before re-running useEffect
+    return () => clearTimeout(timer);
+  }, [isLoggedIn, dispatch, token])
 
   return (
     <div className="bg-primary">

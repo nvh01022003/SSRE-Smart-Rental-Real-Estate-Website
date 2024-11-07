@@ -7,6 +7,8 @@ import Lightbox from 'react-image-lightbox';
 import icons from '../../ultils/icons';
 import { useSelector } from 'react-redux';
 import axios from 'axios';
+import { formatVietnameseToString } from '../../ultils/Common/formatVietnameseToString';
+import { useNavigate } from 'react-router-dom';
 
 // Import Swiper styles
 import 'swiper/css';
@@ -18,6 +20,7 @@ import { FaFlag, FaMapMarkerAlt, FaDollarSign, FaClock } from 'react-icons/fa'; 
 const { RiCrop2Line } = icons;
 
 const DetailPost = () => {
+    const navigate = useNavigate();
     const { id } = useParams();
     const token = useSelector(state => state.auth);
 
@@ -256,7 +259,9 @@ const DetailPost = () => {
                                 </tr>
                                 <tr className="bg-gray-200 h-8">
                                     <td className="font-normal pl-2">Chuyên mục : </td>
-                                    <td className='underline text-blue-700 font-medium hover:cursor-pointer hover:text-orange-700'>
+                                    <td className='underline text-blue-700 font-medium hover:cursor-pointer hover:text-orange-700'
+                                        onClick={() => navigate(`/${formatVietnameseToString(data.category.category_name)}`)}
+                                    >
                                         {data.category.category_name}
                                     </td>
                                 </tr>

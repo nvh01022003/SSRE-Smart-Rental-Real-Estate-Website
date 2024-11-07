@@ -12,7 +12,7 @@ const payOS = new PayOS("3eec00e7-41bd-43cb-8fac-1dbe0fe0e71f",
     "a29b070b0effcc6cc78b3667150478ee996d74fb0216aef1d78cb07b65402aed");
 
 // Tạo yêu cầu thanh toán qua payOS
-const createPaymentPayos = async (amount, orderId, id) => {
+const createPaymentPayos = async (amount, id) => {
     try {
         const orderCode = Number(String(new Date().getTime()).slice(-6));  // bởi vì payos yêu cầu mã đơn hàng phải là số
 
@@ -20,8 +20,8 @@ const createPaymentPayos = async (amount, orderId, id) => {
             orderCode,
             amount,
             description: "Thanh toán qua PayOS",
-            returnUrl: 'https://youtube.com', // Đảm bảo `returnUrl` được đặt đúng
-            cancelUrl: 'https://youtube.com' // Đảm bảo `cancelUrl` được đặt đúng
+            returnUrl: 'http://localhost:3000/he-thong/nap-tien', // Đảm bảo `returnUrl` được đặt đúng
+            cancelUrl: 'http://localhost:3000/he-thong/nap-tien' // Đảm bảo `cancelUrl` được đặt đúng
         };
         console.log("Payment Data:", paymentData); // Kiểm tra giá trị của paymentData
 
@@ -54,7 +54,7 @@ const createPaymentPayos = async (amount, orderId, id) => {
         throw new Error("Invalid PayOS response");
     } catch (error) {
         console.error("Error creating PayOS payment request:", error);
-        throw new Error("Payment request failed");
+        throw new Error(error.message);
     }
 };
 

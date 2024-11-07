@@ -8,6 +8,7 @@ const authorization = require("../middleware/authorize/check-role")
 const managerUserController = require("../controller/admin/manager-user-controller")
 const managerCategoryController = require("../controller/admin/manager-category-controller.js")
 const managerPostController = require("../controller/admin/manager-post-controller.js")
+const transactionController = require('../controller/admin/manager-transaction-controller.js');
 const img = require("../middleware/upload/uploadImg")
 const multer = require('multer');
 const storage = multer.memoryStorage();
@@ -24,24 +25,22 @@ router.delete("/deleteUsers", authentication.authenticateToken, authorization.ch
 router.get("/showDetailUser/:userId", authentication.authenticateToken, authorization.checkRoleAdmin, managerUserController.showDetailUser)
 // update user by id
 router.put("/updateUser/:userId", authentication.authenticateToken, authorization.checkRoleAdmin, validate.validateUpdateUserByAdmin, managerUserController.updateUser)
-// change role user by id
-router.put("/changeRoleUser/:userId", authentication.authenticateToken, authorization.checkRoleAdmin, managerUserController.changeRoleUser)
-router.put("/updateUser/:userId", authentication.authenticateToken, authorization.checkRoleAdmin, managerUserController.updateUser)
 // delete user by id
-router.delete("/deleteUser/:userId", authentication.authenticateToken, authorization.checkRoleAdmin, managerUserController.deleteUser)
+router.delete("/deleteUser/:userId", authentication.authenticateToken, authorization.checkRoleAdmin, managerUserController.deleteUser, managerUserController.sendMailReasonDeleteUser)
 // find user by name
 router.get("/findUserByName", authentication.authenticateToken, authorization.checkRoleAdmin, managerUserController.findUserByEmail)
 // find user by role
 router.get("/findUserByRole", authentication.authenticateToken, authorization.checkRoleAdmin, managerUserController.findUserByRole)
+
+// MANAGE UPGRADE REQUEST
 // hiển thị các yêu cầu nâng cấp tài khoản
 router.get("/showAllUpgradeRequest", authentication.authenticateToken, authorization.checkRoleAdmin, managerUserController.showAllUpgradeRequest)
-//từ chối yêu cầu nâng cấp tài khoản
-router.put("/refuseUpgradeRequest/:userId", authentication.authenticateToken, authorization.checkRoleAdmin, managerUserController.refuseChangeRoleUser)
-// change role user lên ladnlord
-router.put("/changeRoleUser/:userId", authentication.authenticateToken, authorization.checkRoleAdmin, managerUserController.changeRoleUser)
 
-
-
+// phê duyệt yêu cầu nâng cấp tài khoản
+// change role user by id
+router.put("/changeRoleUser/:userId", authentication.authenticateToken, authorization.checkRoleAdmin, managerUserController.changeRoleUser, managerUserController.sendMailApproveUpgradeRequest)
+// từ chối yêu cầu nâng cấp tài khoản
+router.put("/rejectUpgradeRequest/:userId", authentication.authenticateToken, authorization.checkRoleAdmin, managerUserController.rejectUpgradeRequest, managerUserController.sendMailRejectUpgradeRequest)
 
 
 // MANAGE CATEGORY
@@ -64,5 +63,10 @@ router.delete("/deletePosts", authentication.authenticateToken, authorization.ch
 // show detail post by id
 router.get("/showDetailPost/:postId", authentication.authenticateToken, authorization.checkRoleAdmin, managerPostController.showDetailPost)
 // delete post by id
-router.delete("/deletePost/:postId", authentication.authenticateToken, authorization.checkRoleAdmin, managerPostController.deletePost)
+router.delete("/deletePost/:postId", authentication.authenticateToken, authorization.checkRoleAdmin, managerPostController.deletePost, managerPostController.sendMailReasonDeletePost)
+
+// MANAGE TRANSACTION
+router.get("/showAllDepositHistory", authentication.authenticateToken, authorization.checkRoleAdmin, transactionController.showAllDepositHistory);
+
+
 module.exports = router

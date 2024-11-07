@@ -10,10 +10,10 @@ module.exports = {
         type: Sequelize.INTEGER
       },
       lat: {
-        type: Sequelize.STRING
+        type: Sequelize.STRING,
       },
       lon: {
-        type: Sequelize.STRING
+        type: Sequelize.STRING,
       },
       createdAt: {
         allowNull: false,

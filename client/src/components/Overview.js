@@ -2,11 +2,7 @@ import React, { useState, useEffect, useImperativeHandle, forwardRef } from 'rea
 import { SelectCategory, InputReadOnly, InputFormV2, SelectTargets } from './';
 import InputFormV3 from './InputFormV3.js';
 import { useSelector, useDispatch } from 'react-redux';
-import { getPersonalInfo } from '../services/userService';
 import { getCategories } from '../store/actions/app.js';
-
-import DatePicker from 'react-datepicker';
-import 'react-datepicker/dist/react-datepicker.css';
 
 const targets = [
     { code: '0', value: 'Tất cả' },
@@ -21,11 +17,8 @@ const Overview = forwardRef(({ payload, setPayload, handleInputChange }, ref) =>
     useEffect(() => {
         dispatch(getCategories());
     }, [dispatch]);
-    //console.log(categories);
 
-    const { token } = useSelector(state => state.auth);
-
-    const [personalInfo, setPersonalInfo] = useState(null);
+    const { user } = useSelector((state) => state.user);
 
     const [errorMessages, setErrorMessages] = useState({
         title: '',
@@ -37,12 +30,17 @@ const Overview = forwardRef(({ payload, setPayload, handleInputChange }, ref) =>
         expire: '',
     });
 
-    const [selectedDate, setSelectedDate] = useState(null);
+    const [selectedDate, setSelectedDate] = useState('');
 
-    // Hàm xử lý khi người dùng chọn ngày hết hạn
-    const handleDateChange = (date) => {
-        setSelectedDate(date);
-        const formattedDate = date ? date.toISOString() : '';
+    const handleDateChange = (e) => {
+        const dateString = e.target.value;
+        const date = new Date(dateString);
+
+        setSelectedDate(dateString);
+
+        // Định dạng ngày thành yyyy-MM-dd
+        const formattedDate = date ? date.toISOString().split("T")[0] : '';
+
         setPayload((prev) => ({ ...prev, expire: formattedDate }));
         handleInputChange('expire', formattedDate);
 
@@ -53,20 +51,8 @@ const Overview = forwardRef(({ payload, setPayload, handleInputChange }, ref) =>
         }));
     };
 
-    useEffect(() => {
-        const fetchPersonalInfo = async () => {
-            try {
-                const data = await getPersonalInfo(token);
-                setPersonalInfo(data.info_user);
-            } catch (error) {
-                console.error('Error fetching personal information:', error);
-            }
-        };
 
-        fetchPersonalInfo();
-    }, [token]);
-
-    const fullName = personalInfo ? `${personalInfo.firstName} ${personalInfo.lastName}`.trim() : '';
+    const fullName = user ? `${user.firstName} ${user.lastName}`.trim() : '';
 
     // Hàm định dạng số thành dạng có dấu phẩy
     const formatNumberWithCommas = (value) => {
@@ -199,135 +185,120 @@ const Overview = forwardRef(({ payload, setPayload, handleInputChange }, ref) =>
     //console.log(payload);
 
     return (
-        <div>
-            <h2 className='font-semibold text-xl py-4'>Thông tin mô tả</h2>
-            <div className='w-full flex flex-col gap-4'>
-                <div className='w-1/2 relative'>
+        <div className="p-4 md:p-6">
+            <h2 className="font-semibold text-xl sm:text-2xl py-4">Thông tin mô tả</h2>
+            <div className="w-full flex flex-col gap-4">
+                <div className="w-full relative">
                     <SelectCategory
-                        value={String(payload.category_id || '')} // Đảm bảo đây là chuỗi
-                        setValue={(value) => handleInputChangeWithValidation('category_id', value)} // Gọi hàm cập nhật
-                        name='category_id'
+                        value={String(payload.category_id || '')}
+                        setValue={(value) => handleInputChangeWithValidation('category_id', value)}
+                        name="category_id"
                         options={categories.map(category => ({
-                            code: category.id, // ID của chuyên mục
-                            value: category.category_name // Tên hiển thị của chuyên mục
+                            code: category.id,
+                            value: category.category_name,
                         }))}
-                        label='Loại chuyên mục'
+                        label="Loại chuyên mục"
+                        className="w-full" // Ensuring full width
                     />
-
                     {errorMessages.category_id && (
-                        <p className='text-red-500 absolute -bottom-6 text-sm'>
+                        <p className="text-red-500 absolute -bottom-6 text-sm">
                             {errorMessages.category_id}
                         </p>
                     )}
-
                 </div>
-                <div className='relative mt-5'>
+                <div className="relative mt-3">
                     <InputFormV3
                         value={payload.title}
-                        name='title'
+                        name="title"
                         setValue={(value) => handleInputChangeWithValidation('title', value)}
-                        label='Tiêu đề'
+                        label="Tiêu đề"
+                        className="w-full"
                     />
                     {errorMessages.title && (
-                        <p className='text-red-500 absolute -bottom-6 text-sm'>
+                        <p className="text-red-500 absolute -bottom-6 text-sm">
                             {errorMessages.title}
                         </p>
                     )}
                 </div>
-                <div className='relative flex flex-col gap-2 mt-5'>
+                <div className="relative flex flex-col gap-2 mt-3">
                     <label htmlFor="desc">Nội dung mô tả</label>
                     <textarea
+                        placeholder="Nhập thông tin chi tiết ..."
                         id="desc"
-                        cols="30" rows="10"
-                        className='w-full rounded-md outline-none border border-gray-300 p-2'
+                        cols="30" rows="5"
+                        className="w-full rounded-md outline-none border border-gray-300 p-2"
                         value={payload.description}
-                        name='description'
+                        name="description"
                         onChange={(e) => handleInputChangeWithValidation('description', e.target.value)}
                     ></textarea>
                     {errorMessages.description && (
-                        <p className='text-red-500 absolute -bottom-6 text-sm'>
+                        <p className="text-red-500 absolute -bottom-6 text-sm">
                             {errorMessages.description}
                         </p>
                     )}
                 </div>
-                <div className='w-1/2 flex flex-col gap-4 mt-5'>
-                    <InputReadOnly label='Thông tin liên hệ' value={fullName} />
-                    <InputReadOnly label='Điện thoại' value={personalInfo?.phone} />
-                    {/* Giá cho thuê */}
-                    <div className='relative'>
+                <div className="w-full flex flex-col gap-4 mt-3">
+                    <InputReadOnly label="Thông tin liên hệ" value={fullName} className="w-full" />
+                    <InputReadOnly label="Điện thoại" value={user?.phone} className="w-full" />
+                    <div className="relative mt-3">
                         <InputFormV2
                             value={formatNumberWithCommas(payload.price)}
-                            setValue={(value) => handlePriceInput(value)} // Gọi hàm xử lý giá
-                            name='price'
-                            small='Nhập đầy đủ số, ví dụ 1 triệu thì nhập là 1000000'
-                            label='Giá cho thuê'
-                            unit='đồng'
+                            setValue={(value) => handlePriceInput(value)}
+                            name="price"
+                            small="Nhập đầy đủ số, ví dụ 1 triệu thì nhập là 1000000"
+                            label="Giá cho thuê"
+                            unit="đồng"
+                            className="w-full"
                         />
                         {errorMessages.price && (
-                            <p className='text-red-500 absolute -bottom-6 text-sm'>
+                            <p className="text-red-500 absolute -bottom-6 text-sm">
                                 {errorMessages.price}
                             </p>
                         )}
                     </div>
-
-                    {/* Diện tích */}
-                    <div className='relative mt-5'>
+                    <div className="relative mt-3">
                         <InputFormV2
                             value={formatNumberWithCommas(payload.acreage)}
-                            setValue={(value) => handleAreaInput(value)} // Gọi hàm xử lý diện tích
-                            name='acreage'
-                            label='Diện tích'
-                            unit='m²'
+                            setValue={(value) => handleAreaInput(value)}
+                            name="acreage"
+                            label="Diện tích"
+                            unit="m²"
+                            className="w-full"
                         />
                         {errorMessages.acreage && (
-                            <p className='text-red-500 absolute -bottom-6 text-sm'>
+                            <p className="text-red-500 absolute -bottom-6 text-sm">
                                 {errorMessages.acreage}
                             </p>
                         )}
                     </div>
-                    <div className='relative mt-5'>
-                        {/* <Select
-                            value={payload.target}
-                            setValue={(value) => handleInputChangeWithValidation('target', value)}
-                            name='target'
-                            options={targets}
-                            label='Đối tượng cho thuê'
-                        /> */}
-
+                    <div className="relative mt-3">
                         <SelectTargets
-                            value={String(payload.target || '')} // Đảm bảo đây là chuỗi
-                            setValue={(value) => handleInputChangeWithValidation('target', value)} // Gọi hàm cập nhật
-                            name='target'
+                            value={String(payload.target || '')}
+                            setValue={(value) => handleInputChangeWithValidation('target', value)}
+                            name="target"
                             options={targets.map(target => ({
                                 code: target.code,
-                                value: target.value
+                                value: target.value,
                             }))}
-                            label='Đối tượng cho thuê'
+                            label="Đối tượng cho thuê"
+                            className="w-full"
                         />
-
                         {errorMessages.target && (
-                            <p className='text-red-500 absolute -bottom-6 text-sm'>
+                            <p className="text-red-500 absolute -bottom-6 text-sm">
                                 {errorMessages.target}
                             </p>
                         )}
                     </div>
-
-                    <div className='relative mt-5'>
-                        <div className='flex-col'>
-                            <label htmlFor="expire" className='font-medium align-center block mb-2' >Ngày hết hạn bài đăng</label>
-                            <DatePicker
-                                selected={selectedDate}
-                                onChange={handleDateChange}
-                                showTimeSelect
-                                timeFormat="HH:mm"
-                                timeIntervals={15}
-                                dateFormat="Pp"
-                                className='w-[87%] rounded-md outline-none border border-gray-300 p-2 cursor-pointer'
-                                placeholderText="Chọn ngày và giờ"
-                            />
-                        </div>
+                    <div className="relative mt-3">
+                        <label htmlFor="expire" className="font-medium block mb-2">Ngày hết hạn bài đăng</label>
+                        <input
+                            type="date"
+                            value={selectedDate}
+                            onChange={handleDateChange}
+                            className='mt-1 p-2 border border-gray-300 rounded-md w-full'
+                        />
                         {errorMessages.expire && (
-                            <p className='text-red-500 absolute -bottom-6 text-sm'>
+                            <p className="text-red-500 absolute -bottom-6 text-sm">
                                 {errorMessages.expire}
                             </p>
                         )}

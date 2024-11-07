@@ -6,31 +6,28 @@ import { Sidebar } from './';
 import { FiMenu, FiX } from 'react-icons/fi';
 import logo from '../../assets/logo.png';
 import { Link } from 'react-router-dom';
-import axios from 'axios';
+import * as actions from '../../store/actions';
+import { useDispatch } from 'react-redux'
 
 const System = () => {
-    const { isLoggedIn, token } = useSelector(state => state.auth);
+    const dispatch = useDispatch();
+    const { isLoggedIn, token, role } = useSelector(state => state.auth);
     const [isSidebarOpen, setIsSidebarOpen] = useState(true);
-    const [role, setRole] = useState(null);
-
-    const fetchRole = async () => {
-        try {
-            const res = await axios.post('http://localhost:5000/api/v1/auth/checkRole', {}, {
-                headers: {
-                    'token': `${token}`,
-                }
-            });
-            if (res.data.err === 0) {
-                setRole(res.data.msg);
-            }
-        } catch (error) {
-            console.error('Error fetching user role:', error);
-        }
-    };
 
     useEffect(() => {
-        fetchRole();
-    }, [token]);
+        const fetchUserRole = async () => {
+            try {
+                //const response = 
+                await dispatch(actions.Role(token));
+                //console.log('Fetched User Role:', response);
+            } catch (error) {
+                console.error('Error fetching user role:', error);
+            }
+        };
+        if (isLoggedIn) {
+            fetchUserRole();
+        }
+    }, [isLoggedIn, token, dispatch]);
 
     if (!isLoggedIn) return <Navigate to={`/${path.LOGIN}`} replace={true} />;
 

@@ -200,6 +200,17 @@ const findPostByAll = async (minPrice, maxPrice, location, minAcreage, maxAcreag
                 [Op.between]: [minAcreage, maxAcreage]
             }
         }
+
+        if (location) {
+            const addressResult = await Address.findAll({
+                where: {
+                    city: location
+                }
+            })
+            const addressIDs = addressResult.map((address) => address.id);
+            whereCondition.address_id = addressIDs;
+        }
+
         if (location) {
             const addressResult = await Address.findAll({
                 where: {
@@ -428,6 +439,28 @@ const reqUpdateToLandlord = async (userId, info, imgKYC) => {
     }
 
 }
+
+const totalPostSaved = async (userId) => {
+    try {
+        const total = await Favourite.count({
+            where: {
+                user_id: userId
+            }
+        });
+        return {
+            err: 0,
+            msg: total
+        }
+    } catch (err) {
+        return {
+            err: 1,
+            msg: err
+        }
+    }
+}
+
+
+
 module.exports = {
     getInfoUser,
     changeInfoUser,
@@ -439,6 +472,7 @@ module.exports = {
     listPostByPage,
     showDetailPost,
     showCategory,
-    reqUpdateToLandlord
+    reqUpdateToLandlord,
+    totalPostSaved
 
 };

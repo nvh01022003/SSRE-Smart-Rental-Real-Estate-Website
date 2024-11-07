@@ -5,7 +5,8 @@ const { Wallet, Transaction } = require('../../models'); // Import model Wallet
 
 // Tạo yêu cầu thanh toán
 const createPayment = async (req, res) => {
-    const { amount, paymentMethod } = req.body; // Thêm `paymentMethod` để xác định MoMo hoặc PayOS
+    const { paymentMethod } = req.body; // Thêm `paymentMethod` để xác định MoMo hoặc PayOS
+    const amount = parseInt(req.body.amount);
     const userId = req.user.id;
     console.log('Amount:', amount, 'User ID:', userId, 'Payment Method:', paymentMethod);
 
@@ -25,7 +26,7 @@ const createPayment = async (req, res) => {
         if (paymentMethod === "MoMo") {
             paymentUrl = await createPaymentRequest(amount, orderId, wallet.id); // Gọi MoMo service
         } else if (paymentMethod === "payOS") {
-            paymentUrl = await createPaymentPayos(amount, orderId, wallet.id); // Gọi PayOS service
+            paymentUrl = await createPaymentPayos(amount, wallet.id); // Gọi PayOS service
         } else {
             return res.status(400).json({ message: 'Invalid payment method' });
         }
@@ -157,41 +158,29 @@ const showBalance = async (req, res) => {
     }
 };
 
+const showDepositHistory = async (req, res) => {
+    try {
+        const userId = req.user.id;
+
+        // Find the wallet associated with the user
+        const wallet = await Wallet.findOne({ where: { user_id: userId } });
+
+        if (!wallet) {
+            return res.status(404).json({ err: 1, msg: 'Wallet not found' });
+        }
+
+        // Find transactions associated with the wallet
+        const transactions = await Transaction.findAll({
+            where: { wallet_id: wallet.id },
+            attributes: ['paycode', 'createdAt', 'amount', 'status']
+        });
+
+        return res.status(200).json({ err: 0, transactions });
+    } catch (error) {
+        console.error('Error fetching deposit history:', error);
+        return res.status(500).json({ err: 1, msg: 'Internal server error' });
+    }
+};
 
 
-
-
-// Xử lý callback từ MoMo khi giao dịch hoàn thành
-// const momoCallback = async (req, res) => {
-//     console.log('------Callback data:', req.body);
-//     const { orderId, amount, id, resultCode } = req.body;
-//     try {
-//         if (resultCode === 0) {
-//             // Cập nhật số dư ví sau khi thanh toán thành công
-//             await updateWalletBalance(id, amount);
-
-//             // Cập nhật trạng thái giao dịch trong DB
-//             await Transaction.update(
-//                 { status: 'success' },
-//                 { where: { paycode: orderId } }
-//             );
-
-//             console.log('Updated Wallet:', await Wallet.findOne({ where: { id: id } }));
-
-//             return res.status(200).json({ message: 'Transaction successful, wallet updated' });
-//         } else {
-//             // Nếu giao dịch không thành công
-//             await Transaction.update(
-//                 { status: 'failed' },
-//                 { where: { paycode: orderId } }
-//             );
-//             return res.status(400).json({ message: 'Transaction failed or canceled' });
-//         }
-//     } catch (error) {
-//         return res.status(500).json({ message: 'Failed to update wallet balance', error: error.message });
-//     }
-// };
-
-
-
-module.exports = { createPayment, checkPaymentStatus, handleMoMoCallback, handlePayOSCallback, showBalance }; 
+module.exports = { showDepositHistory, createPayment, checkPaymentStatus, handleMoMoCallback, handlePayOSCallback, showBalance }; 
