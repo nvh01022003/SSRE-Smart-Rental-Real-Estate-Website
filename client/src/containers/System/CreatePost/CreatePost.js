@@ -226,47 +226,50 @@ const CreatePost = () => {
     }
 
     return (
-        <div>
+        <div className="container mx-auto p-4 md:p-6">
             {role === 'tenant' ? (
-                <div className='px-6 h-min-screen'>
-                    <h1 className='text-3xl font-medium py-4 border-b border-gray-200'>Đăng tin mới</h1>
-                    <div className='flex gap-2 mt-10 font-medium text-lg'>
+                <div className='bg-white shadow-md rounded-lg p-6'>
+                    <h1 className='text-3xl md:text-4xl font-bold text-gray-800 text-center py-4 border-b border-gray-200'>Đăng tin mới</h1>
+                    <div className='flex flex-col md:flex-row gap-2 mt-10 font-medium text-lg'>
                         <p className='text-gray-500'>Chức năng này chỉ dành cho nhà cho thuê :</p>
                         <p
-                            className='text-blue-500 hover:text-red-500 hover:underline underline cursor-pointer'
+                            className='text-blue-500 hover:text-red-500 hover:underline cursor-pointer'
                             onClick={() => window.location.href = '/he-thong/nang-cap-tai-khoan'}
                         >Nâng cấp tài khoản theo đường link này !</p>
                     </div>
                 </div>
             ) : (
-                <div className='px-6 h-min-screen' >
-                    <h1 className='text-3xl font-medium py-4 border-b border-gray-200'>Đăng tin mới</h1>
-                    <div className='flex gap-4'>
+                <div className='bg-white shadow-md rounded-lg p-6'>
+                    <h1 className='text-3xl md:text-4xl font-bold text-gray-800 text-center py-4 border-b border-gray-200'>Đăng tin mới</h1>
+                    <div className='flex flex-col md:flex-row gap-4'>
                         <div className='py-4 flex flex-col gap-8 flex-auto'>
-                            <Address ref={addressRef} payload={payload} setPayload={setPayload} handleInputChange={handleInputChange} resetForm={payloadResetFlag} />
-                            <Overview ref={overviewRef} payload={payload} setPayload={setPayload} handleInputChange={handleInputChange} />
-
+                            <div className='py-4 border-b border-gray-200'>
+                                <Address ref={addressRef} payload={payload} setPayload={setPayload} handleInputChange={handleInputChange} resetForm={payloadResetFlag} />
+                            </div>
+                            <div className='py-4 border-b border-gray-200'>
+                                <Overview ref={overviewRef} payload={payload} setPayload={setPayload} handleInputChange={handleInputChange} />
+                            </div>
                             <div className='w-full mb-5'>
                                 <h2 className='font-semibold text-xl py-4'>Hình ảnh</h2>
-                                <small>Cập nhật hình ảnh rõ ràng sẽ cho thuê nhanh hơn</small>
+                                <small className='text-gray-600'>Cập nhật hình ảnh rõ ràng sẽ cho thuê nhanh hơn</small>
                                 <div className='w-full'>
                                     <label className='w-full border-2 h-[200px] mt-4 mb-1 gap-4 flex flex-col items-center justify-center border-gray-400 border-dashed rounded-md' htmlFor="file">
                                         {isLoading
                                             ? <Loading />
                                             : <div className='flex flex-col items-center justify-center'>
                                                 <BsCameraFill color='blue' size={50} />
-                                                Thêm ảnh
+                                                <span className='text-gray-700'>Thêm ảnh</span>
                                             </div>}
                                     </label>
-                                    {errorMessages.images && <p className='text-red-500 text-sm'>{errorMessages.images}</p>} {/* Conditionally render error message */}
+                                    {errorMessages.images && <p className='text-red-500 text-sm'>{errorMessages.images}</p>}
                                     <input onChange={handleFiles} hidden type="file" id='file' name='imgPost' multiple />
                                     <div className='w-full mt-5'>
                                         <h3 className='font-medium py-4 text-xl'>Ảnh đã chọn</h3>
-                                        <div className='flex gap-4 items-center'>
+                                        <div className='flex flex-wrap gap-4 items-center'>
                                             {imagesPreview?.map(item => {
                                                 return (
-                                                    <div key={item} className='relative w-1/3 h-1/3 '>
-                                                        <img src={item} alt="preview" className='w-full h-full object-cover rounded-md' />
+                                                    <div key={item} className='relative w-full sm:w-1/2 md:w-1/3 lg:w-1/4 h-1/3'>
+                                                        <img src={item} alt="preview" className='w-full h-full object-cover rounded-md shadow' />
                                                         <span
                                                             title='Xóa'
                                                             onClick={() => handleDeleteImage(item)}
@@ -282,17 +285,10 @@ const CreatePost = () => {
                                 </div>
                             </div>
                             <Button onClick={handleSubmit} text='Tạo mới' bgColor='bg-green-600' textColor='text-white' />
-                            <div className='h-[500px]'>
-                            </div>
                         </div>
-                        {/* <div className='w-[30%] flex-none'>
-                    maps
-                    <Loading />
-                </div> */}
                     </div>
-                </div >
-            )
-            }
+                </div>
+            )}
         </div>
     );
 };

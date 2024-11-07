@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from 'axios';
 import { useSelector } from 'react-redux';
+import Loading from "./Loading";
 
 const DepositeHistory = () => {
     const [currentPage, setCurrentPage] = useState(1);
@@ -58,69 +59,72 @@ const DepositeHistory = () => {
     };
 
     if (loading) {
-        return <div>Loading...</div>;
+        return <Loading />;
     }
 
     return (
         <div>
             <div className='px-6'>
-                <div className='flex items-center py-4 border-b border-gray-200'>
-                    <h1 className='text-3xl font-medium '>
+                <div className='bg-white shadow-md rounded-lg p-6 mb-6'>
+                    <h1 className='text-3xl md:text-4xl font-bold text-gray-800 text-center py-4 border-b border-gray-200'>
                         Lịch sử nạp tiền
                     </h1>
-                </div>
-                <div className='flex gap-4'>
-                    <div className="py-4 flex flex-col gap-8 flex-auto">
-                        <table className="min-w-full border-collapse border border-gray-200">
-                            <thead>
-                                <tr>
-                                    <th className="border border-gray-200 px-4 py-2">Ngày nạp</th>
-                                    <th className="border border-gray-200 px-4 py-2">Mã giao dịch</th>
-                                    <th className="border border-gray-200 px-4 py-2">Phương thức</th>
-                                    <th className="border border-gray-200 px-4 py-2">Số tiền</th>
-                                    <th className="border border-gray-200 px-4 py-2">Trạng thái</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {currentItems.map((item, index) => (
-                                    <tr key={index}>
-                                        <td className="border border-gray-200 px-4 py-2 text-center align-middle">{formatDate(item.createdAt)}</td>
-                                        <td className="border border-gray-200 px-4 py-2 text-center align-middle">{item.paycode}</td>
-                                        <td className="border border-gray-200 px-4 py-2 text-center align-middle">{item.paycode.startsWith('MOMO') ? 'MoMo' : 'Chuyển khoản'}</td>
-                                        <td className="border border-gray-200 px-4 py-2 text-center align-middle">{item.amount}</td>
-                                        <td className="border border-gray-200 px-4 py-2 text-center align-middle">{item.status}</td>
-                                    </tr>
-                                ))}
-                            </tbody>
-                        </table>
-                        <div className="flex justify-between items-center mt-4">
-                            <div className="flex items-center">
-                                <label className="mr-2 text-gray-500">Hiển thị</label>
-                                <select
-                                    value={itemsPerPage}
-                                    onChange={(e) => setItemsPerPage(Number(e.target.value))}
-                                    className="border border-gray-300 rounded px-2 py-1"
-                                >
-                                    <option value={5}>5</option>
-                                    <option value={10}>10</option>
-                                    <option value={15}>15</option>
-                                </select>
-                                <span className="ml-2 text-gray-500">giao dịch mỗi trang</span>
+                    <div className='flex flex-col md:flex-row gap-4'>
+                        <div className="py-4 flex flex-col gap-8 flex-auto">
+                            <div className="overflow-x-auto"> {/* Thêm div này */}
+                                <table className="min-w-full border-collapse border border-gray-200">
+                                    <thead>
+                                        <tr>
+                                            <th className="border border-gray-200 px-4 py-2">Ngày nạp</th>
+                                            <th className="border border-gray-200 px-4 py-2">Mã giao dịch</th>
+                                            <th className="border border-gray-200 px-4 py-2">Phương thức</th>
+                                            <th className="border border-gray-200 px-4 py-2">Số tiền</th>
+                                            <th className="border border-gray-200 px-4 py-2">Trạng thái</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {currentItems.map((item, index) => (
+                                            <tr key={index}>
+                                                <td className="border border-gray-200 px-4 py-2 text-center align-middle">{formatDate(item.createdAt)}</td>
+                                                <td className="border border-gray-200 px-4 py-2 text-center align-middle">{item.paycode}</td>
+                                                <td className="border border-gray-200 px-4 py-2 text-center align-middle">{item.paycode.startsWith('MOMO') ? 'MoMo' : 'Chuyển khoản'}</td>
+                                                <td className="border border-gray-200 px-4 py-2 text-center align-middle">{item.amount}</td>
+                                                <td className="border border-gray-200 px-4 py-2 text-center align-middle">{item.status}</td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </table>
                             </div>
-                            <div className="flex items-center">
-                                <button onClick={handlePreviousPage} className="px-4 py-2 bg-gray-200 rounded-full mr-2" disabled={currentPage === 1}>
-                                    Trước
-                                </button>
-                                <span className="text-gray-500">{currentPage} trên {totalPages} trang</span>
-                                <button onClick={handleNextPage} className="px-4 py-2 bg-gray-200 rounded-full ml-2" disabled={currentPage === totalPages}>
-                                    Sau
-                                </button>
+                            <div className="flex flex-col md:flex-row justify-between items-center mt-4">
+                                <div className="flex items-center mb-4 md:mb-0">
+                                    <label className="mr-2 text-gray-500">Hiển thị</label>
+                                    <select
+                                        value={itemsPerPage}
+                                        onChange={(e) => setItemsPerPage(Number(e.target.value))}
+                                        className="border border-gray-300 rounded px-2 py-1"
+                                    >
+                                        <option value={5}>5</option>
+                                        <option value={10}>10</option>
+                                        <option value={15}>15</option>
+                                    </select>
+                                    <span className="ml-2 text-gray-500">giao dịch mỗi trang</span>
+                                </div>
+                                <div className="flex items-center">
+                                    <button onClick={handlePreviousPage} className="px-4 py-2 bg-gray-200 rounded-full mr-2" disabled={currentPage === 1}>
+                                        Trước
+                                    </button>
+                                    <span className="text-gray-500">{currentPage} trên {totalPages} trang</span>
+                                    <button onClick={handleNextPage} className="px-4 py-2 bg-gray-200 rounded-full ml-2" disabled={currentPage === totalPages}>
+                                        Sau
+                                    </button>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
+
     );
 }
 

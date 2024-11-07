@@ -184,79 +184,91 @@ const PersonalInfo = () => {
     }
 
     return (
-        <div className="px-6">
-            <h1 className='text-3xl font-medium py-4 border-b border-gray-200'>Thông tin cá nhân</h1>
+        <div className="px-4 md:px-6 max-w-4xl mx-auto">
+            <div className="bg-white shadow-lg rounded-lg p-8 mb-6 max-w-7xl mx-auto">
+                <h1 className="text-3xl md:text-4xl font-bold text-gray-800 text-center py-4 border-b border-gray-200">
+                    Thông tin cá nhân
+                </h1>
 
-            <div className='flex pt-8'>
-                <div>
-                    <div style={{ display: 'flex', alignItems: 'center' }}>
-                        <div>
-                            <label className='text-sm text-gray-700 font-medium'>HỌ, TÊN ĐỆM :</label>
-                            <input
-                                className='input-firstName'
-                                type="text"
-                                name="firstName"
-                                value={formData.firstName}
-                                onChange={handleChange}
-                                placeholder="First Name"
-                                style={{ marginRight: '8px' }}
-                            />
-                            {errors.firstName && <small className='text-red-500 italic'>{errors.firstName}</small>}
+                <div className="flex flex-col md:flex-row justify-between pt-6">
+                    <div className="flex-1 space-y-6 md:space-y-0">
+                        <div className="flex flex-col md:flex-row items-center gap-6">
+                            <div className="w-full md:w-1/2">
+                                <label className="text-sm text-gray-700 font-medium">HỌ, TÊN ĐỆM:</label>
+                                <input
+                                    className="input-firstName w-full p-3 border rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500"
+                                    type="text"
+                                    name="firstName"
+                                    value={formData.firstName}
+                                    onChange={handleChange}
+                                    placeholder="First Name"
+                                />
+                                {errors.firstName && (
+                                    <small className="text-red-500 italic">{errors.firstName}</small>
+                                )}
+                            </div>
+
+                            <div className="w-full md:w-1/2">
+                                <label className="text-sm text-gray-700 font-medium">TÊN:</label>
+                                <input
+                                    className="input-lastName w-full p-3 border rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500"
+                                    type="text"
+                                    name="lastName"
+                                    value={formData.lastName}
+                                    onChange={handleChange}
+                                    placeholder="Last Name"
+                                />
+                                {errors.lastName && (
+                                    <small className="text-red-500 italic">{errors.lastName}</small>
+                                )}
+                            </div>
                         </div>
 
                         <div>
-                            <label className='text-sm text-gray-700 font-medium'>TÊN :</label>
+                            <label className="text-sm text-gray-700 font-medium">EMAIL:</label>
                             <input
-                                className='input-lastName'
-                                type="text"
-                                name="lastName"
-                                value={formData.lastName}
+                                className="input-email w-full p-3 border rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500"
+                                type="email"
+                                name="email"
+                                value={formData.email}
                                 onChange={handleChange}
-                                placeholder="Last Name"
+                                placeholder="Email"
                             />
-                            {errors.lastName && <small className='text-red-500 italic'>{errors.lastName}</small>}
+                            {errors.email && <small className="text-red-500 italic">{errors.email}</small>}
+                        </div>
+
+                        <div>
+                            <label className="text-sm text-gray-700 font-medium">SỐ ĐIỆN THOẠI:</label>
+                            <input
+                                className="input-phone w-full p-3 border rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500"
+                                type="text"
+                                name="phone"
+                                value={formData.phone}
+                                onChange={handleChange}
+                                placeholder="Phone"
+                            />
+                            {errors.phone && <small className="text-red-500 italic">{errors.phone}</small>}
+                        </div>
+                        <div className="flex justify-center">
+                            <button
+                                className="btn-update w-full md:w-auto bg-blue-500 text-white font-bold py-3 px-6 rounded-lg hover:bg-gray-300 transition duration-200"
+                                onClick={handleUpdate}
+                            >
+                                Cập Nhật
+                            </button>
                         </div>
                     </div>
 
-                    <div className='mt-3'>
-                        <label className='text-sm text-gray-700 font-medium'>EMAIL :</label>
-                        <input
-                            className='input-email'
-                            type="email"
-                            name="email"
-                            value={formData.email}
-                            onChange={handleChange}
-                            placeholder="Email"
+                    <div className="flex flex-col items-center mt-6 md:mt-0 md:ml-8">
+                        <img
+                            src={formData.img_avt}
+                            alt="Avatar"
+                            className="avatar w-32 h-32 rounded-full shadow-lg mb-4 md:mb-6"
                         />
-                        {errors.email && <small className='text-red-500 italic'>{errors.email}</small>}
-                    </div>
-                    <div className='mt-3'>
-                        <label className='text-sm text-gray-700 font-medium'>SỐ ĐIỆN THOẠI :</label>
-                        <input
-                            className='input-phone'
-                            type="text"
-                            name="phone"
-                            value={formData.phone}
-                            onChange={handleChange}
-                            placeholder="Phone"
-                        />
-                        {errors.phone && <small className='text-red-500 italic '>{errors.phone}</small>}
-                    </div>
-                    <button
-                        className='btn-update'
-                        onClick={handleUpdate}
-                    >
-                        Cập Nhật
-                    </button>
-                </div>
-
-                <div className="center-container">
-                    <div className='center-content'>
-                        <img src={formData.img_avt} alt="Avatar" className="avatar" />
                         <div className="upload-section">
                             <button
                                 type="button"
-                                className="btn-upload"
+                                className="btn-upload bg-gray-200 hover:bg-gray-300 text-gray-700 font-semibold py-3 px-6 rounded-lg"
                                 onClick={() => document.getElementById('avatar').click()}
                             >
                                 Chọn Ảnh
