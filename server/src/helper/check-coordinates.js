@@ -1,6 +1,9 @@
+
+const dotenv = require('dotenv');
+dotenv.config();
 const axios = require('axios');
 const getGeocodingData = async (address) => {
-    const apiKey = 'AlzaSytO_M2Z8bkR6JgRI1m8_Qvcfn0D_t0kvqu';
+    const apiKey = process.env.MAPKEY;
     const url = `https://maps.gomaps.pro/maps/api/geocode/json?address=${encodeURIComponent(address)}&key=${apiKey}`;
 
     try {
