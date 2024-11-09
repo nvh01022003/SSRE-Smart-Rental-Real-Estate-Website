@@ -1,6 +1,8 @@
 const tenanstService = require("../../services/user-service/tenants-services")
 const helperService = require("../../services/tools/userSearches-service")
+const Decimal = require('decimal.js');
 const jwt = require("jsonwebtoken");
+const { json } = require("sequelize");
 // show info user
 const showInfoUser = async (req, res) => {
     const userId = req.user.id
@@ -88,29 +90,23 @@ const deletePostSaved = async (req, res) => {
 }
 // find post by all condition
 const findPostByAll = async (req, res) => {
-    const minPrice = req.body.minPrice
-    const maxPrice = req.body.maxPrice
-    const location = req.body.location
-    const minAcreage = req.body.minAcreage
-    const maxAcreage = req.body.maxAcreage
-    const categoryCode = req.body.category
+    const minPrice = req.query.minPrice ? new Decimal(req.query.minPrice) : null;
+    const maxPrice = req.query.maxPrice ? new Decimal(req.query.maxPrice) : null;
+    const location = req.query.location || null;
+    const minAcreage = req.query.minAcreage ? new Decimal(req.query.minAcreage) : null;
+    const maxAcreage = req.query.maxAcreage ? new Decimal(req.query.maxAcreage) : null;
+    const categoryCode = req.query.category
     const page = parseInt(req.query.page)
-    const token = req.headers["token"];
+    console.log('Page', page)
+    console.log('1', minPrice)
+    console.log('2', maxPrice)
+    console.log('3', location)
+    console.log('4', minAcreage)
+    console.log('5', maxAcreage)
+    console.log('6', categoryCode)
     try {
         const response = await tenanstService.findPostByAll(minPrice, maxPrice, location, minAcreage, maxAcreage, categoryCode, page)
-        if (response.msg.listPost.length == 0 && token) {
-            jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
-                if (err) {
-                    return res.status(403).json({ err: 1, msg: 'Token not valid' });
-                }
-                req.user = user;
-            })
-            const searchInfo = await helperService.saveUserSearches(req.body, req.user.id)
-            return res.status(200).json(searchInfo)
-        }
-        else {
-            return res.status(200).json(response)
-        }
+        return res.status(200).json(response)
     } catch (error) {
         return res.status(500).json({
             err: -1,
@@ -146,6 +142,7 @@ const totalPage = async (req, res) => {
 // show dateil post
 const showDetailPost = async (req, res) => {
     const postId = req.params.id
+    console.log("id post", postId)
     try {
         const response = await tenanstService.showDetailPost(postId)
         return res.status(200).json(response)
@@ -168,6 +165,38 @@ const showCategory = async (req, res) => {
         })
     }
 }
+// req upgrade to landlord
+const reqUpdateToLandlord = async (req, res) => {
+    const userId = req.user.id
+    const info = req.body.info;
+    const imgKYC = req.body.imageUrls;
+    console.log(imgKYC)
+    console.log(info)
+    console.log(userId)
+    try {
+        const response = await tenanstService.reqUpdateToLandlord(userId, info, imgKYC)
+        return res.status(200).json(response)
+    } catch (error) {
+        return res.status(500).json({
+            err: -1,
+            msg: 'Fail at auth controller upgradeToLandlord: ' + error
+        })
+    }
+}
+
+const totalPostSaved = async (req, res) => {
+    const userId = req.user.id
+    try {
+        const response = await tenanstService.totalPostSaved(userId)
+        return res.status(200).json(response)
+    } catch (error) {
+        return res.status(500).json({
+            err: -1,
+            msg: 'Fail at auth controller totalPostSaved: ' + error
+        })
+    }
+}
+
 
 module.exports = {
     showInfoUser,
@@ -180,5 +209,8 @@ module.exports = {
     listPostByPage,
     totalPage,
     showDetailPost,
-    showCategory
+    showCategory,
+    reqUpdateToLandlord,
+    totalPostSaved
+
 }

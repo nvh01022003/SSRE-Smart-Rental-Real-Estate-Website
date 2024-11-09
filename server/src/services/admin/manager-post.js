@@ -1,9 +1,49 @@
-const { Post } = require('../../models/index');
+const { User, Post, Address, Image, Category, Overview, Coordinates, sequelize } = require("../../models/index");
 // show all post in system
 const showAllPost = async () => {
-    const post = await Post.findAll()
-    return post
+    try {
+        const post = await Post.findAll({
+            order: [['createdAt', 'DESC']],
+            // trả về đủ thông tin của post
+            include: [
+                {
+                    model: Address,
+                    attributes: ['city', 'district', 'detail_address']
+                },
+                {
+                    model: Image,
+                    attributes: ['img_url_list']
+                },
+                {
+                    model: Category,
+                    attributes: ['id', 'category_name']
+                },
+                {
+                    model: User,
+                    attributes: ['firstName', 'lastName', 'email', 'phone', 'img_avt']
+                },
+                {
+                    model: Overview,
+                    attributes: ['target', 'expire']
+                },
+
+            ]
+        })
+        return {
+            err: 0,
+            posts: post
+        };
+    }
+    catch (err) {
+        return {
+            err: 1,
+            posts: [],
+            msg: err
+        };
+    }
 }
+
+
 // delete post by select list id ( sử dụng cho phần chọn nhiều id sau đó xóa)
 const deletePosts = async (listId) => {
     const post = await Post.destroy({
@@ -24,12 +64,24 @@ const showDetailPost = async (postId) => {
 }
 // delete post by id
 const deletePost = async (postId) => {
-    const post = await Post.destroy({
-        where: {
-            id: postId
-        }
-    })
-    return post
+    try {
+        const post = await Post.destroy({
+            where: {
+                id: postId
+            }
+        })
+        return {
+            err: 0,
+            posts: post
+        };
+    }
+    catch (err) {
+        return {
+            err: 1,
+            posts: [],
+            msg: err
+        };
+    }
 }
 module.exports = {
     showAllPost,

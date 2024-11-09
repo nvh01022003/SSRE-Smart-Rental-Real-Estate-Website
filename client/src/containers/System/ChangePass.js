@@ -62,60 +62,87 @@ const ChangePass = () => {
     };
 
     return (
-        <div className="px-6">
-            <h1 className='text-3xl font-medium py-4 border-b border-gray-200'>Đổi mật khẩu</h1>
+        <div className="px-4 md:px-6 lg:px-8 max-w-lg mx-auto">
+            <div className="bg-white shadow-md rounded-lg p-6 shadow mb-6">
+                <h1 className="text-3xl md:text-4xl font-bold text-gray-800 text-center py-4 border-b border-gray-200">
+                    Đổi mật khẩu 🔒
+                </h1>
 
-            <div className="flex justify-center py-8 pr-6">
-                <form className="bg-white p-6 rounded shadow-md w-80" onSubmit={handleSubmit}>
-                    {/* <h2 className="text-2xl font-bold mb-4 text-center">Change Password</h2> */}
-                    <div className="mb-4">
-                        <label className="text-sm text-gray-700 font-medium" htmlFor="oldPass">
-                            Mật khẩu hiện tại
-                        </label>
-                        <input
-                            type="password"
-                            id="oldPass"
-                            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                            value={oldPass}
-                            onChange={(e) => setOldPass(e.target.value)}
-                        />
-                        {errors.oldPass && <p className="text-red-500 text-xs italic">{errors.oldPass}</p>}
-                    </div>
-                    <div className="mb-4">
-                        <label className="text-sm text-gray-700 font-medium" htmlFor="newPass">
-                            Nhập mật khẩu mới
-                        </label>
-                        <input
-                            type="password"
-                            id="newPass"
-                            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                            value={newPass}
-                            onChange={(e) => setNewPass(e.target.value)}
-                        />
-                        {errors.newPass && <p className="text-red-500 text-xs italic">{errors.newPass}</p>}
-                    </div>
-                    <div className="mb-4">
-                        <label className="text-sm text-gray-700 font-medium" htmlFor="confirmPass">
-                            Nhập lại mật khẩu mới
-                        </label>
-                        <input
-                            type="password"
-                            id="confirmPass"
-                            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                            value={confirmPass}
-                            onChange={(e) => setConfirmPass(e.target.value)}
-                        />
-                        {errors.confirmPass && <p className="text-red-500 text-xs italic">{errors.confirmPass}</p>}
-                    </div>
-                    <div className="flex items-center justify-center">
-                        <button
-                            type="submit"
-                            className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
-                        >
-                            Đổi mật khẩu
-                        </button>
-                    </div>
-                </form>
+                <div className="flex justify-center py-10 md:py-12">
+                    <form
+                        className="bg-white p-8 md:p-10 rounded-2xl shadow-lg w-full max-w-md"
+                        onSubmit={handleSubmit}
+                    >
+                        <div className="mb-6">
+                            <label
+                                className="text-sm md:text-base text-gray-700 font-medium"
+                                htmlFor="oldPass"
+                            >
+                                Mật khẩu hiện tại
+                            </label>
+                            <input
+                                type="password"
+                                id="oldPass"
+                                className="border border-gray-300 rounded-lg w-full py-3 px-4 mt-2 text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-400 transition duration-200"
+                                value={oldPass}
+                                onChange={(e) => setOldPass(e.target.value)}
+                                placeholder="Nhập mật khẩu hiện tại"
+                            />
+                            {errors.oldPass && (
+                                <p className="text-red-500 text-xs mt-1">{errors.oldPass}</p>
+                            )}
+                        </div>
+
+                        <div className="mb-6">
+                            <label
+                                className="text-sm md:text-base text-gray-700 font-medium"
+                                htmlFor="newPass"
+                            >
+                                Nhập mật khẩu mới
+                            </label>
+                            <input
+                                type="password"
+                                id="newPass"
+                                className="border border-gray-300 rounded-lg w-full py-3 px-4 mt-2 text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-400 transition duration-200"
+                                value={newPass}
+                                onChange={(e) => setNewPass(e.target.value)}
+                                placeholder="Nhập mật khẩu mới"
+                            />
+                            {errors.newPass && (
+                                <p className="text-red-500 text-xs mt-1">{errors.newPass}</p>
+                            )}
+                        </div>
+
+                        <div className="mb-6">
+                            <label
+                                className="text-sm md:text-base text-gray-700 font-medium"
+                                htmlFor="confirmPass"
+                            >
+                                Nhập lại mật khẩu mới
+                            </label>
+                            <input
+                                type="password"
+                                id="confirmPass"
+                                className="border border-gray-300 rounded-lg w-full py-3 px-4 mt-2 text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-400 transition duration-200"
+                                value={confirmPass}
+                                onChange={(e) => setConfirmPass(e.target.value)}
+                                placeholder="Nhập lại mật khẩu mới"
+                            />
+                            {errors.confirmPass && (
+                                <p className="text-red-500 text-xs mt-1">{errors.confirmPass}</p>
+                            )}
+                        </div>
+
+                        <div className="flex items-center justify-center mt-10">
+                            <button
+                                type="submit"
+                                className="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-3 px-6 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 transition duration-200 w-full md:w-auto"
+                            >
+                                Đổi mật khẩu
+                            </button>
+                        </div>
+                    </form>
+                </div>
             </div>
         </div>
     );

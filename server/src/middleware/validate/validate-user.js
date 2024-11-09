@@ -5,7 +5,6 @@ const bcryptjs = require("bcryptjs");
 // check email va sdt da ton tai ch
 const validateEmailPhone = async (req, res, next) => {
     const { email, phone } = req.body;
-
     try {
         const [existingEmail, existingPhone] = await Promise.all([
             User.findOne({ where: { email } }),
@@ -27,7 +26,7 @@ const validateEmailPhone = async (req, res, next) => {
         }
     } catch (err) {
         return res.status(500).json({
-            err: 10,
+            err: 101,
             msg: err.message,
         });
     }
@@ -45,6 +44,37 @@ const validateEmailPhoneReset = async (req, res, next) => {
         });
     }
 }
+
+const validateUpdateUserByAdmin = async (req, res, next) => {
+    const { email, phone } = req.body;
+    const userId = req.params.userId // Lấy userId từ params 
+    try {
+        const [existingEmail, existingPhone] = await Promise.all([
+            User.findOne({ where: { email } }),
+            User.findOne({ where: { phone } }),
+        ]);
+
+        if (existingEmail && existingEmail.id != userId) {
+            return res.status(409).json({ // 409 xung đột là một mã
+                err: 1,
+                msg: 'Email already exists',
+            });
+        } else if (existingPhone && existingPhone.id != userId) {
+            return res.status(409).json({ // 409 xung đột là một mã
+                err: 2,
+                msg: 'Phone number already exists',
+            });
+        } else {
+            next();
+        }
+    } catch (err) {
+        return res.status(500).json({
+            err: 10,
+            msg: err.message,
+        });
+    }
+};
+
 const validateUpdate = async (req, res, next) => {
     const { email, phone } = req.body;
     const userId = req.user.id;
@@ -75,6 +105,7 @@ const validateUpdate = async (req, res, next) => {
     }
 
 };
+
 const validatePass = async (req, res, next) => {
     const { oldPass, newPass } = req.body;
     const userId = req.user.id
@@ -97,4 +128,4 @@ const validatePass = async (req, res, next) => {
     }
 
 };
-module.exports = { validateEmailPhone, validateUpdate, validatePass, validateEmailPhoneReset }
+module.exports = { validateEmailPhone, validateUpdate, validateUpdateUserByAdmin, validatePass, validateEmailPhoneReset }

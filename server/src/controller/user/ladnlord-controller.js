@@ -40,17 +40,24 @@ const updateStatusPosts = async (req, res) => {
 const updatePost = async (req, res) => {
     try {
         const postId = req.params.id;
-        const dataUpdae = req.body;
-        const response = await ladnlordServices.updatePost(postId, dataUpdae);
-        return res.status(200).json(response)
+        console.log('postId', postId);
+        const dataUpdate = JSON.parse(req.body.post);
+        console.log('dataUpdate', dataUpdate);
+        const files = req.files; // Get the uploaded files
+        console.log('files', files);
+
+        const response = await ladnlordServices.updatePost(postId, dataUpdate, files);
+        return res.status(200).json(response);
     } catch (error) {
-        return res.status(400).json({ error: error.message })
+        return res.status(400).json({ error: error.message });
     }
-}
+};
+
 // DELETE POST
 const deletePost = async (req, res) => {
     try {
         const postId = req.params.id;
+        console.log('postId', postId)
         const response = await ladnlordServices.deletePost(postId);
         return res.status(200).json(response)
     } catch (error) {
@@ -81,8 +88,9 @@ const listPost = async (req, res) => {
 // SHOW LIST POST BY PAGE PAGINATION
 const listPostByPage = async (req, res) => {
     try {
-        const page = req.query.page;
-        const response = await ladnlordServices.listPostByPage(page);
+        const page = parseInt(req.query.page)
+        const userId = req.user.id
+        const response = await ladnlordServices.listPostByPage(userId, page);
         return res.status(200).json(response)
     } catch (error) {
         return res.status(400).json({ error: error.message })

@@ -1,6 +1,6 @@
 import actionTypes from "../actions/actionTypes";
 const initState = {
-    msg: '',
+    msg: [],
     categories: [],
     prices: [],
     areas: [],
@@ -12,8 +12,8 @@ const appReducer = (state = initState, action) => {
         case actionTypes.GET_CATEGORIES:
             return {
                 ...state,
-                categories: action.categories || [],
-                msg: action.msg || '',
+                categories: action.data.categories || [],
+                msg: action.data.msg || '',
             }
         case actionTypes.GET_PRICES:
             return {

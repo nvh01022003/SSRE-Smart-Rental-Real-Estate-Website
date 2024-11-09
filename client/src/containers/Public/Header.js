@@ -1,34 +1,207 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react'
-import logo from '../../assets/logo.png'
-import { Button, User } from '../../components'
-import icons from '../../ultils/icons'
-import { useNavigate, Link, useSearchParams } from 'react-router-dom'
-import { useSelector, useDispatch } from 'react-redux'
-import * as actions from '../../store/actions'
-import menuManage from '../../ultils/menuManage'
-import { logout } from '../../store/actions/auth'
-import { AiOutlineHeart, AiOutlineAppstore } from 'react-icons/ai';
-import { path } from '../../ultils/constant';
+// import React, { useCallback, useEffect, useRef, useState } from 'react';
+// import logo from '../../assets/logo.png';
+// import { Button, User } from '../../components';
+// import { useNavigate, Link, useSearchParams } from 'react-router-dom';
+// import { useSelector, useDispatch } from 'react-redux';
+// import menuManage from '../../ultils/menuManage';
+// import { logout } from '../../store/actions/auth';
+// import { AiOutlineAppstore, AiOutlinePlusCircle, AiOutlineLogout } from 'react-icons/ai';
+// import { BsBookmarkStarFill } from 'react-icons/bs';
+// import { getTotalPostSaved } from '../../store/actions/post';
 
-const { AiOutlinePlusCircle, AiOutlineLogout, BsBookmarkStarFill } = icons
+// const Header = () => {
+//     const navigate = useNavigate();
+//     const dispatch = useDispatch();
+//     const [searchParams] = useSearchParams();
+//     const headerRef = useRef();
+//     const { isLoggedIn } = useSelector(state => state.auth);
+//     const [isShowMenu, setIsShowMenu] = useState(false);
+//     const { role, token } = useSelector(state => state.auth);
+//     const [totalPostsSaved, setTotalPostsSaved] = useState([0]);
+//     const { totalPostSaved } = useSelector(state => state.post);
+//     console.log(totalPostSaved);
+
+//     const navigateTo = useCallback((path) => {
+//         navigate(path);
+//     }, [navigate]);
+
+//     useEffect(() => {
+//         dispatch(getTotalPostSaved(token));
+//         setTotalPostsSaved(totalPostSaved);
+//     }, [token, dispatch, totalPostSaved]);
+
+//     useEffect(() => {
+//         headerRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+//     }, [searchParams.get('page')]);
+
+//     const filteredMenu = menuManage.filter(item => {
+//         if (role === 'ladnlord') {
+//             return [1, 2, 3, 4, 5].includes(item.id);
+//         } else {
+//             return [3, 4, 6].includes(item.id);
+//         }
+//     });
+
+//     const handleLogout = () => {
+//         dispatch(logout());
+//     };
+
+//     const handleCreatePostClick = () => {
+//         navigate('/he-thong/tao-moi-bai-dang');
+//     };
+
+//     const handleSavePost = () => {
+//         navigate('tin-da-luu');
+//     };
+
+//     return (
+//         <div ref={headerRef} className='w-5/6 mx-auto container'>
+//             <div className='flex flex-col md:flex-row items-center justify-between p-4'>
+//                 <Link to={'/'} className='flex items-center mb-2 md:mb-0'>
+//                     <img
+//                         src={logo}
+//                         alt="logo"
+//                         className='w-[90px] h-[70px] object-contain'
+//                     />
+//                     <div className='ml-2'>
+//                         <span className='text-2xl font-semibold block'>
+//                             Smart Rental Real Estate Website
+//                         </span>
+//                         <span className='text-sm text-gray-600 block'>
+//                             Nền tảng kết nối chủ nhà và người thuê, tối ưu hóa tìm kiếm nhà thuê bằng AI
+//                         </span>
+//                     </div>
+//                 </Link>
+//                 <div className='flex items-center gap-3'>
+//                     {!isLoggedIn && (
+//                         <div className='flex items-center gap-2'>
+//                             <Button
+//                                 text={'Đăng nhập'}
+//                                 textColor='text-white'
+//                                 bgColor='bg-[#3961fb]'
+//                                 onClick={() => navigateTo('/login')}
+//                             />
+//                             <Button
+//                                 text={'Đăng ký'}
+//                                 textColor='text-white'
+//                                 bgColor='bg-[#3961fb]'
+//                                 onClick={() => navigateTo('/register')}
+//                             />
+//                         </div>
+//                     )}
+//                     {isLoggedIn && (
+//                         <div className='flex items-center gap-3 relative'>
+//                             <User />
+//                             <div className="flex items-center relative cursor-pointer rounded-md hover:underline" onClick={handleSavePost}>
+//                                 <BsBookmarkStarFill className="text-red-500 text-xl" />
+//                                 {totalPostsSaved > 0 && (
+//                                     <span className="absolute top-[-10px] right-[45px] bg-red-500 text-white rounded-full text-xs px-1">
+//                                         {totalPostsSaved}
+//                                     </span>
+//                                 )}
+//                                 <span className="ml-1 text-black">Đã lưu</span>
+
+//                             </div>
+//                             <div className="flex items-center cursor-pointer rounded-md p-2 hover:underline" onClick={() => setIsShowMenu(prev => !prev)}>
+//                                 <AiOutlineAppstore className="text-black" size={20} />
+//                                 <span className="ml-1 text-black">Quản lý tài khoản</span>
+//                             </div>
+//                             {isShowMenu && (
+//                                 <div className='absolute min-w-180 top-full bg-white shadow-md rounded-md p-4 right-0 flex flex-col'>
+//                                     {filteredMenu.map(item => (
+//                                         <Link
+//                                             className='hover:text-orange-500 flex items-center gap-2 text-blue-600 border-b border-gray-200 py-2'
+//                                             key={item.id}
+//                                             to={item?.path}
+//                                         >
+//                                             {item?.icon}
+//                                             {item.text}
+//                                         </Link>
+//                                     ))}
+//                                     <span
+//                                         className='cursor-pointer hover:text-orange-500 text-blue-500 py-2 flex items-center gap-2'
+//                                         onClick={() => {
+//                                             setIsShowMenu(false);
+//                                             handleLogout();
+//                                         }}
+//                                     >
+//                                         <AiOutlineLogout />
+//                                         Đăng xuất
+//                                     </span>
+//                                 </div>
+//                             )}
+//                         </div>
+//                     )}
+//                     <Button
+//                         text={'Đăng tin mới'}
+//                         textColor='text-white'
+//                         bgColor='bg-secondary2'
+//                         IcAfter={AiOutlinePlusCircle}
+//                         onClick={handleCreatePostClick}
+//                     />
+//                 </div>
+//             </div>
+//         </div>
+//     );
+// };
+
+// export default Header;
+import React, { useCallback, useEffect, useRef, useState } from 'react';
+import logo from '../../assets/logo.png';
+import { Button, User } from '../../components';
+import { useNavigate, Link, useSearchParams } from 'react-router-dom';
+import { useSelector, useDispatch } from 'react-redux';
+import menuManage from '../../ultils/menuManage';
+import { logout } from '../../store/actions/auth';
+import { AiOutlineAppstore, AiOutlinePlusCircle, AiOutlineLogout } from 'react-icons/ai';
+import { BsBookmarkStarFill } from 'react-icons/bs';
+import { getTotalPostSaved } from '../../store/actions/post';
+import { HiOutlineExclamationCircle } from 'react-icons/hi';
+
+
 
 const Header = () => {
-    const navigate = useNavigate()
-    const dispatch = useDispatch()
-    const [searchParams] = useSearchParams()
-    const headerRef = useRef()
-    const { isLoggedIn } = useSelector(state => state.auth)
-    const [isShowMenu, setIsShowMenu] = useState(false)
+    const navigate = useNavigate();
+    const dispatch = useDispatch();
+    const [searchParams] = useSearchParams();
+    const headerRef = useRef();
+    const { isLoggedIn } = useSelector(state => state.auth);
+    const [isShowMenu, setIsShowMenu] = useState(false);
+    const { role, token } = useSelector(state => state.auth);
+    const { totalPostSaved } = useSelector(state => state.post);
+    const [totalPostsSaved, setTotalPostsSaved] = useState(0);
+
+    const email = process.env.REACT_APP_SYSTEM_EMAIL || 'ssresystem@gmail.com';
+    const subject = encodeURIComponent("Báo cáo hệ thống Smart Rental Real Estate");
+    const body = encodeURIComponent("Hãy mô tả báo cáo của bạn cho hệ thống Smart Rental Real Estate ở đây.");
+
+    const mailtoLink = `mailto:${email}?subject=${subject}&body=${body}`;
+
     const navigateTo = useCallback((path) => {
         navigate(path);
     }, [navigate]);
-    useEffect(() => {
-        headerRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' })
-    }, [searchParams.get('page')])
 
     useEffect(() => {
-        console.log('Header re-rendered. isLoggedIn:', isLoggedIn); // Add this line
-    }, [isLoggedIn]);
+        if (token) {
+            dispatch(getTotalPostSaved(token));
+        }
+    }, [token, dispatch]);
+
+    useEffect(() => {
+        setTotalPostsSaved(totalPostSaved);
+    }, [totalPostSaved]);
+
+    useEffect(() => {
+        headerRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, [searchParams.get('page')]);
+
+    const filteredMenu = menuManage.filter(item => {
+        if (role === 'ladnlord') {
+            return [1, 2, 3, 4, 5].includes(item.id);
+        } else {
+            return [3, 4, 6].includes(item.id);
+        }
+    });
 
     const handleLogout = () => {
         dispatch(logout());
@@ -37,18 +210,19 @@ const Header = () => {
     const handleCreatePostClick = () => {
         navigate('/he-thong/tao-moi-bai-dang');
     };
+
     const handleSavePost = () => {
         navigate('tin-da-luu');
     };
 
     return (
-        <div ref={headerRef} className='w-4/5 mx-auto container'>
-            <div className='w-full flex items-center justify-between'>
-                <Link to={'/'} className='flex items-center'>
+        <div ref={headerRef} className='w-5/6 mx-auto container'>
+            <div className='flex flex-col md:flex-row items-center justify-between p-4'>
+                <Link to={'/'} className='flex items-center mb-2 md:mb-0'>
                     <img
                         src={logo}
                         alt="logo"
-                        className='w-[90px] h-[70px] object-contain mt-4'
+                        className='w-[90px] h-[70px] object-contain'
                     />
                     <div className='ml-2'>
                         <span className='text-2xl font-semibold block'>
@@ -59,62 +233,71 @@ const Header = () => {
                         </span>
                     </div>
                 </Link>
-                <div className='flex items-center gap-1'>
-                    {!isLoggedIn && <div className='flex items-center gap-1'>
-
-                        <Button
-                            text={'Đăng nhập'}
-                            textColor='text-white'
-                            bgColor='bg-[#3961fb]'
-                            onClick={() => navigateTo('/login')}
-                        />
-                        <Button
-                            text={'Đăng ký'}
-                            textColor='text-white'
-                            bgColor='bg-[#3961fb]'
-                            onClick={() => navigateTo('/register')}
-                        />
-                    </div>}
-                    {isLoggedIn && <div className='flex items-center gap-3 relative'>
-                        <User />
-                        <div className="flex items-center cursor-pointer rounded-md hover:underline" onClick={handleSavePost}>
-                            {/* Thêm sự kiện onclick để thực hiện navigate đến route trang đã lưu bài đăng */}
-                            <BsBookmarkStarFill className="text-red-500 relative mt-1">
-                                {/* <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full px-1">1</span> */}
-                            </BsBookmarkStarFill>
-                            <span className="ml-1 text-black text-normal ">Đã lưu</span>
+                <div className='flex items-center gap-3'>
+                    {!isLoggedIn && (
+                        <div className='flex items-center gap-2'>
+                            <Button
+                                text={'Đăng nhập'}
+                                textColor='text-white'
+                                bgColor='bg-[#3961fb]'
+                                onClick={() => navigateTo('/login')}
+                            />
+                            <Button
+                                text={'Đăng ký'}
+                                textColor='text-white'
+                                bgColor='bg-[#3961fb]'
+                                onClick={() => navigateTo('/register')}
+                            />
                         </div>
-                        <div className="flex items-center mr-4 cursor-pointer rounded-md p-2 hover:underline"
-                            onClick={() => setIsShowMenu(prev => !prev)}>
-                            <AiOutlineAppstore className="text-black mt-1" size={20} />
-                            <span className="ml-1 text-black text-normal">Quản lý tài khoản</span>
-                        </div>
-                        {isShowMenu && <div className='absolute min-w-180 top-full bg-white shadow-md rounded-md p-4 right-0 flex flex-col'>
-                            {menuManage.map(item => {
-                                return (
-                                    <Link
-                                        className='hover:text-orange-500 flex items-center gap-2 text-blue-600 border-b border-gray-200 py-2'
-                                        key={item.id}
-                                        to={item?.path}
+                    )}
+                    {isLoggedIn && (
+                        <div className='flex items-center gap-3 relative'>
+                            <User />
+                            <div className="flex items-center relative cursor-pointer rounded-md hover:underline" onClick={handleSavePost}>
+                                <BsBookmarkStarFill className="text-red-500 text-xl" />
+                                {totalPostsSaved > 0 && (
+                                    <span className="absolute top-[-10px] right-[45px] bg-red-500 text-white rounded-full text-xs px-1">
+                                        {totalPostsSaved}
+                                    </span>
+                                )}
+                                <span className="ml-1 text-black">Đã lưu</span>
+                            </div>
+                            <div className="flex items-center cursor-pointer rounded-md p-2 hover:underline" onClick={() => setIsShowMenu(prev => !prev)}>
+                                <AiOutlineAppstore className="text-black" size={20} />
+                                <span className="ml-1 text-black">Quản lý tài khoản</span>
+                            </div>
+                            {isShowMenu && (
+                                <div className='absolute min-w-180 top-full bg-white shadow-md rounded-md p-4 right-0 flex flex-col'>
+                                    {filteredMenu.map(item => (
+                                        <Link
+                                            className='hover:text-orange-500 flex items-center gap-2 text-blue-600 border-b border-gray-200 py-2'
+                                            key={item.id}
+                                            to={item?.path}
+                                        >
+                                            {item?.icon}
+                                            {item.text}
+                                        </Link>
+                                    ))}
+                                    <span className='cursor-pointer hover:text-orange-500 text-blue-500 py-2 flex items-center gap-2'>
+                                        <HiOutlineExclamationCircle />
+                                        <a href={mailtoLink} className="flex items-center gap-2">
+                                            Báo cáo hệ thống
+                                        </a>
+                                    </span>
+                                    <span
+                                        className='cursor-pointer hover:text-orange-500 text-blue-500 py-2 flex items-center gap-2'
+                                        onClick={() => {
+                                            setIsShowMenu(false);
+                                            handleLogout();
+                                        }}
                                     >
-                                        {item?.icon}
-                                        {item.text}
-                                    </Link>
-                                )
-                            })}
-                            <span
-                                className='cursor-pointer hover:text-orange-500 text-blue-500 py-2 flex items-center gap-2'
-                                onClick={() => {
-                                    setIsShowMenu(false)
-                                    dispatch(actions.logout())
-                                    onclick = { handleLogout }
-                                }}
-                            >
-                                <AiOutlineLogout />
-                                Đăng xuất
-                            </span>
-                        </div>}
-                    </div>}
+                                        <AiOutlineLogout />
+                                        Đăng xuất
+                                    </span>
+                                </div>
+                            )}
+                        </div>
+                    )}
                     <Button
                         text={'Đăng tin mới'}
                         textColor='text-white'
@@ -125,7 +308,7 @@ const Header = () => {
                 </div>
             </div>
         </div>
-    )
-}
+    );
+};
 
-export default Header
+export default Header;

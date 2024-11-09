@@ -8,6 +8,7 @@ import { path } from '../../ultils/constant';
 import ForgotPassword from './ForgotPass/ForgotPass';
 import { AuthContext } from '../../../src/Context/AuthContext';
 
+
 const Login = () => {
 
     const { login } = useContext(AuthContext);
@@ -72,11 +73,7 @@ const Login = () => {
             console.log(response); // Log response để kiểm tra
             if (response?.access_token) {
                 login(response?.access_token); // Update token in context
-                //localStorage.setItem('token', response.access_token);
-                //localStorage.setItem('user', JSON.stringify(response.user));
-                Swal.fire('Success', 'Đăng nhập thành công !', 'success').then(() => {
-                    navigate('/');
-                });
+                navigate('/');
             } else {
                 Swal.fire('Oops !', response?.payload?.msg || 'No response data', 'error');
             }

@@ -12,13 +12,12 @@ const router = express.Router()
 
 
 // create post
-// 
-router.post("/createPost", authentication.authenticateToken, authorization.checkRoleUser, upload.array('imgPost', 10), img.checkFileTypePost, img.updateImgs, ladnlordController.createPost)
+router.post("/createPost", authentication.authenticateToken, authorization.checkRoleUser, upload.array('imgPost', 10), img.checkFileTypeImg, img.updateImgs, ladnlordController.createPost)
 // change status post
 router.post("/changestatus/:id", authentication.authenticateToken, authorization.checkRoleUser, ladnlordController.updateStatusPost)
-// update post
-router.get("/updatePost/:id", authentication.authenticateToken, authorization.checkRoleUser, ladnlordController.updatePost)
-// delete post
+// update post by id
+router.post("/updatePost/:id", authentication.authenticateToken, authorization.checkRoleUser, upload.array('images', 10), ladnlordController.updatePost)
+// delete post by id
 router.delete("/deletePost/:id", authentication.authenticateToken, authorization.checkRoleUser, ladnlordController.deletePost)
 // show list post
 router.get("/listPost", authentication.authenticateToken, authorization.checkRoleUser, ladnlordController.listPost)

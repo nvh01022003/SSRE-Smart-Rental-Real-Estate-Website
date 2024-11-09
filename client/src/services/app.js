@@ -34,7 +34,7 @@ export const apiGetProvinces = () => new Promise(async (resolve, reject) => {
         reject(error)
     }
 })
-export const apiGetPublicProvinces = () => new Promise(async (resolve, reject) => {
+export const apiGetPubliccitys = () => new Promise(async (resolve, reject) => {
     try {
         const response = await axiosDefault({
             method: 'get',

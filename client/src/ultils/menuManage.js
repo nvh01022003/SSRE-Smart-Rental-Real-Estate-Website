@@ -1,8 +1,9 @@
 import icons from './icons'
+import { FaDollarSign } from 'react-icons/fa'; // Importing relevant icons
 
-const { ImPencil2, MdOutlineLibraryBooks, BiUserPin, BiMoney, FcLike } = icons
+const { ImPencil2, MdOutlineLibraryBooks, BiUserPin, AiOutlineLock, BiRocket, AiOutlineDollar } = icons
 
-const menuManage = [
+const memuSidebar = [
     {
         id: 1,
         text: 'Đăng tin cho thuê',
@@ -16,23 +17,29 @@ const menuManage = [
         icon: <MdOutlineLibraryBooks />
     },
     {
-        id: 4,
+        id: 3,
         text: 'Thông tin tài khoản',
         path: '/he-thong/thong-tin-ca-nhan',
         icon: <BiUserPin />
     },
     {
-        id: 6,
-        text: 'Nạp tiền',
-        path: '/he-thong/nap-tien',
-        icon: <BiMoney />
+        id: 4,
+        text: 'Đổi mật khẩu',
+        path: '/he-thong/doi-mat-khau',
+        icon: <AiOutlineLock />
     },
     {
-        id: 7,
-        text: 'Tin đã lưu',
-        path: '/tin-da-luu',
-        icon: <FcLike />
-    }
+        id: 5,
+        text: 'Nạp tiền',
+        path: '/he-thong/nap-tien',
+        icon: <AiOutlineDollar />
+    },
+    {
+        id: 6,
+        text: 'Nâng cấp tài khoản',
+        path: '/he-thong/nang-cap-tai-khoan',
+        icon: <BiRocket />
+    },
 ]
 
-export default menuManage
+export default memuSidebar

@@ -17,18 +17,22 @@ export const path = {
     CHO_THUE_MAT_BANG: 'cho-thue-mat-bang',
     NHA_CHO_THUE: 'nha-cho-thue',
     CHO_THUE_PHONG_TRO: 'cho-thue-phong-tro',
-    DETAL_POST__TITLE__POSTID: 'chi-tiet/:title/:postId',
+    DETAL_POST__TITLE__POSTID: 'chi-tiet/:title/:id',
     SEARCH: 'tim-kiem',
     SYSTEM: '/he-thong/*',
     CREATE_POST: 'tao-moi-bai-dang',
     PERSONAL_INFO: 'thong-tin-ca-nhan',
+    MANAGE_POST: 'quan-ly-bai-dang',
     CHANGE_PASS: 'doi-mat-khau',
-    PAYMENT:'nap-tien/*',
+    LIST_POSTS_SAVED: 'tin-da-luu',
+    UPGRADE_ACCOUNT: 'nang-cap-tai-khoan',
+    PAYMENT: 'nap-tien/*',
     HISTORY_PAYMENT: 'lich-su-thanh-toan',
     DEPOSITE_HISTORY: 'lich-su-nap-tien',
-    MOMO:'momo',
-    SAVE_POST:'tin-da-luu',
-    BANK_TRANSFER:'thong-tin-chuyen-khoan',
+    MOMO: 'momo',
+    SAVE_POST: 'tin-da-luu',
+    BANK_TRANSFER: 'chuyen-khoan',
+
 }
 
 export const text = {

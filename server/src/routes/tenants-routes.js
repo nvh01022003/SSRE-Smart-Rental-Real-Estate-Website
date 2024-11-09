@@ -24,12 +24,14 @@ router.delete("/deletePostSaved/:id", authentication.authenticateToken, tenantsC
 // report post
 router.post("/reportPost/:id", authentication.authenticateToken, tenantsController.reportPost)
 
+// total number of posts saved
+router.get("/totalPostSaved", authentication.authenticateToken, tenantsController.totalPostSaved)
 // find post by price and acreage and location and category 
 router.get("/findPostByAll", tenantsController.findPostByAll)
 // show detail post
-router.get("/showDetailPost/:id", authentication.authenticateToken, tenantsController.showDetailPost)
-
-
+router.get("/showDetailPost/:id", tenantsController.showDetailPost)
+// gửi yêu cầu nâng cấp tài khoản thành landlord và có up ảnh chứng minh nhân dân và đợi phê duyệt
+router.post("/reqUpdateToLandlord", authentication.authenticateToken, authorization.checkRoleUserTenants, upload.array('imgKYC', 2), img.checkFileTypeImg, img.updateImgs, tenantsController.reqUpdateToLandlord)
 
 
 

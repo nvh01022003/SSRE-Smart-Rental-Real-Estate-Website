@@ -5,9 +5,9 @@ const paginationHelper = require("../../helper/pagination");
 const authServices = require("../../services/auth/auth");
 const { where } = require("sequelize");
 const { Op } = require('sequelize');
-const { User, Post, Address, Favourite, Report, Category, sequelize } = require("../../models/index");
-
+const { User, Post, Address, Image, Favourite, Report, Category, Overview, Coordinates, UpgradeRequest, sequelize } = require("../../models/index");
 const { response } = require("express");
+const e = require("express");
 require('dotenv').config();
 // CREATE 
 const getInfoUser = async (userId) => {
@@ -19,7 +19,6 @@ const getInfoUser = async (userId) => {
             attributes: ['id', 'firstName', 'lastName', 'email', 'phone', 'img_avt']
         })
         if (user) {
-            console.log(user);
             return {
                 err: 0,
                 msg: 'get info user success',
@@ -90,7 +89,6 @@ const reportPost = async (userId, postId, desc) => {
         }
     }
 }
-
 // show list post saved sử dung pagination
 const listPostSaved = async (userId, page) => {
     try {
@@ -108,18 +106,55 @@ const listPostSaved = async (userId, page) => {
             totalData
         )
         // các bài viết theo trang
-        const posts = await Favourite.findAll({
+        const listPostSave = await Favourite.findAll({
             where: {
                 user_id: userId
             },
             limit: objectPagination.limitPage,
             offset: objectPagination.skip,
-            order: [['createdAt', 'DESC']]
+            order: [['createdAt', 'DESC']],
+            // show thông tin chi tiết của bài viết gồm address, img, user tạo
+            include: [
+                {
+                    model: Post,
+                    include: [
+                        {
+                            model: Address,
+                            attributes: ['city', 'district', 'detail_address']
+                        },
+                        {
+                            model: Image,
+                            attributes: ['img_url_list']
+                        },
+                        {
+                            model: User,
+                            attributes: ['firstName', 'lastName', 'email', 'phone', 'img_avt']
+                        },
+                        {
+                            model: Category,
+                            attributes: ['category_name']
+                        }
+                    ]
+                }
+            ]
+
+        });
+        listPostSave.forEach((favourite) => {
+            try {
+                favourite.dataValues.Post.Image.dataValues.img_url_list = JSON.parse(favourite.dataValues.Post.Image.dataValues.img_url_list);
+                // ví dụ ae muốn lấy ảnh đầu tiên thì là favourite.dataValues.Post.Image.dataValues.img_url_list[0]
+                console.log(favourite.dataValues.Post.Image.dataValues.img_url_list[0]);
+            } catch (error) {
+                console.error(`Fail to parse img_url_list for post ID ${favourite.post_id}:`, error);
+                favourite.dataValues.Post.Images.forEach((image) => {
+                    image.img_url_list = [];
+                });
+            }
         });
         return {
             err: 0,
             msg: {
-                listPost: posts,
+                listPost: listPostSave,
                 objectPagination
             }
         }
@@ -130,7 +165,6 @@ const listPostSaved = async (userId, page) => {
         }
     }
 }
-
 // DELETE POST SAVED
 const deletePostSaved = async (userId, postId) => {
     try {
@@ -153,6 +187,7 @@ const deletePostSaved = async (userId, postId) => {
 }
 // FIND POST BY ALL
 const findPostByAll = async (minPrice, maxPrice, location, minAcreage, maxAcreage, categoryCode, page) => {
+    console.log("giá", minPrice, maxPrice);
     try {
         let whereCondition = {};
         if (minPrice && maxPrice) {
@@ -165,6 +200,17 @@ const findPostByAll = async (minPrice, maxPrice, location, minAcreage, maxAcreag
                 [Op.between]: [minAcreage, maxAcreage]
             }
         }
+
+        if (location) {
+            const addressResult = await Address.findAll({
+                where: {
+                    city: location
+                }
+            })
+            const addressIDs = addressResult.map((address) => address.id);
+            whereCondition.address_id = addressIDs;
+        }
+
         if (location) {
             const addressResult = await Address.findAll({
                 where: {
@@ -187,13 +233,49 @@ const findPostByAll = async (minPrice, maxPrice, location, minAcreage, maxAcreag
             page,
             totalData
         )
+        console.log("điều kiện", whereCondition);
         const posts = await Post.findAll({
             where: whereCondition,
             limit: objectPagination.limitPage,
             offset: objectPagination.skip,
-            order: [['createdAt', 'DESC']]
+            order: [['createdAt', 'DESC']],
+            // trả về đủ thông tin address, img
+            include: [
+                {
+                    model: Address,
+                    attributes: ['city', 'district', 'detail_address']
+                },
+                // tìm ảnh theo id của bài viết theo img_id
+                {
+                    model: Image,
+                    where: {
+                        id: sequelize.col('post.img_id')
+                    },
+                    attributes: ['img_url_list']
+                },
+                {
+                    model: Category,
+                    attributes: ['category_name']
+                },
+                {
+                    model: User,
+                    attributes: ['firstName', 'lastName', 'email', 'phone', 'img_avt']
+                },
+
+            ]
+
         });
         // console.log(posts);
+        posts.forEach((post) => {
+            try {
+                post.dataValues.Image.img_url_list = JSON.parse(post.dataValues.Image.img_url_list);
+                console.log(post.dataValues.Image.img_url_list);
+            } catch (error) {
+                console.log("Fail to parse img_url_list" + error);
+                post.dataValues.img_url_list = [];
+            }
+        });
+
         return {
             err: 0,
             msg: {
@@ -229,27 +311,151 @@ const listPostByPage = async (page) => {
         }
     }
 }
-
 // show detail post
+// const showDetailPost = async (postId) => {
+//     try {
+//         const post = await Post.findOne({
+//             where: {
+//                 id: postId
+//             }
+//         })
+//         // tim chi tiet cac bang khac : category, address, user, overviews dùng promise.all
+//         const [category, address, user, overviews, map, image] = await Promise.all([
+//             Category.findOne({
+//                 where: {
+//                     id: post.category_id
+//                 },
+//                 attributes: ['category_name']
+//             }),
+//             Address.findOne({
+//                 where: {
+//                     id: post.address_id
+//                 },
+//                 attributes: ['city', 'district', 'detail_address']
+//             }),
+//             User.findOne({
+//                 where: {
+//                     id: post.user_id
+//                 },
+//                 attributes: ['firstName', 'lastName', 'email', 'phone', 'img_avt']
+//             }),
+//             Overview.findOne({
+//                 where: {
+//                     id: post.overview_id
+//                 },
+//                 attributes: ['code', 'area', 'type', 'target', 'expire']
+//             }),
+//             Coordinates.findOne({
+//                 where: {
+//                     id: post.coordinates_id
+//                 },
+//                 attributes: ['lat', 'lon']
+//             }),
+//             Image.findOne({
+//                 where: {
+//                     id: post.img_id
+//                 },
+//                 attributes: ['img_url_list']
+//             })
+//         ])
+//         post.dataValues.map = `<iframe src="https://www.google.com/maps/embed?pb=!1m10!1m8!1m3!1d7668.902703874087!2d${map.dataValues.lon}!3d${map.dataValues.lat}!3m2!1i1024!2i768!4f13.1!5e0!3m2!1svi!2s!4v1729530897356!5m2!1svi!2s" width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>`;
+//         post.dataValues.category = category;
+//         post.dataValues.address = address;
+//         post.dataValues.user = user;
+//         post.dataValues.overviews = overviews;
+//         post.dataValues.images = JSON.parse(image.dataValues.img_url_list);
+//         return {
+//             err: 0,
+//             msg: post
+//         }
+//     } catch (err) {
+//         return {
+//             err: 1,
+//             msg: err
+//         }
+//     }
+// }
+
+// show category
+
 const showDetailPost = async (postId) => {
     try {
         const post = await Post.findOne({
             where: {
                 id: postId
             }
-        })
+        });
+
+        if (!post) {
+            return {
+                err: 1,
+                msg: 'Post not found'
+            };
+        }
+
+        // Fetch related data sequentially
+        const category = await Category.findOne({
+            where: {
+                id: post.category_id
+            },
+            attributes: ['category_name']
+        });
+
+        const address = await Address.findOne({
+            where: {
+                id: post.address_id
+            },
+            attributes: ['city', 'district', 'detail_address']
+        });
+
+        const user = await User.findOne({
+            where: {
+                id: post.user_id
+            },
+            attributes: ['firstName', 'lastName', 'email', 'phone', 'img_avt']
+        });
+
+        const overviews = await Overview.findOne({
+            where: {
+                id: post.overview_id
+            },
+            attributes: ['code', 'area', 'type', 'target', 'expire']
+        });
+
+        const map = await Coordinates.findOne({
+            where: {
+                id: post.coordinates_id
+            },
+            attributes: ['lat', 'lon']
+        });
+
+        const image = await Image.findOne({
+            where: {
+                id: post.img_id
+            },
+            attributes: ['img_url_list']
+        });
+
+        // Add related data to post
+        post.dataValues.map = `<iframe src="https://www.google.com/maps/embed?pb=!1m10!1m8!1m3!1d7668.902703874087!2d${map.dataValues.lon}!3d${map.dataValues.lat}!3m2!1i1024!2i768!4f13.1!5e0!3m2!1svi!2s!4v1729530897356!5m2!1svi!2s" width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>`;
+        post.dataValues.category = category;
+        post.dataValues.address = address;
+        post.dataValues.user = user;
+        post.dataValues.overviews = overviews;
+        post.dataValues.images = JSON.parse(image.dataValues.img_url_list);
+
         return {
             err: 0,
             msg: post
-        }
+        };
     } catch (err) {
         return {
             err: 1,
             msg: err
-        }
+        };
     }
-}
-// show category
+};
+
 const showCategory = async () => {
     try {
         const category = await Category.findAll();
@@ -264,6 +470,55 @@ const showCategory = async () => {
         }
     }
 }
+// req upgrade to landlord để gửi yêu cầu nâng cấp lên landlord
+const reqUpdateToLandlord = async (userId, info, imgKYC) => {
+    try {
+        info = JSON.parse(info)
+        imgKYC = JSON.stringify(imgKYC);
+        console.log(imgKYC);
+        const userVerification = await UpgradeRequest.create({
+            user_id: userId,
+            full_name: info.full_name,
+            date_of_birth: info.date_of_birth,
+            address: info.address,
+            contact: info.contact,
+            citizen_id: info.citizen_id,
+            id_card_image_url: imgKYC
+        })
+        return {
+            err: 0,
+            msg: "Request update to landlord success"
+        }
+    } catch (err) {
+        return {
+            err: 1,
+            msg: err
+        }
+    }
+
+}
+
+const totalPostSaved = async (userId) => {
+    try {
+        const total = await Favourite.count({
+            where: {
+                user_id: userId
+            }
+        });
+        return {
+            err: 0,
+            msg: total
+        }
+    } catch (err) {
+        return {
+            err: 1,
+            msg: err
+        }
+    }
+}
+
+
+
 module.exports = {
     getInfoUser,
     changeInfoUser,
@@ -274,5 +529,8 @@ module.exports = {
     findPostByAll,
     listPostByPage,
     showDetailPost,
-    showCategory
+    showCategory,
+    reqUpdateToLandlord,
+    totalPostSaved
+
 };

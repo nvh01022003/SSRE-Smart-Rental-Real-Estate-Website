@@ -1,5 +1,6 @@
 import actionTypes from './actionTypes'
-import { apiGetNewPosts, apiGetPosts, apiGetPostsLimit, apiSavePost } from '../../services/post'
+import { apiGetNewPosts, apiGetPosts, apiGetPostsLimit } from '../../services/post'
+import axios from 'axios'
 
 export const getPosts = () => async (dispatch) => {
     try {
@@ -23,26 +24,29 @@ export const getPosts = () => async (dispatch) => {
         })
     }
 }
-export const getPostsLimit = (query) => async (dispatch) => {
+export const getPostsLimit = (params) => async (dispatch) => {
     try {
-        const response = await apiGetPostsLimit(query)
+        const response = await axios.get('http://localhost:5000/api/v1/user/tenants/findPostByAll', { params });
         if (response?.data.err === 0) {
             dispatch({
                 type: actionTypes.GET_POSTS_LIMIT,
-                posts: response.data.response?.rows,
-                count: response.data.response?.count
+                posts: response.data.msg.listPost || [],  // Safeguard if rows is missing
+                count: response.data?.response?.count || 0,  // Safeguard if count is missing
+                msg: response.data.msg.listPost || 'No posts found',  // Assuming the response format contains `listPost`
             })
         } else {
             dispatch({
                 type: actionTypes.GET_POSTS_LIMIT,
-                msg: response.data.msg
+                posts: [],
+                msg: response.data?.msg || 'An error occurred',
             })
         }
 
     } catch (error) {
         dispatch({
             type: actionTypes.GET_POSTS_LIMIT,
-            posts: null
+            posts: [],
+            msg: 'Failed to fetch posts, please try again later.'
         })
     }
 }
@@ -69,32 +73,68 @@ export const getNewPosts = () => async (dispatch) => {
         })
     }
 }
-// Action để lưu bài viết
-export const savePost = (postId, token) => async (dispatch) => {
-    try {
-        const response = await apiSavePost(postId, token);  // Gọi API từ FE tới BE
-        console.log('Save Post Action Response:', response);
 
-        // Nếu lưu bài viết thành công
-        if (response?.err === 0) {
+
+export const fetchSavedPosts = (token, page) => async (dispatch) => {
+    try {
+        const response = await axios.get(`http://localhost:5000/api/v1/user/tenants/listPostSaved?page=${page}`, {
+            headers: {
+                'token': `${token}`
+            }
+        });
+        if (response.data.err === 0) {
             dispatch({
-                type: actionTypes.SAVE_POST_SUCCESS,
-                data: response.msg  // Truyền dữ liệu thành công
+                type: actionTypes.FETCH_SAVED_POSTS_SUCCESS,
+                payload: response.data.msg.listPost
             });
-            return response;  // Trả về dữ liệu cho component (nếu cần)
         } else {
-            // Nếu lưu bài viết thất bại
             dispatch({
-                type: actionTypes.SAVE_POST_FAIL,
-                data: response.msg || 'Save post failed'
+                type: actionTypes.FETCH_SAVED_POSTS_FAILURE,
+                payload: response.data.msg
             });
         }
     } catch (error) {
-        console.error('Save Post Action Error:', error);
         dispatch({
-            type: actionTypes.SAVE_POST_FAIL,
-            data: error.msg || 'An error occurred while saving the post'
+            type: actionTypes.FETCH_SAVED_POSTS_FAILURE,
+            payload: error.message
         });
-        throw error;  // Ném lỗi ra component để hiển thị cho người dùng
     }
 };
+
+export const deleteSavedPost = (token, id) => async (dispatch) => {
+    try {
+        await axios.delete(`http://localhost:5000/api/v1/user/tenants/deletePostSaved/${id}`, {
+            headers: { 'token': `${token}` }
+        });
+        dispatch({
+            type: actionTypes.DELETE_SAVED_POST_SUCCESS,
+            payload: id
+        });
+    } catch (error) {
+        dispatch({
+            type: actionTypes.DELETE_SAVED_POST_FAILURE,
+            payload: error.message
+        });
+    }
+};
+
+export const getTotalPostSaved = (token) => async (dispatch) => {
+    try {
+        const response = await axios.get('http://localhost:5000/api/v1/user/tenants/totalPostSaved', {
+            headers: {
+                'token': ` ${token}` // Include token in headers
+            }
+        });
+        if (response.data.err === 0) {
+            dispatch({
+                type: actionTypes.GET_TOTAL_POSTS_SAVED,
+                payload: response.data.msg
+            });
+        } else {
+            throw new Error(response.data.msg);
+        }
+    } catch (error) {
+        console.error('Error fetching total', error);
+        throw error;
+    }
+}

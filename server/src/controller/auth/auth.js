@@ -81,6 +81,7 @@ const authenticateToken = (req, res, next) => {
             return res.status(403).json({ err: 1, msg: 'Token not valid' });
         }
         req.user = user; // Thêm thông tin người dùng vào request
+        console.log("oke")
         next();
     });
 };
