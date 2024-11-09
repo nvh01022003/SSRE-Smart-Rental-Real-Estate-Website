@@ -49,7 +49,7 @@ const showAllSoftDeletePosts = async () => {
     try {
         const post = await Post.findAll({
             where: {
-                status: 1  // Chỉ lấy các bài đăng có status = 0
+                status: 1  // Chỉ lấy các bài đăng có status = 1
             },
             order: [['createdAt', 'DESC']], // Sắp xếp theo thời gian tạo, từ mới nhất
             include: [
@@ -91,7 +91,7 @@ const showAllSoftDeletePosts = async () => {
 // khôi phục post đã xóa mềm
 const restorePost = async (postId) => {
     const post = await Post.update(
-        { status: 0 }, // Khôi phục lại trạng thái thành 0
+        { status: 0 }, // Khôi phục lại status = 0
         {
             where: {
                 id: postId,
@@ -101,7 +101,7 @@ const restorePost = async (postId) => {
     );
     return post;
 }
-//delete mềm :3 post by select list id ( sử dụng cho phần chọn nhiều id sau đó xóa)
+//delete soft post by select list id ( sử dụng cho phần chọn nhiều id sau đó xóa)
 const softDeletePosts = async (listId) => {
     const post = await Post.update(
         { status: 1 }, // Cập nhật status thành 1
