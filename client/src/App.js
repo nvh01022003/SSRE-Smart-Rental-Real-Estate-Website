@@ -156,6 +156,7 @@ import Payment from './containers/System/Payment';
 import Momo from './components/Momo';
 import BankTransfer from './components/BankTransfer';
 import ManagePost from '../src/containers/System/ManagePost';
+import DeletedPosts from './containers/System/DeletedPosts';
 
 function App() {
   const dispatch = useDispatch();
@@ -207,6 +208,7 @@ function App() {
         {/* System Routes */}
         <Route path={path.SYSTEM} element={<System />} >
           <Route path={path.MANAGE_POST} element={<ManagePost />} />
+          <Route path="quan-ly-bai-dang/tin-da-xoa" element={<DeletedPosts />} />
           <Route path={path.CREATE_POST} element={<CreatePost />} />
           <Route path={path.PERSONAL_INFO} element={<PersonalInfo />} />
           <Route path={path.CHANGE_PASS} element={<ChangePass />} />

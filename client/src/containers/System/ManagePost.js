@@ -7,8 +7,11 @@ import { apiGetPubliccitys, apiGetPublicDistrict, apiGetPublicWard } from '../..
 import Swal from 'sweetalert2';
 import { fetchCategories } from '../../store/actions';
 import { Loading } from '../../components';
+import { FaTrash } from 'react-icons/fa';
+import { useNavigate } from 'react-router-dom';
 
 const ManagePost = () => {
+    const navigate = useNavigate();
     const dispatch = useDispatch();
     const [posts, setPosts] = useState([]);
     const [search, setSearch] = useState("");
@@ -376,13 +379,6 @@ const ManagePost = () => {
                         />
                         <FaSearch className='absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400' />
                     </div>
-                    {/* <button
-                        onClick={() => setShowDeleted(!showDeleted)}
-                        className="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded transition duration-300 flex items-center mr-4"
-                    >
-                        {showDeleted ? <FaUndo className="mr-2" /> : <FaTrash className="mr-2" />}
-                        {showDeleted ? 'Tin đang hiển thị' : 'Tin đã xóa'}
-                    </button> */}
 
                     {/* Dropdown cho danh mục */}
                     <div className='mr-4'>
@@ -397,6 +393,13 @@ const ManagePost = () => {
                             ))}
                         </select>
                     </div>
+                    <button
+                        onClick={() => navigate('/he-thong/quan-ly-bai-dang/tin-da-xoa')}
+                        className="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded transition duration-300 flex items-center mr-4"
+                    >
+                        <FaTrash className="mr-2" />
+                        Tin đã xóa
+                    </button>
                     <button
                         onClick={() => window.location.href = '/he-thong/tao-moi-bai-dang'}
                         className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded transition duration-300 flex items-center"

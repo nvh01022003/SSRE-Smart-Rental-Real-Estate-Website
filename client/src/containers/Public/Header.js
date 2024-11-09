@@ -236,18 +236,24 @@ const Header = () => {
                 <div className='flex items-center gap-3'>
                     {!isLoggedIn && (
                         <div className='flex items-center gap-2'>
-                            <Button
-                                text={'Đăng nhập'}
-                                textColor='text-white'
-                                bgColor='bg-[#3961fb]'
+                            <button
+                                className='px-4 py-2 rounded-lg shadow-lg bg-[#3961fb] text-white 
+               hover:bg-[#2f4fc2] hover:shadow-xl active:scale-95 
+               transition-all duration-300 ease-in-out transform'
                                 onClick={() => navigateTo('/login')}
-                            />
-                            <Button
-                                text={'Đăng ký'}
-                                textColor='text-white'
-                                bgColor='bg-[#3961fb]'
+                            >
+                                Đăng nhập
+                            </button>
+
+                            <button
+                                className='px-4 py-2 rounded-lg shadow-lg bg-[#3961fb] text-white 
+               hover:bg-[#2f4fc2] hover:shadow-xl active:scale-95 
+               transition-all duration-300 ease-in-out transform'
                                 onClick={() => navigateTo('/register')}
-                            />
+                            >
+                                Đăng ký
+                            </button>
+
                         </div>
                     )}
                     {isLoggedIn && (
@@ -298,13 +304,13 @@ const Header = () => {
                             )}
                         </div>
                     )}
-                    <Button
-                        text={'Đăng tin mới'}
-                        textColor='text-white'
-                        bgColor='bg-secondary2'
-                        IcAfter={AiOutlinePlusCircle}
+                    <button
+                        type='button'
                         onClick={handleCreatePostClick}
-                    />
+                        className='outline-none py-2 px-3 bg-secondary1 flex items-center justify-center gap-2 text-white text-normal font-normal rounded-lg shadow-md hover:bg-secondary2 transition duration-300'
+                    >
+                        Đăng tin mới <AiOutlinePlusCircle />
+                    </button>
                 </div>
             </div>
         </div>
