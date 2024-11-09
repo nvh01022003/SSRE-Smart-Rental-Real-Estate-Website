@@ -12,7 +12,7 @@ const createPaymentRequest = async (amount, orderId, id) => {
     const requestId = orderId;
     const orderInfo = "Thanh toán với MoMo";
     const redirectUrl = "https://webhook.site/redirect/success";
-    const ipnUrl = "https://e04b-2402-800-629c-d80e-b1b6-81cb-a1da-12a.ngrok-free.app/api/v1/user/callbackMOMO";
+    const ipnUrl = "https://217d-2402-800-6238-1230-9104-ebf4-35f1-6aaa.ngrok-free.app/api/v1/user/callbackMOMO";
     const expireTime = Math.floor(Date.now() / 1000) + 5 * 60;
 
 

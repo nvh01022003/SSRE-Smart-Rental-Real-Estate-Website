@@ -14,6 +14,7 @@ const showAllUser = async (req, res) => {
         })
     }
 }
+
 // show detail user by id
 const showDetailUser = async (req, res) => {
     const userId = req.params.userId
