@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { FiCreditCard, FiDollarSign } from 'react-icons/fi';
 import axios from 'axios';
 import { useSelector } from 'react-redux';
@@ -8,11 +8,20 @@ const ManageTransaction = () => {
     const [activeTab, setActiveTab] = useState("DepositeHistory");
     const [isModalOpenView, setIsModalOpenView] = useState(false);
     const [currentUser, setCurrentUser] = useState(null);
-    const [search, setSearch] = useState("");
     const [role, setRole] = useState("all");
     const [depositHistory, setDepositHistory] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
     const { token } = useSelector((state) => state.auth);
+    const [searchTerm, setSearchTerm] = useState("");
+
+    // Tạo một tham chiếu (reference) đến phần tử input
+    const inputRef = useRef(null);
+
+    // Hook useEffect sẽ chạy mỗi khi searchTerm thay đổi
+    useEffect(() => {
+        // Kiểm tra nếu inputRef.current tồn tại, nếu có thì gọi focus() để đưa tiêu điểm vào input
+        inputRef.current?.focus();
+    }, [searchTerm]);  // useEffect sẽ chỉ chạy khi searchTerm thay đổi
 
     useEffect(() => {
         const fetchDepositHistory = async () => {
@@ -36,7 +45,7 @@ const ManageTransaction = () => {
     }, [token]);
 
     const handleSearch = (e) => {
-        setSearch(e.target.value);
+        setSearchTerm(e.target.value);
     };
 
     const handleRoleChange = (e) => {
@@ -46,7 +55,7 @@ const ManageTransaction = () => {
     const filterDepositHistory = () => {
         return depositHistory.filter(item => {
             const fullName = `${item.Wallet.User.firstName} ${item.Wallet.User.lastName}`.toLowerCase();
-            const searchMatch = fullName.includes(search.toLowerCase());
+            const searchMatch = fullName.includes(searchTerm.toLowerCase());
             const roleMatch = role === "all" || (role === "MoMo" && item.paycode.startsWith('MOMO')) || (role === "BankTransfer" && !item.paycode.startsWith('MOMO'));
             return searchMatch && roleMatch;
         });
@@ -101,56 +110,66 @@ const ManageTransaction = () => {
         };
 
         return (
-            <div className='px-6'>
-                <h1 className='text-3xl font-medium py-4'>Lịch sử nạp tiền</h1>
-                <div className="flex flex-col md:flex-row mb-4">
+            <div className="p-4 md:pt-9 md:p-6 md:mb-5 bg-white rounded-lg shadow-lg h-[calc(100vh-149px)] flex flex-col">
+                <h2 className="text-3xl font-medium mb-10">Lịch sử nạp tiền</h2>
+
+                {/* Search and Role Filter */}
+                <div className="flex flex-col md:flex-row mb-8">
                     <input
+                        ref={inputRef}
                         type="text"
                         placeholder="Tìm kiếm người dùng theo tên..."
-                        value={search}
+                        value={searchTerm}
                         onChange={handleSearch}
                         className="border p-2 rounded-md flex-grow mb-2 md:mb-0 md:mr-4"
                     />
-                    <select value={role} onChange={handleRoleChange} className="border p-2 rounded-md">
+                    <select value={role} onChange={handleRoleChange} className="border border-gray-400 p-2 rounded-md">
                         <option value="all">Phương thức nạp tiền</option>
                         <option value="MoMo">MoMo</option>
                         <option value="BankTransfer">Chuyển Khoản</option>
                     </select>
                 </div>
+
                 {isLoading ? (
                     <div><Loading /></div>
                 ) : (
-                    <table className="min-w-full border-collapse">
-                        <thead>
-                            <tr>
-                                <th className="border border-gray-200 px-4 py-2">Người nạp</th>
-                                <th className="border border-gray-200 px-4 py-2">Ngày nạp</th>
-                                <th className="border border-gray-200 px-4 py-2">Mã giao dịch</th>
-                                <th className="border border-gray-200 px-4 py-2">Phương thức</th>
-                                <th className="border border-gray-200 px-4 py-2">Số tiền</th>
-                                <th className="border border-gray-200 px-4 py-2">Trạng thái</th>
-                                <th className="border border-gray-200 px-4 py-2">Chức năng</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {currentItems.map((item, index) => (
-                                <tr key={index}>
-                                    <td className="border border-gray-200 px-4 py-2 text-center">{item.Wallet.User.firstName} {item.Wallet.User.lastName}</td>
-                                    <td className="border border-gray-200 px-4 py-2 text-center">{formatDate(item.createdAt)}</td>
-                                    <td className="border border-gray-200 px-4 py-2 text-center">{item.paycode}</td>
-                                    <td className="border border-gray-200 px-4 py-2 text-center">{item.paycode.startsWith('MOMO') ? 'MoMo' : 'Chuyển khoản'}</td>
-                                    <td className="border border-gray-200 px-4 py-2 text-center">{item.amount}</td>
-                                    <td className="border border-gray-200 px-4 py-2 text-center">{item.status}</td>
-                                    <td className="border border-gray-200 px-4 py-2 text-center">
-                                        <button className="bg-blue-500 hover:bg-blue-600 text-white px-2 py-1 rounded-md transition duration-300" onClick={() => openModalView(item)}>
-                                            Xem
-                                        </button>
-                                    </td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    </table>
+                    <div className="overflow-x-auto bg-white shadow-md rounded-lg flex-1 max-h-[calc(50vh-79px)]">
+                        <div className="h-[calc(50vh-130px)]">
+                            <table className="min-w-full border-collapse border border-gray-200">
+                                <thead className="sticky top-0 bg-gray-100">
+                                    <tr className="font-semibold text-gray-700 uppercase tracking-wider">
+                                        <th className="border border-gray-200 px-4 py-2">Người nạp</th>
+                                        <th className="border border-gray-200 px-4 py-2">Ngày nạp</th>
+                                        <th className="border border-gray-200 px-4 py-2">Mã giao dịch</th>
+                                        <th className="border border-gray-200 px-4 py-2">Phương thức</th>
+                                        <th className="border border-gray-200 px-4 py-2">Số tiền</th>
+                                        <th className="border border-gray-200 px-4 py-2">Trạng thái</th>
+                                        <th className="border border-gray-200 px-4 py-2">Chức năng</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {currentItems.map((item, index) => (
+                                        <tr key={index}>
+                                            <td className="border border-gray-200 px-4 py-2 text-center">{item.Wallet.User.firstName} {item.Wallet.User.lastName}</td>
+                                            <td className="border border-gray-200 px-4 py-2 text-center">{formatDate(item.createdAt)}</td>
+                                            <td className="border border-gray-200 px-4 py-2 text-center">{item.paycode}</td>
+                                            <td className="border border-gray-200 px-4 py-2 text-center">{item.paycode.startsWith('MOMO') ? 'MoMo' : 'Chuyển khoản'}</td>
+                                            <td className="border border-gray-200 px-4 py-2 text-center">{item.amount}</td>
+                                            <td className="border border-gray-200 px-4 py-2 text-center">{item.status}</td>
+                                            <td className="border border-gray-200 px-4 py-2 text-center">
+                                                <button className="bg-blue-500 hover:bg-blue-600 text-white px-2 py-1 rounded-md transition duration-300" onClick={() => openModalView(item)}>
+                                                    Xem
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
                 )}
+
+                {/* Pagination */}
                 <div className="flex justify-between items-center mt-4">
                     <div className="flex items-center">
                         <label className="mr-2 text-gray-500">Hiển thị</label>
@@ -308,68 +327,62 @@ const ManageTransaction = () => {
         const currentItems = fakeData.slice(indexOfFirstItem, indexOfLastItem);
 
         return (
-            <div>
-                <div className='px-6'>
-                    <div className='flex items-center py-4 border-b border-gray-200'>
-                        <h1 className='text-3xl font-medium '>
-                            Lịch sử thanh toán
-                        </h1>
-                    </div>
-                    <div className='flex gap-4'>
-                        <div className="py-4 flex flex-col gap-8 flex-auto">
-                            <table className="min-w-full border-collapse border border-gray-200">
-                                <thead>
-                                    <tr>
-                                        <th className="border border-gray-200 px-4 py-2">Thời gian</th>
-                                        <th className="border border-gray-200 px-4 py-2">Loại hoạt động</th>
-                                        <th className="border border-gray-200 px-4 py-2">Mã tin đăng</th>
-                                        <th className="border border-gray-200 px-4 py-2">Loại tin</th>
-                                        <th className="border border-gray-200 px-4 py-2">Số dư</th>
-                                        <th className="border border-gray-200 px-4 py-2">Phí</th>
-                                        <th className="border border-gray-200 px-4 py-2">Còn lại</th>
-                                        <th className="border border-gray-200 px-4 py-2">Trạng thái</th>
+            <div className="p-4 md:pt-9 md:p-6 md:mb-5 bg-white rounded-lg shadow-lg h-[calc(100vh-149px)] flex flex-col">
+                <h2 className="text-3xl font-medium mb-10">Lịch sử thanh toán</h2>
+                <div className="overflow-x-auto bg-white shadow-md rounded-lg mt-5 flex-1 max-h-[calc(50vh-79px)]">
+                    <div className="h-[calc(50vh-130px)]">
+                        <table className="min-w-full border-collapse border border-gray-200">
+                            <thead className="sticky top-0 bg-gray-100">
+                                <tr className="font-semibold text-gray-700 uppercase tracking-wider">
+                                    <th className="border border-gray-200 px-4 py-2">Thời gian</th>
+                                    <th className="border border-gray-200 px-4 py-2">Loại hoạt động</th>
+                                    <th className="border border-gray-200 px-4 py-2">Mã tin đăng</th>
+                                    <th className="border border-gray-200 px-4 py-2">Loại tin</th>
+                                    <th className="border border-gray-200 px-4 py-2">Số dư</th>
+                                    <th className="border border-gray-200 px-4 py-2">Phí</th>
+                                    <th className="border border-gray-200 px-4 py-2">Còn lại</th>
+                                    <th className="border border-gray-200 px-4 py-2">Trạng thái</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {currentItems.map((item, index) => (
+                                    <tr key={index}>
+                                        <td className="border border-gray-200 px-4 py-2 text-center">{formatDate(item.time)}</td>
+                                        <td className="border border-gray-200 px-4 py-2 text-center">{item.activityType}</td>
+                                        <td className="border border-gray-200 px-4 py-2 text-center">{item.postId}</td>
+                                        <td className="border border-gray-200 px-4 py-2 text-center">{item.postType}</td>
+                                        <td className="border border-gray-200 px-4 py-2 text-center">{item.balance}</td>
+                                        <td className="border border-gray-200 px-4 py-2 text-center">{item.fee}</td>
+                                        <td className="border border-gray-200 px-4 py-2 text-center">{item.remaining}</td>
+                                        <td className="border border-gray-200 px-4 py-2 text-center">{item.status}</td>
                                     </tr>
-                                </thead>
-                                <tbody>
-                                    {currentItems.map((item, index) => (
-                                        <tr key={index}>
-                                            <td className="border border-gray-200 px-4 py-2 text-center">{formatDate(item.time)}</td>
-                                            <td className="border border-gray-200 px-4 py-2 text-center">{item.activityType}</td>
-                                            <td className="border border-gray-200 px-4 py-2 text-center">{item.postId}</td>
-                                            <td className="border border-gray-200 px-4 py-2 text-center">{item.postType}</td>
-                                            <td className="border border-gray-200 px-4 py-2 text-center">{item.balance}</td>
-                                            <td className="border border-gray-200 px-4 py-2 text-center">{item.fee}</td>
-                                            <td className="border border-gray-200 px-4 py-2 text-center">{item.remaining}</td>
-                                            <td className="border border-gray-200 px-4 py-2 text-center">{item.status}</td>
-                                        </tr>
-                                    ))}
-                                </tbody>
-                            </table>
-                            <div className="flex justify-between items-center mt-4">
-                                <div className="flex items-center">
-                                    <label className="mr-2 text-gray-500">Hiển thị</label>
-                                    <select
-                                        value={itemsPerPage}
-                                        onChange={(e) => setItemsPerPage(Number(e.target.value))}
-                                        className="border border-gray-300 rounded px-2 py-1"
-                                    >
-                                        <option value={5}>5</option>
-                                        <option value={10}>10</option>
-                                        <option value={15}>15</option>
-                                    </select>
-                                    <span className="ml-2 text-gray-500">giao dịch mỗi trang</span>
-                                </div>
-                                <div className="flex items-center">
-                                    <button onClick={handlePreviousPage} className="px-4 py-2 bg-gray-200 rounded-full mr-2" disabled={currentPage === 1}>
-                                        Trước
-                                    </button>
-                                    <span className="text-gray-500">{currentPage} trên {totalPages} trang</span>
-                                    <button onClick={handleNextPage} className="px-4 py-2 bg-gray-200 rounded-full ml-2" disabled={currentPage === totalPages}>
-                                        Sau
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div className="flex flex-col md:flex-row justify-between items-center mt-4">
+                    <div className="flex items-center mb-4 md:mb-0">
+                        <label className="mr-2 text-gray-500">Hiển thị</label>
+                        <select
+                            value={itemsPerPage}
+                            onChange={(e) => setItemsPerPage(Number(e.target.value))}
+                            className="border border-gray-300 rounded px-2 py-1"
+                        >
+                            <option value={5}>5</option>
+                            <option value={10}>10</option>
+                            <option value={15}>15</option>
+                        </select>
+                        <span className="ml-2 text-gray-500">giao dịch mỗi trang</span>
+                    </div>
+                    <div className="flex items-center">
+                        <button onClick={handlePreviousPage} className="px-4 py-2 bg-gray-200 rounded-full mr-2" disabled={currentPage === 1}>
+                            Trước
+                        </button>
+                        <span className="text-gray-500">{currentPage} trên {totalPages} trang</span>
+                        <button onClick={handleNextPage} className="px-4 py-2 bg-gray-200 rounded-full ml-2" disabled={currentPage === totalPages}>
+                            Sau
+                        </button>
                     </div>
                 </div>
             </div>

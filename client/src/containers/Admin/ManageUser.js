@@ -19,6 +19,9 @@ const ManageUser = () => {
 
     const [errors, setErrors] = useState({});
 
+    const [currentPage, setCurrentPage] = useState(1);
+    const [itemsPerPage, setItemsPerPage] = useState(5);
+
     useEffect(() => {
         // Delay fetchUsers by 1 second
         const delayFetch = setTimeout(() => {
@@ -206,7 +209,6 @@ const ManageUser = () => {
     };
 
 
-
     const openModalView = (user) => {
         setCurrentUser(user); // Set the current user for view
         setIsModalOpenView(true); // Open the modal
@@ -358,12 +360,29 @@ const ManageUser = () => {
         return <Loading />;
     }
 
+    const totalPages = Math.ceil(filteredUsers.length / itemsPerPage);
+    const indexOfLastItem = currentPage * itemsPerPage;
+    const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+    const currentItems = filteredUsers.slice(indexOfFirstItem, indexOfLastItem);
+
+    const handlePreviousPage = () => {
+        if (currentPage > 1) {
+            setCurrentPage(currentPage - 1);
+        }
+    };
+
+    const handleNextPage = () => {
+        if (currentPage < totalPages) {
+            setCurrentPage(currentPage + 1);
+        }
+    };
+
     return (
-        <div className="p-4 md:p-6 bg-white rounded-lg shadow-lg h-full">
-            <h2 className="text-2xl font-bold mb-4">Quản lý người dùng</h2>
+        <div className="p-4 md:pt-9 md:p-6 md:mb-5 bg-white rounded-lg shadow-lg h-[calc(100vh-84px)] flex flex-col">
+            <h2 className="text-3xl font-medium mb-10">Quản lý người dùng</h2>
 
             {/* Search and Role Filter */}
-            <div className="flex flex-col md:flex-row mb-4">
+            <div className="flex flex-col md:flex-row mb-8">
                 <input
                     type="text"
                     placeholder="Tìm kiếm người dùng theo tên..."
@@ -398,70 +417,105 @@ const ManageUser = () => {
             </div>
 
             {/* User Table */}
-            <div className="overflow-x-auto bg-white shadow-md rounded-lg mt-5">
-                <table className="min-w-full border-collapse border border-gray-200">
-                    <thead>
-                        <tr className="bg-gray-100 font-semibold text-gray-700 uppercase tracking-wider">
-                            <th className='border border-gray-200 px-4 py-2'>
-                                <input
-                                    type="checkbox"
-                                    checked={selectedUsers.length === users.length}
-                                    onChange={toggleSelectAllUsers}
-                                />
-                            </th>
-                            <th className='border border-gray-200 px-4 py-2'>ID</th>
-                            <th className='border border-gray-200 px-4 py-2'>Họ và tên</th>
-                            <th className='border border-gray-200 px-4 py-2'>Email</th>
-                            <th className='border border-gray-200 px-4 py-2'>Số điện thoại</th>
-                            <th className="border border-gray-200 px-4 py-2' hidden md:table-cell">Vai trò</th>
-                            <th className="border border-gray-200 px-4 py-2' hidden md:table-cell">Hình ảnh</th>
-                            <th className="border border-gray-200 px-4 py-2'">Chức năng</th>
-                        </tr>
-                    </thead>
-                    <tbody className="overflow-y-auto">
-                        {filteredUsers.map((user) => (
-                            <tr key={user.id} className="border-b">
-                                <td className="border border-gray-200 px-4 py-2 text-center align-middle">
+            <div className="overflow-x-auto bg-white shadow-md rounded-lg mt-5 flex-1 max-h-[calc(50vh-79px)]">
+                <div className="h-[calc(50vh-130px)]"> {/* Adjust 350px based on your header/footer height */}
+                    <table className="min-w-full border-collapse border border-gray-200">
+                        <thead className="sticky top-0 bg-gray-100">
+                            <tr className="font-semibold text-gray-700 uppercase tracking-wider">
+                                <th className='border border-gray-200 px-4 py-2 bg-gray-100'>
                                     <input
                                         type="checkbox"
-                                        checked={selectedUsers.includes(user.id)}
-                                        onChange={() => toggleSelectUser(user.id)}
+                                        checked={selectedUsers.length === users.length}
+                                        onChange={toggleSelectAllUsers}
                                     />
-                                </td>
-                                <td className='border border-gray-200 px-4 py-2 text-center align-middle'>{user.id}</td>
-                                <td className='border border-gray-200 px-4 py-2 text-left align-middle'>{user.firstName} {user.lastName}</td>
-                                <td className='border border-gray-200 px-4 py-2 text-left align-middle'>{user.email}</td>
-                                <td className='border border-gray-200 px-4 py-2 text-center align-middle'>{user.phone}</td>
-                                <td className="border border-gray-200 px-4 py-2 text-center align-middle hidden md:table-cell">
-                                    {user.role === "tenant" ? "Người thuê" : user.role === "ladnlord" ? "Chủ nhà" : user.role}
-                                </td>
-                                <td className="border border-gray-200 px-4 py-2 text-center align-middle hidden md:table-cell">
-                                    <img src={user.img_avt} alt={user.firstName} className="w-[30px] h-[30px] rounded-full object-cover mx-auto" />
-                                </td>
-                                <td className="border border-gray-200 px-4 py-2 text-center align-middle">
-                                    <button
-                                        className="bg-blue-500 hover:bg-blue-600 text-white px-2 py-1 rounded-md mr-2 transition duration-300"
-                                        onClick={() => openModalView(user)} // View details logic 
-                                    >
-                                        Xem
-                                    </button>
-                                    {/* <button
+                                </th>
+                                <th className='border border-gray-200 px-4 py-2 bg-gray-100'>ID</th>
+                                <th className='border border-gray-200 px-4 py-2 bg-gray-100'>Họ và tên</th>
+                                <th className='border border-gray-200 px-4 py-2 bg-gray-100'>Email</th>
+                                <th className='border border-gray-200 px-4 py-2 bg-gray-100'>Số điện thoại</th>
+                                <th className="border border-gray-200 px-4 py-2 bg-gray-100 hidden md:table-cell">Vai trò</th>
+                                <th className="border border-gray-200 px-4 py-2 bg-gray-100 hidden md:table-cell">Hình ảnh</th>
+                                <th className="border border-gray-200 px-4 py-2 bg-gray-100">Chức năng</th>
+                            </tr>
+                        </thead>
+                        <tbody className="overflow-y-auto">
+                            {currentItems.map((user) => (
+                                <tr key={user.id} className="border-b">
+                                    <td className="border border-gray-200 px-4 py-2 text-center align-middle">
+                                        <input
+                                            type="checkbox"
+                                            checked={selectedUsers.includes(user.id)}
+                                            onChange={() => toggleSelectUser(user.id)}
+                                        />
+                                    </td>
+                                    <td className='border border-gray-200 px-4 py-2 text-center align-middle'>{user.id}</td>
+                                    <td className='border border-gray-200 px-4 py-2 text-left align-middle'>{user.firstName} {user.lastName}</td>
+                                    <td className='border border-gray-200 px-4 py-2 text-left align-middle'>{user.email}</td>
+                                    <td className='border border-gray-200 px-4 py-2 text-center align-middle'>{user.phone}</td>
+                                    <td className="border border-gray-200 px-4 py-2 text-center align-middle hidden md:table-cell">
+                                        {user.role === "tenant" ? "Người thuê" : user.role === "ladnlord" ? "Chủ nhà" : user.role}
+                                    </td>
+                                    <td className="border border-gray-200 px-4 py-2 text-center align-middle hidden md:table-cell">
+                                        <img src={user.img_avt} alt={user.firstName} className="w-[30px] h-[30px] rounded-full object-cover mx-auto" />
+                                    </td>
+                                    <td className="border border-gray-200 px-4 py-2 text-center align-middle">
+                                        <button
+                                            className="bg-blue-500 hover:bg-blue-600 text-white px-2 py-1 rounded-md mr-2 transition duration-300"
+                                            onClick={() => openModalView(user)} // View details logic 
+                                        >
+                                            Xem
+                                        </button>
+                                        {/* <button
                                         className="bg-yellow-500 text-white px-2 py-1 rounded-md mr-2"
                                         onClick={() => openModal(user)} // Open modal with user data
                                     >
                                         <FaEdit />
                                     </button> */}
-                                    <button
-                                        className="bg-red-500 hover:bg-red-600 text-white px-2 py-1 rounded-md transition duration-300"
-                                        onClick={() => handleDeleteUser(user.id, user.email)} // Delete user logic
-                                    >
-                                        Xóa
-                                    </button>
-                                </td>
-                            </tr>
-                        ))}
-                    </tbody>
-                </table>
+                                        <button
+                                            className="bg-red-500 hover:bg-red-600 text-white px-2 py-1 rounded-md transition duration-300"
+                                            onClick={() => handleDeleteUser(user.id, user.email)} // Delete user logic
+                                        >
+                                            Xóa
+                                        </button>
+                                    </td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div className="flex justify-between items-center sticky bottom-0 bg-white py-4">
+                <div className="flex items-center">
+                    <label className="mr-2 text-gray-500">Hiển thị</label>
+                    <select
+                        value={itemsPerPage}
+                        onChange={(e) => setItemsPerPage(Number(e.target.value))}
+                        className="border border-gray-300 rounded px-2 py-1"
+                    >
+                        <option value={5}>5</option>
+                        <option value={10}>10</option>
+                        <option value={15}>15</option>
+                    </select>
+                    <span className="ml-2 text-gray-500">người dùng mỗi trang</span>
+                </div>
+                <div className="flex items-center">
+                    <button
+                        onClick={handlePreviousPage}
+                        className="px-4 py-2 bg-gray-200 rounded-full mr-2"
+                        disabled={currentPage === 1}
+                    >
+                        Trước
+                    </button>
+                    <span className="text-gray-500">{currentPage} trên {totalPages} trang</span>
+                    <button
+                        onClick={handleNextPage}
+                        className="px-4 py-2 bg-gray-200 rounded-full ml-2"
+                        disabled={currentPage === totalPages}
+                    >
+                        Sau
+                    </button>
+                </div>
             </div>
 
             {/* Update User Modal */}

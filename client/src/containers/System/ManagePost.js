@@ -408,8 +408,8 @@ const ManagePost = () => {
 
             <div className="overflow-x-auto bg-white shadow-md rounded-lg mt-5">
                 <table className="min-w-full border-collapse border border-gray-200">
-                    <thead>
-                        <tr>
+                    <thead className="sticky top-0 bg-gray-100">
+                        <tr className="font-semibold text-gray-700 uppercase tracking-wider">
                             <th className='border border-gray-200 py-2 '>Mã tin</th>
                             <th className='border border-gray-200 px-4 py-2 '>Tiêu đề</th>
                             <th className='border border-gray-200  py-2'>

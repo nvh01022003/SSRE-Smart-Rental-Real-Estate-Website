@@ -18,6 +18,9 @@ const ManagePost = () => {
 
     const modalRef = useRef(null);
 
+    const [currentPage, setCurrentPage] = useState(1);
+    const [itemsPerPage, setItemsPerPage] = useState(5);
+
     useEffect(() => {
         dispatch(fetchPostsAdmin(token, 1));
     }, [dispatch, token]);
@@ -340,12 +343,29 @@ const ManagePost = () => {
         return formattedNumber;
     };
 
+    const totalPages = Math.ceil(filteredPosts.length / itemsPerPage);
+    const indexOfLastItem = currentPage * itemsPerPage;
+    const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+    const currentItems = filteredPosts.slice(indexOfFirstItem, indexOfLastItem);
+
+    const handlePreviousPage = () => {
+        if (currentPage > 1) {
+            setCurrentPage(currentPage - 1);
+        }
+    };
+
+    const handleNextPage = () => {
+        if (currentPage < totalPages) {
+            setCurrentPage(currentPage + 1);
+        }
+    };
+
     return (
-        <div className="p-4 md:p-6 bg-white rounded-lg shadow-lg h-full">
-            <h2 className="text-2xl font-bold mb-4">Quản lý tin đăng</h2>
+        <div className="p-4 md:pt-9 md:p-6 md:mb-5 bg-white rounded-lg shadow-lg h-[calc(100vh-84px)] flex flex-col">
+            <h2 className="text-3xl font-medium mb-10">Quản lý tin đăng</h2>
 
             {/* Search and Filter */}
-            <div className="flex flex-col md:flex-row mb-4">
+            <div className="flex flex-col md:flex-row mb-8">
                 <input
                     type="text"
                     placeholder="Tìm kiếm bài viết theo tiêu đề..."
@@ -383,287 +403,324 @@ const ManagePost = () => {
             </div>
 
             {/* Post Table */}
-            <div className="overflow-x-auto bg-white shadow-md rounded-lg mt-5">
-                <table className="min-w-full border-collapse border border-gray-200">
-                    <thead>
-                        <tr className="bg-gray-100 font-semibold text-gray-700 uppercase tracking-wider">
-                            <th className="border border-gray-200 px-2 py-2">
-                                <input
-                                    type="checkbox"
-                                    checked={selectedPosts.length === postsAdmin.length}
-                                    onChange={toggleSelectAllPosts}
-                                />
-                            </th>
-                            <th className='border border-gray-200 px-4 py-2'>ID</th>
-                            <th className='border border-gray-200 px-4 py-2'>Tiêu đề</th>
-                            <th className='border border-gray-200  py-2'>
-                                <div className="flex flex-col">
-                                    <span>Giá thuê</span>
-                                    <span>(VNĐ/tháng)</span>
-                                </div>
-                            </th>
-                            <th className='border border-gray-200  py-2'>
-                                <div className="flex flex-col">
-                                    <span>Diện tích</span>
-                                    <span>(m²)</span>
-                                </div>
-                            </th>
-                            <th className='border border-gray-200 px-4 py-2'>Địa chỉ</th>
-                            <th className='border border-gray-200 px-4 py-2'>Danh mục</th>
-                            <th className='border border-gray-200 px-4 py-2'>Ngày đăng</th>
-                            <th className='border border-gray-200 px-4 py-2'>Chức năng</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {isLoading || !postsAdmin.length ? (
-                            <tr>
-                                <td colSpan="9" className="text-center py-4">
-                                    {isLoading ? 'Đang tải...' : 'Không có bài viết nào trên hệ thống'}
-                                </td>
+            <div className="overflow-x-auto bg-white shadow-md rounded-lg mt-5 flex-1 max-h-[calc(50vh-79px)]">
+                <div className="h-[calc(50vh-130px)]">
+                    <table className="min-w-full border-collapse border border-gray-200">
+                        <thead className="sticky top-0 bg-gray-100">
+                            <tr className="font-semibold text-gray-700 uppercase tracking-wider">
+                                <th className="border border-gray-200 px-2 py-2">
+                                    <input
+                                        type="checkbox"
+                                        checked={selectedPosts.length === postsAdmin.length}
+                                        onChange={toggleSelectAllPosts}
+                                    />
+                                </th>
+                                <th className='border border-gray-200 px-4 py-2'>ID</th>
+                                <th className='border border-gray-200 px-4 py-2'>Tiêu đề</th>
+                                <th className='border border-gray-200  py-2'>
+                                    <div className="flex flex-col">
+                                        <span>Giá thuê</span>
+                                        <span>(VNĐ/tháng)</span>
+                                    </div>
+                                </th>
+                                <th className='border border-gray-200  py-2'>
+                                    <div className="flex flex-col">
+                                        <span>Diện tích</span>
+                                        <span>(m²)</span>
+                                    </div>
+                                </th>
+                                <th className='border border-gray-200 px-4 py-2'>Địa chỉ</th>
+                                <th className='border border-gray-200 px-4 py-2'>Danh mục</th>
+                                <th className='border border-gray-200 px-4 py-2'>Ngày đăng</th>
+                                <th className='border border-gray-200 px-4 py-2'>Chức năng</th>
                             </tr>
-                        ) : (
-                            filteredPosts.map((post) => (
-                                <tr key={post.id} className="border-b">
-                                    <td className="border border-gray-200 px-2 py-2">
-                                        <input
-                                            type="checkbox"
-                                            checked={selectedPosts.includes(post.id)}
-                                            onChange={() => toggleSelectPost(post.id)}
-                                        />
-                                    </td>
-                                    <td className="border border-gray-200 px-4 py-2 text-center align-middle">{post.id}</td>
-                                    <td className="border border-gray-200 px-4 py-2 truncate max-w-[200px] overflow-hidden whitespace-nowrap text-ellipsis">{post.title}</td>
-                                    <td className="border border-gray-200 px-4 py-2 text-center align-middle">{formatNumberWithDots(post.price)}</td>
-                                    <td className="border border-gray-200 px-4 py-2 text-center align-middle">{formatNumberWithDots(post.acreage)}</td>
-                                    <td className="border border-gray-200 px-4 py-2 text-center align-middle">{post.Address.city.replace("Thành phố ", "")}</td>
-                                    <td className="border border-gray-200 px-4 py-2 text-center align-middle">{post.Category.category_name}</td>
-                                    <td className="border border-gray-200 px-4 py-2 text-center align-middle">{formatDate(post.createdAt)}</td>
-                                    <td className="border border-gray-200 px-4 py-2 text-center align-middle">
-                                        <button
-                                            className="bg-blue-500 hover:bg-blue-600 text-white px-2 py-1 rounded-md mr-2 transition duration-300"
-                                            onClick={() => openModalView(post)}
-                                        >
-                                            Xem
-                                        </button>
-                                        <button
-                                            className="bg-red-500 hover:bg-red-600 text-white px-2 py-1 rounded-md transition duration-300"
-                                            onClick={() => handleDeletePost(post.id, post.User.email)}
-                                        >
-                                            Xóa
-                                        </button>
+                        </thead>
+                        <tbody>
+                            {isLoading || !postsAdmin.length ? (
+                                <tr>
+                                    <td colSpan="9" className="text-center py-4">
+                                        {isLoading ? 'Đang tải...' : 'Không có bài viết nào trên hệ thống'}
                                     </td>
                                 </tr>
-                            ))
-                        )}
-                    </tbody>
-                </table>
-            </div>
+                            ) : (
+                                currentItems.map((post) => (
+                                    <tr key={post.id} className="border-b">
+                                        <td className="border border-gray-200 px-2 py-2">
+                                            <input
+                                                type="checkbox"
+                                                checked={selectedPosts.includes(post.id)}
+                                                onChange={() => toggleSelectPost(post.id)}
+                                            />
+                                        </td>
+                                        <td className="border border-gray-200 px-4 py-2 text-center align-middle">{post.id}</td>
+                                        <td className="border border-gray-200 px-4 py-2 truncate max-w-[200px] overflow-hidden whitespace-nowrap text-ellipsis">{post.title}</td>
+                                        <td className="border border-gray-200 px-4 py-2 text-center align-middle">{formatNumberWithDots(post.price)}</td>
+                                        <td className="border border-gray-200 px-4 py-2 text-center align-middle">{formatNumberWithDots(post.acreage)}</td>
+                                        <td className="border border-gray-200 px-4 py-2 text-center align-middle">{post.Address.city.replace("Thành phố ", "")}</td>
+                                        <td className="border border-gray-200 px-4 py-2 text-center align-middle">{post.Category.category_name}</td>
+                                        <td className="border border-gray-200 px-4 py-2 text-center align-middle">{formatDate(post.createdAt)}</td>
+                                        <td className="border border-gray-200 px-4 py-2 text-center align-middle">
+                                            <button
+                                                className="bg-blue-500 hover:bg-blue-600 text-white px-2 py-1 rounded-md mr-2 transition duration-300"
+                                                onClick={() => openModalView(post)}
+                                            >
+                                                Xem
+                                            </button>
+                                            <button
+                                                className="bg-red-500 hover:bg-red-600 text-white px-2 py-1 rounded-md transition duration-300"
+                                                onClick={() => handleDeletePost(post.id, post.User.email)}
+                                            >
+                                                Xóa
+                                            </button>
+                                        </td>
+                                    </tr>
+                                ))
+                            )}
+                        </tbody>
+                    </table>
+                </div>
 
-            {/* View Post Modal */}
-            {isModalOpenView && currentPost && (
-                <div className="fixed inset-0 bg-gray-600 overflow-y-auto bg-opacity-50 flex items-center justify-center ">
-                    <div
-                        ref={modalRef}
-                        className="bg-white p-3.5 rounded-lg w-11/12 md:w-2/3 max-h-screen overflow-y-auto relative "
-                        style={{
-                            maxHeight: 'calc(100vh - 20px)',
-                            overflowY: 'auto'
-                        }}
-                    >
-                        <h3
-                            className="text-xl font-bold mb-4 py-4"
-                            style={{
-                                position: 'sticky',
-                                top: '0',
-                                backgroundColor: 'white',
-                                zIndex: 10
-                            }}
-                        >
-                            Thông tin chi tiết bài viết
-                        </h3>
-
-                        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
-                            <div className="col-span-1">
-                                <label className="font-semibold">ID:</label>
-                                <input
-                                    type="text"
-                                    value={currentPost.id}
-                                    disabled
-                                    className="border p-2 rounded-md w-full"
-                                />
-                            </div>
-                            <div className="col-span-1">
-                                <label className="font-semibold">Danh mục:</label>
-                                <input
-                                    type="text"
-                                    value={currentPost.Category.category_name}
-                                    disabled
-                                    className="border p-2 rounded-md w-full"
-                                />
-                            </div>
-                            <div className="col-span-1">
-                                <label className="font-semibold">Giá cho thuê (VNĐ/tháng):</label>
-                                <input
-                                    type="text"
-                                    value={formatNumberWithDots(currentPost.price)}
-                                    disabled
-                                    className="border p-2 rounded-md w-full"
-                                />
-                            </div>
-                            <div className="col-span-1">
-                                <label className="font-semibold">Diện tích (m²):</label>
-                                <input
-                                    type="text"
-                                    value={formatNumberWithDots(currentPost.acreage)}
-                                    disabled
-                                    className="border p-2 rounded-md w-full"
-                                />
-                            </div>
-                        </div>
-                        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
-                            <div className="col-span-1">
-                                <label className="font-semibold">Ngày đăng tin:</label>
-                                <input
-                                    type="text"
-                                    value={new Date(currentPost.createdAt).toLocaleDateString('vi-VN')}
-                                    disabled
-                                    className="border p-2 rounded-md w-full"
-                                />
-                            </div>
-                            <div className="col-span-1">
-                                <label className="font-semibold">Ngày cập nhật tin đăng:</label>
-                                <input
-                                    type="text"
-                                    value={new Date(currentPost.updatedAt).toLocaleDateString('vi-VN')}
-                                    disabled
-                                    className="border p-2 rounded-md w-full"
-                                />
-                            </div>
-                            <div className="col-span-1">
-                                <label className="font-semibold">Ngày hết hạn tin đăng:</label>
-                                <input
-                                    type="text"
-                                    value={new Date(currentPost.Overview.expire).toLocaleDateString('vi-VN')}
-                                    disabled
-                                    className="border p-2 rounded-md w-full"
-                                />
-                            </div>
-                            <div className="col-span-1">
-                                <label className="font-semibold">Đối tượng cho thuê:</label>
-                                <input
-                                    type="text"
-                                    value={
-                                        parseInt(currentPost.Overview.target) === 0
-                                            ? 'Tất cả'
-                                            : parseInt(currentPost.Overview.target) === 1
-                                                ? 'Nam'
-                                                : 'Nữ'
-                                    }
-                                    disabled
-                                    className="border p-2 rounded-md w-full"
-                                />
-                            </div>
-                        </div>
-                        <div className="col-span-2 mb-4">
-                            <label className="font-semibold">Địa chỉ chi tiết:</label>
-                            <input
-                                type="text"
-                                value={`${currentPost.Address.detail_address}, ${currentPost.Address.district}, ${currentPost.Address.city}`}
-                                disabled
-                                className="border p-2 rounded-md w-full"
-                            />
-                        </div>
-                        <div className="col-span-2 mb-4">
-                            <label className="font-semibold">Tiêu đề:</label>
-                            <input
-                                type="text"
-                                value={currentPost.title}
-                                disabled
-                                className="border p-2 rounded-md w-full"
-                            />
-                        </div>
-                        <div className="col-span-2 mb-4">
-                            <label className="font-semibold">Mô tả:</label>
-                            <textarea
-                                value={currentPost.description}
-                                disabled
-                                className="border p-2 rounded-md w-full h-32"
-                                style={{ resize: 'none' }}
-                                rows={3}
-                            />
-                        </div>
-
-
-                        {/* Image Section */}
+                {/* View Post Modal */}
+                {isModalOpenView && currentPost && (
+                    <div className="fixed inset-0 bg-gray-600 overflow-y-auto bg-opacity-50 flex items-center justify-center ">
                         <div
-                            className="w-full mb-4 p-4 rounded-lg shadow-lg border border-gray-300 bg-white "
+                            ref={modalRef}
+                            className="bg-white p-3.5 rounded-lg w-11/12 md:w-2/3 max-h-screen overflow-y-auto relative "
                             style={{
-                                backgroundColor: '#f9f9f9',
-                                boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
+                                maxHeight: 'calc(100vh - 20px)',
+                                overflowY: 'auto'
                             }}
                         >
-                            <label className="font-semibold text-lg mb-2 block text-gray-700">Hình ảnh bài viết:</label>
-                            <div className="grid grid-cols-2 gap-4 md:grid-cols-1 lg:grid-cols-2">
-                                {Array.isArray(JSON.parse(currentPost.Image.img_url_list)) &&
-                                    JSON.parse(currentPost.Image.img_url_list).map((img, index) => (
-                                        <img
-                                            key={index}
-                                            src={img}
-                                            alt={`preview-${index}`}
-                                            className="w-full h-42 object-cover rounded-md"
-                                        />
-                                    ))}
-                            </div>
-                        </div>
-
-                        {/* User Information Block */}
-                        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mt-5">
-                            <div className="col-span-3">
-                                <h3 className="text-lg font-medium mb-2">Thông tin người đăng tin</h3>
-                                <div className="mb-2">
-                                    <label className="font-semibold">Họ và tên:</label>
-                                    <input
-                                        type="text"
-                                        value={`${currentPost.User.firstName} ${currentPost.User.lastName}`}
-                                        disabled
-                                        className="border p-2 rounded-md w-full"
-                                    />
-                                </div>
-                                <div className="mb-2">
-                                    <label className="font-semibold">Email:</label>
-                                    <input
-                                        type="text"
-                                        value={currentPost.User.email}
-                                        disabled
-                                        className="border p-2 rounded-md w-full"
-                                    />
-                                </div>
-                                <div className="mb-2">
-                                    <label className="font-semibold">Số điện thoại:</label>
-                                    <input
-                                        type="text"
-                                        value={currentPost.User.phone}
-                                        disabled
-                                        className="border p-2 rounded-md w-full"
-                                    />
-                                </div>
-                            </div>
-                            <div className="col-span-1 flex justify-center items-center">
-                                <img src={currentPost.User.img_avt} alt={currentPost.User.firstName} className="w-25 h-25 rounded-full object-cover" />
-                            </div>
-                        </div>
-
-                        <div className="mt-10 justify-end flex">
-                            <button
-                                className="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-md mr-2"
-                                onClick={closeModalView}
+                            <h3
+                                className="text-xl font-bold mb-4 py-4"
+                                style={{
+                                    position: 'sticky',
+                                    top: '0',
+                                    backgroundColor: 'white',
+                                    zIndex: 10
+                                }}
                             >
-                                Đóng
-                            </button>
+                                Thông tin chi tiết bài viết
+                            </h3>
+
+                            <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
+                                <div className="col-span-1">
+                                    <label className="font-semibold">ID:</label>
+                                    <input
+                                        type="text"
+                                        value={currentPost.id}
+                                        disabled
+                                        className="border p-2 rounded-md w-full"
+                                    />
+                                </div>
+                                <div className="col-span-1">
+                                    <label className="font-semibold">Danh mục:</label>
+                                    <input
+                                        type="text"
+                                        value={currentPost.Category.category_name}
+                                        disabled
+                                        className="border p-2 rounded-md w-full"
+                                    />
+                                </div>
+                                <div className="col-span-1">
+                                    <label className="font-semibold">Giá cho thuê (VNĐ/tháng):</label>
+                                    <input
+                                        type="text"
+                                        value={formatNumberWithDots(currentPost.price)}
+                                        disabled
+                                        className="border p-2 rounded-md w-full"
+                                    />
+                                </div>
+                                <div className="col-span-1">
+                                    <label className="font-semibold">Diện tích (m²):</label>
+                                    <input
+                                        type="text"
+                                        value={formatNumberWithDots(currentPost.acreage)}
+                                        disabled
+                                        className="border p-2 rounded-md w-full"
+                                    />
+                                </div>
+                            </div>
+                            <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
+                                <div className="col-span-1">
+                                    <label className="font-semibold">Ngày đăng tin:</label>
+                                    <input
+                                        type="text"
+                                        value={new Date(currentPost.createdAt).toLocaleDateString('vi-VN')}
+                                        disabled
+                                        className="border p-2 rounded-md w-full"
+                                    />
+                                </div>
+                                <div className="col-span-1">
+                                    <label className="font-semibold">Ngày cập nhật tin đăng:</label>
+                                    <input
+                                        type="text"
+                                        value={new Date(currentPost.updatedAt).toLocaleDateString('vi-VN')}
+                                        disabled
+                                        className="border p-2 rounded-md w-full"
+                                    />
+                                </div>
+                                <div className="col-span-1">
+                                    <label className="font-semibold">Ngày hết hạn tin đăng:</label>
+                                    <input
+                                        type="text"
+                                        value={new Date(currentPost.Overview.expire).toLocaleDateString('vi-VN')}
+                                        disabled
+                                        className="border p-2 rounded-md w-full"
+                                    />
+                                </div>
+                                <div className="col-span-1">
+                                    <label className="font-semibold">Đối tượng cho thuê:</label>
+                                    <input
+                                        type="text"
+                                        value={
+                                            parseInt(currentPost.Overview.target) === 0
+                                                ? 'Tất cả'
+                                                : parseInt(currentPost.Overview.target) === 1
+                                                    ? 'Nam'
+                                                    : 'Nữ'
+                                        }
+                                        disabled
+                                        className="border p-2 rounded-md w-full"
+                                    />
+                                </div>
+                            </div>
+                            <div className="col-span-2 mb-4">
+                                <label className="font-semibold">Địa chỉ chi tiết:</label>
+                                <input
+                                    type="text"
+                                    value={`${currentPost.Address.detail_address}, ${currentPost.Address.district}, ${currentPost.Address.city}`}
+                                    disabled
+                                    className="border p-2 rounded-md w-full"
+                                />
+                            </div>
+                            <div className="col-span-2 mb-4">
+                                <label className="font-semibold">Tiêu đề:</label>
+                                <input
+                                    type="text"
+                                    value={currentPost.title}
+                                    disabled
+                                    className="border p-2 rounded-md w-full"
+                                />
+                            </div>
+                            <div className="col-span-2 mb-4">
+                                <label className="font-semibold">Mô tả:</label>
+                                <textarea
+                                    value={currentPost.description}
+                                    disabled
+                                    className="border p-2 rounded-md w-full h-32"
+                                    style={{ resize: 'none' }}
+                                    rows={3}
+                                />
+                            </div>
+
+
+                            {/* Image Section */}
+                            <div
+                                className="w-full mb-4 p-4 rounded-lg shadow-lg border border-gray-300 bg-white "
+                                style={{
+                                    backgroundColor: '#f9f9f9',
+                                    boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
+                                }}
+                            >
+                                <label className="font-semibold text-lg mb-2 block text-gray-700">Hình ảnh bài viết:</label>
+                                <div className="grid grid-cols-2 gap-4 md:grid-cols-1 lg:grid-cols-2">
+                                    {Array.isArray(JSON.parse(currentPost.Image.img_url_list)) &&
+                                        JSON.parse(currentPost.Image.img_url_list).map((img, index) => (
+                                            <img
+                                                key={index}
+                                                src={img}
+                                                alt={`preview-${index}`}
+                                                className="w-full h-42 object-cover rounded-md"
+                                            />
+                                        ))}
+                                </div>
+                            </div>
+
+                            {/* User Information Block */}
+                            <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mt-5">
+                                <div className="col-span-3">
+                                    <h3 className="text-lg font-medium mb-2">Thông tin người đăng tin</h3>
+                                    <div className="mb-2">
+                                        <label className="font-semibold">Họ và tên:</label>
+                                        <input
+                                            type="text"
+                                            value={`${currentPost.User.firstName} ${currentPost.User.lastName}`}
+                                            disabled
+                                            className="border p-2 rounded-md w-full"
+                                        />
+                                    </div>
+                                    <div className="mb-2">
+                                        <label className="font-semibold">Email:</label>
+                                        <input
+                                            type="text"
+                                            value={currentPost.User.email}
+                                            disabled
+                                            className="border p-2 rounded-md w-full"
+                                        />
+                                    </div>
+                                    <div className="mb-2">
+                                        <label className="font-semibold">Số điện thoại:</label>
+                                        <input
+                                            type="text"
+                                            value={currentPost.User.phone}
+                                            disabled
+                                            className="border p-2 rounded-md w-full"
+                                        />
+                                    </div>
+                                </div>
+                                <div className="col-span-1 flex justify-center items-center">
+                                    <img src={currentPost.User.img_avt} alt={currentPost.User.firstName} className="w-25 h-25 rounded-full object-cover" />
+                                </div>
+                            </div>
+
+                            <div className="mt-10 justify-end flex">
+                                <button
+                                    className="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-md mr-2"
+                                    onClick={closeModalView}
+                                >
+                                    Đóng
+                                </button>
+                            </div>
                         </div>
                     </div>
+                )}
+
+            </div>
+
+            {/* Pagination Controls */}
+            <div className="flex justify-between items-center sticky bottom-0 bg-white py-4">
+                <div className="flex items-center">
+                    <label className="mr-2 text-gray-500">Hiển thị</label>
+                    <select
+                        value={itemsPerPage}
+                        onChange={(e) => setItemsPerPage(Number(e.target.value))}
+                        className="border border-gray-300 rounded px-2 py-1"
+                    >
+                        <option value={5}>5</option>
+                        <option value={10}>10</option>
+                        <option value={15}>15</option>
+                    </select>
+                    <span className="ml-2 text-gray-500">chuyên mục mỗi trang</span>
                 </div>
-            )}
+                <div className="flex items-center">
+                    <button
+                        onClick={handlePreviousPage}
+                        className="px-4 py-2 bg-gray-200 rounded-full mr-2"
+                        disabled={currentPage === 1}
+                    >
+                        Trước
+                    </button>
+                    <span className="text-gray-500">{currentPage} trên {totalPages} trang</span>
+                    <button
+                        onClick={handleNextPage}
+                        className="px-4 py-2 bg-gray-200 rounded-full ml-2"
+                        disabled={currentPage === totalPages}
+                    >
+                        Sau
+                    </button>
+                </div>
+            </div>
 
         </div>
     );

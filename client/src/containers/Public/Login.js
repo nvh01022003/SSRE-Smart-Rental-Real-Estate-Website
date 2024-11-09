@@ -145,13 +145,12 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FiMail, FiLock } from 'react-icons/fi';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import Swal from 'sweetalert2';
 import { Loading } from '../../components';
 import * as actions from '../../store/actions';
 import logo from '../../assets/logo.png';
 import { motion } from 'framer-motion';
-import { path } from '../../ultils/constant';
 
 // Common wrapper component for both Login and Register forms
 const AuthWrapper = ({ children }) => {
@@ -163,7 +162,7 @@ const AuthWrapper = ({ children }) => {
             className="min-h-screen flex flex-col items-center justify-center bg-cover bg-center px-4"
             style={{
                 backgroundImage:
-                    "url('https://images.unsplash.com/photo-1560518883-ce09059eeffa?ixlib=rb-4.0.3')",
+                    "url('https://images.unsplash.com/photo-1582653291997-079a1c04e5a1?ixlib=rb-4.0.3')",
                 backgroundColor: 'rgba(0, 0, 0, 0.5)',
                 backgroundBlendMode: 'overlay',
             }}
@@ -201,19 +200,12 @@ const Login = () => {
     }, []);
     const dispatch = useDispatch();
     const navigate = useNavigate();
-    const { msg, update } = useSelector(state => state.auth);
     const [payload, setPayload] = useState({
         email: '',
         password: '',
     });
     const [invalidFields, setInvalidFields] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
-
-    useEffect(() => {
-        if (msg) {
-            Swal.fire('Oops!', msg, 'error');
-        }
-    }, [msg, update]);
 
     const validateForm = () => {
         let invalids = 0;

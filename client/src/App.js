@@ -133,7 +133,7 @@
 // src/App.js
 
 import React, { useEffect } from 'react';
-import { Routes, Route, useLocation } from 'react-router-dom';
+import { Routes, Route } from 'react-router-dom';
 import { Home, Login, Rental, Homepage, DetailPost, SearchDetail } from './containers/Public';
 import { path } from './ultils/constant';
 import { CreatePost } from '../src/containers/System';
@@ -156,14 +156,10 @@ import Payment from './containers/System/Payment';
 import Momo from './components/Momo';
 import BankTransfer from './components/BankTransfer';
 import ManagePost from '../src/containers/System/ManagePost';
-import { AnimatePresence } from 'framer-motion';
-import ProtectedRoute from './components/ProtectedRoute';
-import PublicRoute from './components/PublicRoute';
 
 function App() {
   const dispatch = useDispatch();
   const { isLoggedIn, token } = useSelector(state => state.auth);
-  const location = useLocation(); // To provide a unique key for AnimatePresence
 
   useEffect(() => {
     // Clear localStorage items related to authentication
@@ -175,7 +171,7 @@ function App() {
       if (isLoggedIn && token) {
         dispatch(actions.setUserInfo(token)); // Dispatch the action to update the Redux store
       }
-    }, 1000); // 1 second timeout
+    }, 1); // 1 second timeout
 
     // Cleanup the timer on component unmount or before re-running useEffect
     return () => clearTimeout(timer);
@@ -185,56 +181,47 @@ function App() {
     <div className="bg-primary">
       {/* <AnimatePresence mode="wait" initial={false}> */}
       <Routes>
-        {/* Public Routes */}
-        <Route element={<PublicRoute />}>
-          <Route path={path.LOGIN} element={<Login />} />
-          <Route path={path.FORGOT_PASS} element={<ForgotPassword />} />
-          <Route path={path.VALIDATE_CODE} element={<ValidateCode />} />
-          <Route path={path.RESET_PASS} element={<ResetPass />} />
-          <Route path={path.REGISTER} element={<Register />} />
-          <Route path="register/verify" element={<Verify />} />
+        {/* Trang chủ và các route con */}
+        <Route path={path.HOME} element={<Home />}>
+          <Route path="*" element={<Homepage />} />
+          <Route path={path.CHO_THUE_CAN_HO} element={<Rental />} />
+          <Route path={path.CHO_THUE_MAT_BANG} element={<Rental />} />
+          <Route path={path.CHO_THUE_PHONG_TRO} element={<Rental />} />
+          <Route path={path.NHA_CHO_THUE} element={<Rental />} />
+          <Route path={path.SEARCH} element={<SearchDetail />} />
+          <Route path={path.DETAL_POST__TITLE__POSTID} element={<DetailPost />} />
+          <Route path="chi-tiet/*" element={<DetailPost />} />
         </Route>
 
-        {/* Home and Nested Routes */}
-        {/* Protected Routes */}
-        <Route element={<ProtectedRoute />}>
-          <Route path={path.HOME} element={<Home />}>
-            <Route path='*' element={<Homepage />} />
-            <Route path={path.CHO_THUE_CAN_HO} element={<Rental />} />
-            <Route path={path.CHO_THUE_MAT_BANG} element={<Rental />} />
-            <Route path={path.CHO_THUE_PHONG_TRO} element={<Rental />} />
-            <Route path={path.NHA_CHO_THUE} element={<Rental />} />
-            <Route path={path.SEARCH} element={<SearchDetail />} />
-            <Route path={path.DETAL_POST__TITLE__POSTID} element={<DetailPost />} />
-            <Route path='chi-tiet/*' element={<DetailPost />} />
-          </Route>
-        </Route>
+        {/* Các route đăng nhập và đăng ký */}
+        <Route path={path.LOGIN} element={<Login />} />
+        <Route path={path.FORGOT_PASS} element={<ForgotPassword />} />
+        <Route path={path.VALIDATE_CODE} element={<ValidateCode />} />
+        <Route path={path.RESET_PASS} element={<ResetPass />} />
+        <Route path={path.REGISTER} element={<Register />} />
+        <Route path="register/verify" element={<Verify />} />
+
+        {/* Các route công khai khác */}
+        <Route path="tin-da-luu" element={<ListPostsSaved />} />
 
         {/* System Routes */}
-        {/* Protected Routes */}
-        <Route element={<ProtectedRoute />}>
-          <Route path={path.SYSTEM} element={<System />} >
-            <Route path={path.MANAGE_POST} element={<ManagePost />} />
-            <Route path={path.CREATE_POST} element={<CreatePost />} />
-            <Route path={path.PERSONAL_INFO} element={<PersonalInfo />} />
-            <Route path={path.CHANGE_PASS} element={<ChangePass />} />
-            <Route path={path.UPGRADE_ACCOUNT} element={<UpgradeAccount />} />
-            <Route path={path.PAYMENT} element={<Payment />} >
-              <Route path={path.DEPOSITE_HISTORY} element={<DepositeHistory />} />
-              <Route path={path.HISTORY_PAYMENT} element={<HistoryPayment />} />
-              <Route path={path.MOMO} element={<Momo />} />
-              <Route path={path.BANK_TRANSFER} element={<BankTransfer />} />
-            </Route>
+        <Route path={path.SYSTEM} element={<System />} >
+          <Route path={path.MANAGE_POST} element={<ManagePost />} />
+          <Route path={path.CREATE_POST} element={<CreatePost />} />
+          <Route path={path.PERSONAL_INFO} element={<PersonalInfo />} />
+          <Route path={path.CHANGE_PASS} element={<ChangePass />} />
+          <Route path={path.UPGRADE_ACCOUNT} element={<UpgradeAccount />} />
+          <Route path={path.PAYMENT} element={<Payment />} >
+            <Route path={path.DEPOSITE_HISTORY} element={<DepositeHistory />} />
+            <Route path={path.HISTORY_PAYMENT} element={<HistoryPayment />} />
+            <Route path={path.MOMO} element={<Momo />} />
+            <Route path={path.BANK_TRANSFER} element={<BankTransfer />} />
           </Route>
         </Route>
-
-        {/* Other Routes */}
-        <Route path='tin-da-luu' element={<ListPostsSaved />} />
       </Routes>
 
       {/* ChatGPT Component */}
       <ChatGPT />
-      {/* </AnimatePresence> */}
     </div>
   );
 }

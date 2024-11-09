@@ -267,7 +267,7 @@ const Header = () => {
                                 <span className="ml-1 text-black">Quản lý tài khoản</span>
                             </div>
                             {isShowMenu && (
-                                <div className='absolute min-w-180 top-full bg-white shadow-md rounded-md p-4 right-0 flex flex-col'>
+                                <div className='absolute min-w-180 top-full bg-white shadow-md rounded-md p-4 right-0 flex flex-col z-50'>
                                     {filteredMenu.map(item => (
                                         <Link
                                             className='hover:text-orange-500 flex items-center gap-2 text-blue-600 border-b border-gray-200 py-2'

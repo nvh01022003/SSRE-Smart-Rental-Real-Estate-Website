@@ -17,7 +17,7 @@ const AuthWrapper = ({ children }) => {
             className="min-h-screen flex flex-col items-center justify-center bg-cover bg-center px-4"
             style={{
                 backgroundImage:
-                    "url('https://images.unsplash.com/photo-1560518883-ce09059eeffa?ixlib=rb-4.0.3')",
+                    "url('https://images.unsplash.com/photo-1582653291997-079a1c04e5a1?ixlib=rb-4.0.3')",
                 backgroundColor: 'rgba(0, 0, 0, 0.5)',
                 backgroundBlendMode: 'overlay',
             }}
