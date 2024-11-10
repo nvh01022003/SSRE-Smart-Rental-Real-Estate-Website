@@ -3,8 +3,10 @@ const { User, Post, Address, Image, Category, Overview, Coordinates, PostType, s
 const showAllPost = async () => {
     try {
         const post = await Post.findAll({
-            order: [['createdAt', 'DESC']],
-            // trả về đủ thông tin của post
+            where: {
+                status: 0  // Chỉ lấy các bài đăng có status = 0
+            },
+            order: [['createdAt', 'DESC']], // Sắp xếp theo thời gian tạo, từ mới nhất
             include: [
                 {
                     model: Address,
@@ -26,15 +28,59 @@ const showAllPost = async () => {
                     model: Overview,
                     attributes: ['target', 'expire']
                 },
-
             ]
-        })
+        });
+
         return {
             err: 0,
             posts: post
         };
+    } catch (err) {
+        return {
+            err: 1,
+            posts: [],
+            msg: err
+        };
     }
-    catch (err) {
+};
+
+// Show Soft Delete Posts
+const showAllSoftDeletePosts = async () => {
+    try {
+        const post = await Post.findAll({
+            where: {
+                status: 1  // Chỉ lấy các bài đăng có status = 1
+            },
+            order: [['createdAt', 'DESC']], // Sắp xếp theo thời gian tạo, từ mới nhất
+            include: [
+                {
+                    model: Address,
+                    attributes: ['city', 'district', 'detail_address']
+                },
+                {
+                    model: Image,
+                    attributes: ['img_url_list']
+                },
+                {
+                    model: Category,
+                    attributes: ['id', 'category_name']
+                },
+                {
+                    model: User,
+                    attributes: ['firstName', 'lastName', 'email', 'phone', 'img_avt']
+                },
+                {
+                    model: Overview,
+                    attributes: ['target', 'expire']
+                },
+            ]
+        });
+
+        return {
+            err: 0,
+            posts: post
+        };
+    } catch (err) {
         return {
             err: 1,
             posts: [],
@@ -42,7 +88,43 @@ const showAllPost = async () => {
         };
     }
 }
-
+// khôi phục post đã xóa mềm
+const restorePost = async (postId) => {
+    const post = await Post.update(
+        { status: 0 }, // Khôi phục lại status = 0
+        {
+            where: {
+                id: postId,
+                status: 1 // khôi phục bài viết có status = 1 (đã bị xóa mềm)
+            }
+        }
+    );
+    return post;
+}
+//delete soft post by select list id ( sử dụng cho phần chọn nhiều id sau đó xóa)
+const softDeletePosts = async (listId) => {
+    const post = await Post.update(
+        { status: 1 }, // Cập nhật status thành 1
+        {
+            where: {
+                id: listId
+            }
+        }
+    );
+    return post;
+}
+//delele mềm post by id 
+const softDeletePost = async (postId) => {
+    const post = await Post.update(
+        { status: 1 }, // Cập nhật status thành 1
+        {
+            where: {
+                id: postId
+            }
+        }
+    );
+    return post;
+}
 
 // delete post by select list id ( sử dụng cho phần chọn nhiều id sau đó xóa)
 const deletePosts = async (listId) => {
@@ -173,5 +255,9 @@ module.exports = {
     createTypePost,
     updateTypePost,
     deleteTypePost,
-    showAllTypePost
+    showAllTypePost,
+    softDeletePosts,
+    softDeletePost,
+    showAllSoftDeletePosts,
+    restorePost
 }

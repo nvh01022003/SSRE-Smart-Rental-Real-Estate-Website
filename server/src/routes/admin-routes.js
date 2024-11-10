@@ -64,6 +64,15 @@ router.delete("/deletePosts", authentication.authenticateToken, authorization.ch
 router.get("/showDetailPost/:postId", authentication.authenticateToken, authorization.checkRoleAdmin, managerPostController.showDetailPost)
 // delete post by id
 router.delete("/deletePost/:postId", authentication.authenticateToken, authorization.checkRoleAdmin, managerPostController.deletePost, managerPostController.sendMailReasonDeletePost)
+// soft delete post by id (chuyển status thành 1)
+router.put("/softDeletePost/:postId", authentication.authenticateToken, authorization.checkRoleAdmin, managerPostController.softDeletePost)
+// soft delete post by select list id ( sử dụng cho phần chọn nhiều id sau đó xóa)
+router.put("/softDeletePosts", authentication.authenticateToken, authorization.checkRoleAdmin, managerPostController.softDeletePosts)
+// show all soft Delete Posts
+router.get("/showAllSoftDeletePosts", authentication.authenticateToken, authorization.checkRoleAdmin, managerPostController.showAllSoftDeletePosts) 
+// restore post by id (chuyển status từ 1 thành 0)
+router.put("/restorePost/:postId", authentication.authenticateToken, authorization.checkRoleAdmin, managerPostController.restorePost)
+
 
 // MANAGE TRANSACTION
 router.get("/showAllDepositHistory", authentication.authenticateToken, authorization.checkRoleAdmin, transactionController.showAllDepositHistory);

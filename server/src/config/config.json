@@ -1,8 +1,8 @@
 {
   "development": {
     "username": "root",
-    "password": "1234567",
-    "database": "property_db",
+    "password": "123456",
+    "database": "property_db_1",
     "host": "127.0.0.1",
     "dialect": "mysql"
   },
