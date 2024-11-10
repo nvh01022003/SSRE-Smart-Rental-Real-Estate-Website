@@ -96,6 +96,47 @@ const listPostByPage = async (req, res) => {
         return res.status(400).json({ error: error.message })
     }
 }
+// LIST POST
+const showAllSoftDeletePosts = async (req, res) => {
+    try {
+        userId = req.user.id;
+        const response = await ladnlordServices.showAllSoftDeletePosts(userId);
+        return res.status(200).json(response)
+    } catch (error) {
+        return res.status(400).json({ error: error.message })
+    }
+}
+// restorePostController.js
+const restorePost = async (req, res) => {
+    try {
+
+        const postId = req.params.id; // Lấy postId từ tham số URL
+
+        // Gọi service để khôi phục bài đăng
+        const response = await ladnlordServices.restoreSoftDeletedPost(postId);
+
+        return res.status(200).json(response);
+    } catch (error) {
+        return res.status(400).json({ error: error.message });
+    }
+};
+
+
+// softDeletePostController.js
+const softDeletePost = async (req, res) => {
+    try {
+        const postId = req.params.id; // Lấy postId từ tham số URL
+
+        // Gọi service để xóa mềm bài đăng
+        const response = await ladnlordServices.softDeletePost(postId);
+
+        return res.status(200).json(response);
+    } catch (error) {
+        return res.status(400).json({ error: error.message });
+    }
+};
+
+
 
 module.exports = {
     createPost,
@@ -105,6 +146,10 @@ module.exports = {
     deleteListPost,
     listPost,
     updateStatusPosts,
-    listPostByPage
+    listPostByPage,
+    showAllSoftDeletePosts,
+    restorePost,
+    softDeletePost
+
 
 }
