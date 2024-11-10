@@ -75,6 +75,15 @@ module.exports = {
         onUpdate: 'CASCADE',
         onDelete: 'CASCADE'
       },
+      postType_id: {
+        type: Sequelize.INTEGER,
+        references: {
+          model: 'PostTypes',
+          key: "id"
+        },
+        onUpdate: 'CASCADE',
+        onDelete: 'CASCADE'
+      },
       acreage: {
         type: Sequelize.DECIMAL(10, 2)
       },
