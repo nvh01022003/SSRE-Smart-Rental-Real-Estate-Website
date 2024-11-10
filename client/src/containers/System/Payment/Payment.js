@@ -1,17 +1,18 @@
 import React, { useState, useEffect } from 'react';
-import bankTransfer from '../../assets/bankTransfer.png';
-import momo_icon from '../../assets/momo_icon.svg'
-import { path } from '../../ultils/constant'; // Thêm import cho path
+import bankTransfer from '../../../assets/bankTransfer.png';
+import momo_icon from '../../../assets/momo_icon.svg'
+import { path } from '../../../ultils/constant'; // Thêm import cho path
 import { useNavigate, Route, Routes } from 'react-router-dom';
-import DepositeHistory from '../../components/DepositeHistory';
-import HistoryPayment from '../../components/HistoryPayment';
-import Momo from '../../components/Momo';
-import BankTransfer from '../../components/BankTransfer';
+import DepositeHistory from './DepositeHistory';
+import HistoryPayment from './HistoryPayment';
+import Momo from './Momo';
+import BankTransfer from './BankTransfer';
 import { useSelector } from 'react-redux';
 import axios from 'axios';
 import styled from 'styled-components';
-import momo from '../../assets/momo.png'
-import credit from '../../assets/credit.svg';
+import momo from '../../../assets/momo.png'
+import credit from '../../../assets/credit.svg';
+import ServicePrice from './ServicePrice';
 
 const ButtonBase = styled.button`
   display: inline-block;
@@ -155,6 +156,7 @@ const Payment = () => {
             <Route path={path.HISTORY_PAYMENT} element={<HistoryPayment />} />
             <Route path={path.MOMO} element={<Momo />} />
             <Route path={path.BANK_TRANSFER} element={<BankTransfer />} />
+            <Route path={path.SERVICE_PRICE} element={<ServicePrice />} />
             <Route path="*" element={
                 <div className="container mx-auto p-4 md:p-6">
                     <div className="bg-white shadow-lg rounded-lg p-6 mb-6">
@@ -223,7 +225,9 @@ const Payment = () => {
                                     >
                                         Lịch sử thanh toán
                                     </button>
-                                    <button className="w-full bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 rounded-lg transition duration-200 ease-in-out">
+                                    <button
+                                        onClick={() => navigate(path.SERVICE_PRICE)}
+                                        className="w-full bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 rounded-lg transition duration-200 ease-in-out">
                                         Bảng giá dịch vụ
                                     </button>
                                 </div>

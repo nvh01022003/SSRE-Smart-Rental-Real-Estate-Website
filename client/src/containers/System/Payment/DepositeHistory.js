@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from 'axios';
 import { useSelector } from 'react-redux';
-import Loading from "./Loading";
+import Loading from "../../../components/Loading";
 
 const DepositeHistory = () => {
     const [currentPage, setCurrentPage] = useState(1);

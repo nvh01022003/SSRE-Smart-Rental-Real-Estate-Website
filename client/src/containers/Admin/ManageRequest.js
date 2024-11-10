@@ -302,7 +302,7 @@ const ManageRequest = () => {
                                 <h3 className="text-xl font-semibold mb-2 text-center mt-2">{request.full_name}</h3>
                                 <div className="space-y-2 mb-10">
                                     <p><span className="font-medium">Ngày sinh :</span> {formatBirthday(request.date_of_birth)}</p>
-                                    <p><span className="font-medium">Số CCCD   <span className='ml-2.5'>:</span></span> {request.id_card_number}</p>
+                                    <p><span className="font-medium">Số CCCD   <span className='ml-2.5'>:</span></span> {request.citizen_id}</p>
                                     <p><span className="font-medium">Địa chỉ   <span className='ml-6'>:</span></span> {request.address}</p>
                                 </div>
                                 <div className="absolute bottom-4 left-5 right-5 flex justify-between space-x-5">

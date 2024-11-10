@@ -65,8 +65,21 @@ router.get("/showDetailPost/:postId", authentication.authenticateToken, authoriz
 // delete post by id
 router.delete("/deletePost/:postId", authentication.authenticateToken, authorization.checkRoleAdmin, managerPostController.deletePost, managerPostController.sendMailReasonDeletePost)
 
+
+
 // MANAGE TRANSACTION
 router.get("/showAllDepositHistory", authentication.authenticateToken, authorization.checkRoleAdmin, transactionController.showAllDepositHistory);
+
+
+// MANAGE TYPE POST
+// create type post
+router.post("/createTypePost", authentication.authenticateToken, authorization.checkRoleAdmin, managerPostController.createTypePost)
+// update type post by id
+router.put("/updateTypePost/:typePostId", authentication.authenticateToken, authorization.checkRoleAdmin, managerPostController.updateTypePost)
+// delete type post by id
+router.delete("/deleteTypePost/:typePostId", authentication.authenticateToken, authorization.checkRoleAdmin, managerPostController.deleteTypePost)
+// show all type post có pagination
+router.get("/showAllTypePost", authentication.authenticateToken, managerPostController.showAllTypePost)
 
 
 module.exports = router

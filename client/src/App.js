@@ -1,3 +1,4 @@
+
 // import React, { useEffect } from 'react';
 // import { Routes, Route } from 'react-router-dom'
 // import { Home, Login, Rental, Homepage, DetailPost, SearchDetail } from './containers/Public'
@@ -150,13 +151,14 @@ import ValidateCode from './containers/Public/ForgotPass/ValidateCode';
 import ResetPass from './containers/Public/ForgotPass/ResetPass';
 import ListPostsSaved from './containers/Public/ListPostsSaved';
 import UpgradeAccount from './containers/Public/UpgradeAccount';
-import HistoryPayment from './components/HistoryPayment';
-import DepositeHistory from './components/DepositeHistory';
-import Payment from './containers/System/Payment';
-import Momo from './components/Momo';
-import BankTransfer from './components/BankTransfer';
+import HistoryPayment from './containers/System/Payment/HistoryPayment';
+import DepositeHistory from './containers/System/Payment/DepositeHistory';
+import Payment from './containers/System/Payment/Payment';
+import Momo from './containers/System/Payment/Momo';
+import BankTransfer from './containers/System/Payment/BankTransfer';
 import ManagePost from '../src/containers/System/ManagePost';
 import DeletedPosts from './containers/System/DeletedPosts';
+import ServicePrice from './containers/System/Payment/ServicePrice';
 
 function App() {
   const dispatch = useDispatch();
@@ -180,7 +182,6 @@ function App() {
 
   return (
     <div className="bg-primary">
-      {/* <AnimatePresence mode="wait" initial={false}> */}
       <Routes>
         {/* Trang chủ và các route con */}
         <Route path={path.HOME} element={<Home />}>
@@ -218,6 +219,7 @@ function App() {
             <Route path={path.HISTORY_PAYMENT} element={<HistoryPayment />} />
             <Route path={path.MOMO} element={<Momo />} />
             <Route path={path.BANK_TRANSFER} element={<BankTransfer />} />
+            <Route path={path.SERVICE_PRICE} element={<ServicePrice />} />
           </Route>
         </Route>
       </Routes>

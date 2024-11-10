@@ -7,7 +7,17 @@ module.exports = {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
-        type: Sequelize.INTEGER
+        type: Sequelize.INTEGER,
+        // tới bảng post
+        post_id: {
+          type: Sequelize.INTEGER,
+          references: {
+            model: 'Posts',
+            key: 'address_id'
+          },
+          onUpdate: 'CASCADE',
+          onDelete: 'CASCADE'
+        }
       },
       city: {
         type: Sequelize.STRING

@@ -32,6 +32,7 @@ export const path = {
     MOMO: 'momo',
     SAVE_POST: 'tin-da-luu',
     BANK_TRANSFER: 'chuyen-khoan',
+    SERVICE_PRICE: 'bang-gia-dich-vu',
 
 }
 

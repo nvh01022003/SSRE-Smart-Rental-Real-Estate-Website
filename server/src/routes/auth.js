@@ -25,7 +25,7 @@ router.post("/resetPass", authController.resetPass)
 
 // router.post("/resetPass/:codeMail", middleware.verifiedMail)
 // router.post("/resetPass/setPass", authentication.authenticateToken, authController.resetPass)
-
+// avt
 router.post('/upload', authentication.authenticateToken, upload.single('avatar'), img.checkFileType, img.updateImg, tenantsController.changeInfo);
 // check role ( show thong tin role)
 router.post("/checkRole", authentication.authenticateToken, authorization.showRoleDetail)

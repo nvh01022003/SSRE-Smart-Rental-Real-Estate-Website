@@ -10,7 +10,12 @@ module.exports = (sequelize, DataTypes) => {
      * The `models/index` file will call this method automatically.
      */
     static associate({ Post }) {
-      this.hasOne(Post, { foreignKey: "overview_id" })
+      this.hasOne(Post, { foreignKey: "overview_id" },
+        {
+          onUpdate: 'CASCADE',
+          onDelete: 'CASCADE'
+        }
+      )
     }
   }
   Overview.init({
