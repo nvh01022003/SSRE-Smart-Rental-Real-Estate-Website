@@ -2,34 +2,18 @@
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable('Transactions', {
+    await queryInterface.createTable('PostTypes', {
       id: {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
         type: Sequelize.INTEGER
       },
-      wallet_id: {
-        type: Sequelize.INTEGER,
-        references: {
-          model: 'wallets',
-          key: "id"
-        },
-        onUpdate: 'CASCADE',
-        onDelete: 'CASCADE'
-      },
-      paycode: {
+      name: {
         type: Sequelize.STRING
       },
-      amount: {
+      price: {
         type: Sequelize.DECIMAL
-      },
-      status: {
-        type: Sequelize.STRING
-      },
-      // cột lưu thông tin giao dịch là nạp hay đăng bài
-      transactionType: {
-        type: Sequelize.STRING
       },
       createdAt: {
         allowNull: false,
@@ -42,6 +26,6 @@ module.exports = {
     });
   },
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable('Transactions');
+    await queryInterface.dropTable('PostTypes');
   }
 };

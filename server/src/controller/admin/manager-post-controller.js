@@ -99,10 +99,66 @@ const deletePost = async (req, res, next) => {
         });
     }
 };
+// tạo loại bài đăng
+const createTypePost = async (req, res) => {
+    const { name, price } = req.body;
+    try {
+        const response = await managerPost.createTypePost(name, price);
+        return res.status(200).json(response);
+    } catch (error) {
+        return res.status(500).json({
+            err: -1,
+            msg: 'Fail at createTypePost: ' + error,
+        });
+    }
+};
+// update type post by id
+const updateTypePost = async (req, res) => {
+    const typePostId = req.params.typePostId;
+    const { name, price } = req.body;
+    try {
+        const response = await managerPost.updateTypePost(typePostId, name, price);
+        return res.status(200).json(response);
+    } catch (error) {
+        return res.status(500).json({
+            err: -1,
+            msg: 'Fail at updateTypePost: ' + error,
+        });
+    }
+};
+//  delete type post by id
+const deleteTypePost = async (req, res) => {
+    const typePostId = req.params.typePostId;
+    try {
+        const response = await managerPost.deleteTypePost(typePostId);
+        return res.status(200).json(response);
+    } catch (error) {
+        return res.status(500).json({
+            err: -1,
+            msg: 'Fail at deleteTypePost: ' + error,
+        });
+    }
+};
+// show all type post
+const showAllTypePost = async (req, res) => {
+    try {
+        const response = await managerPost.showAllTypePost();
+        return res.status(200).json(response);
+    } catch (error) {
+        return res.status(500).json({
+            err: -1,
+            msg: 'Fail at showAllTypePost: ' + error,
+        });
+    }
+};
 module.exports = {
     showAllPost,
     deletePosts,
     showDetailPost,
     deletePost,
-    sendMailReasonDeletePost
+    sendMailReasonDeletePost,
+    createTypePost,
+    updateTypePost,
+    deleteTypePost,
+    showAllTypePost
 }

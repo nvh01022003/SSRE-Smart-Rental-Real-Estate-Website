@@ -1,4 +1,4 @@
-const { User, Post, Address, Image, Category, Overview, Coordinates, sequelize } = require("../../models/index");
+const { User, Post, Address, Image, Category, Overview, Coordinates, PostType, sequelize } = require("../../models/index");
 // show all post in system
 const showAllPost = async () => {
     try {
@@ -83,9 +83,95 @@ const deletePost = async (postId) => {
         };
     }
 }
+// tạo loại bài đăng
+const createTypePost = async (name, price) => {
+    try {
+        const postType = await PostType.create({
+            name: name,
+            price: price
+        })
+        return {
+            err: 0,
+            postType: postType
+        };
+    }
+    catch (err) {
+        return {
+            err: 1,
+            postType: [],
+            msg: err
+        };
+    }
+}
+// update loại bài đăng
+const updateTypePost = async (typePostId, name, price) => {
+    try {
+        const postType = await PostType.update({
+            name: name,
+            price: price
+        }, {
+            where: {
+                id: typePostId
+            }
+        })
+        return {
+            err: 0,
+            postType: postType
+        };
+    }
+    catch (err) {
+        return {
+            err: 1,
+            postType: [],
+            msg: err
+        };
+    }
+}
+// delete loại bài đăng
+const deleteTypePost = async (typePostId) => {
+    try {
+        const postType = await PostType.destroy({
+            where: {
+                id: typePostId
+            }
+        })
+        return {
+            err: 0,
+            postType: postType
+        };
+    }
+    catch (err) {
+        return {
+            err: 1,
+            postType: [],
+            msg: err
+        };
+    }
+}
+// show all loại bài đăng có phân trang
+const showAllTypePost = async () => {
+    try {
+        const postType = await PostType.findAll()
+        return {
+            err: 0,
+            postType: postType
+        };
+    }
+    catch (err) {
+        return {
+            err: 1,
+            postType: [],
+            msg: err
+        };
+    }
+}
 module.exports = {
     showAllPost,
     deletePosts,
     showDetailPost,
-    deletePost
+    deletePost,
+    createTypePost,
+    updateTypePost,
+    deleteTypePost,
+    showAllTypePost
 }

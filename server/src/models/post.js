@@ -9,7 +9,7 @@ module.exports = (sequelize, DataTypes) => {
      * This method is not a part of Sequelize lifecycle.
      * The `models/index` file will call this method automatically.
      */
-    static associate({ Category, Image, Overview, User, Coordinates, Address }) {
+    static associate({ Category, Image, Overview, User, Coordinates, Address, PostType }) {
       // define association here
       this.belongsTo(Category, { foreignKey: 'category_id' })
 
@@ -21,6 +21,7 @@ module.exports = (sequelize, DataTypes) => {
       this.belongsTo(Coordinates, { foreignKey: 'coordinates_id', onDelete: 'CASCADE' });
       this.belongsTo(Address, { foreignKey: 'address_id', onDelete: 'CASCADE' });
       this.belongsTo(Overview, { foreignKey: 'overview_id', onDelete: 'CASCADE' });
+      this.belongsTo(PostType, { foreignKey: 'postType_id', onDelete: 'CASCADE' });
     }
   }
   Post.init({
@@ -38,6 +39,8 @@ module.exports = (sequelize, DataTypes) => {
     coordinates_id: DataTypes.INTEGER,
     price: DataTypes.DECIMAL(10, 2),
     acreage: DataTypes.DOUBLE,
+    // loại bài đăng
+    postType_id: DataTypes.INTEGER,
 
   }, {
     sequelize,
