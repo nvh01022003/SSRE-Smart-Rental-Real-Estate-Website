@@ -8,12 +8,14 @@ const authorization = require("../middleware/authorize/check-role")
 const managerUserController = require("../controller/admin/manager-user-controller")
 const managerCategoryController = require("../controller/admin/manager-category-controller.js")
 const managerPostController = require("../controller/admin/manager-post-controller.js")
-const transactionController = require('../controller/admin/manager-transaction-controller.js');
+const managerPaymentController = require("../controller/admin/manager-payment-controller.js")
+
 const img = require("../middleware/upload/uploadImg")
 const multer = require('multer');
 const storage = multer.memoryStorage();
 const upload = multer({ storage });
 const router = express.Router()
+module.exports = router
 
 
 // MANAGE USER
@@ -55,6 +57,7 @@ router.put("/updateCategory/:categoryId", authentication.authenticateToken, auth
 router.delete("/deleteCategory/:categoryId", authentication.authenticateToken, authorization.checkRoleAdmin, managerCategoryController.deleteCategory)
 
 
+
 // MANAGE POST
 // show all post in system
 router.get("/showAllPost", authentication.authenticateToken, authorization.checkRoleAdmin, managerPostController.showAllPost)
@@ -63,28 +66,16 @@ router.delete("/deletePosts", authentication.authenticateToken, authorization.ch
 // show detail post by id
 router.get("/showDetailPost/:postId", authentication.authenticateToken, authorization.checkRoleAdmin, managerPostController.showDetailPost)
 // delete post by id
-router.delete("/deletePost/:postId", authentication.authenticateToken, authorization.checkRoleAdmin, managerPostController.deletePost, managerPostController.sendMailReasonDeletePost)
-// soft delete post by id (chuyển status thành 1)
+router.delete("/deletePost/:postId", authentication.authenticateToken, authorization.checkRoleAdmin, managerPostController.deletePost)
+// soft delete post by id (chuyển trạng thái thành 1)
 router.put("/softDeletePost/:postId", authentication.authenticateToken, authorization.checkRoleAdmin, managerPostController.softDeletePost)
 // soft delete post by select list id ( sử dụng cho phần chọn nhiều id sau đó xóa)
 router.put("/softDeletePosts", authentication.authenticateToken, authorization.checkRoleAdmin, managerPostController.softDeletePosts)
 // show all soft Delete Posts
 router.get("/showAllSoftDeletePosts", authentication.authenticateToken, authorization.checkRoleAdmin, managerPostController.showAllSoftDeletePosts)
-// restore post by id (chuyển status từ 1 thành 0)
+// restore post by id (chuyển trạng thái từ 1 thành 0)
 router.put("/restorePost/:postId", authentication.authenticateToken, authorization.checkRoleAdmin, managerPostController.restorePost)
 
 
-// MANAGE TRANSACTION
-router.get("/showAllDepositHistory", authentication.authenticateToken, authorization.checkRoleAdmin, transactionController.showAllDepositHistory);
-
-// MANAGE TYPE POST
-// create type post
-router.post("/createTypePost", authentication.authenticateToken, authorization.checkRoleAdmin, managerPostController.createTypePost)
-// update type post by id
-router.put("/updateTypePost/:typePostId", authentication.authenticateToken, authorization.checkRoleAdmin, managerPostController.updateTypePost)
-// delete type post by id
-router.delete("/deleteTypePost/:typePostId", authentication.authenticateToken, authorization.checkRoleAdmin, managerPostController.deleteTypePost)
-// show all type post có pagination
-router.get("/showAllTypePost", authentication.authenticateToken, authorization.checkRoleAdmin, managerPostController.showAllTypePost)
-
-module.exports = router
+//MANAGE PAYMENT
+router.get("/showAllTransaction", authentication.authenticateToken, managerPaymentController.AllTransactionHistory)
