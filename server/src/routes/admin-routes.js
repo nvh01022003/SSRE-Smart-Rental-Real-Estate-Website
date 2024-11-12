@@ -69,7 +69,7 @@ router.put("/softDeletePost/:postId", authentication.authenticateToken, authoriz
 // soft delete post by select list id ( sử dụng cho phần chọn nhiều id sau đó xóa)
 router.put("/softDeletePosts", authentication.authenticateToken, authorization.checkRoleAdmin, managerPostController.softDeletePosts)
 // show all soft Delete Posts
-router.get("/showAllSoftDeletePosts", authentication.authenticateToken, authorization.checkRoleAdmin, managerPostController.showAllSoftDeletePosts) 
+router.get("/showAllSoftDeletePosts", authentication.authenticateToken, authorization.checkRoleAdmin, managerPostController.showAllSoftDeletePosts)
 // restore post by id (chuyển status từ 1 thành 0)
 router.put("/restorePost/:postId", authentication.authenticateToken, authorization.checkRoleAdmin, managerPostController.restorePost)
 
