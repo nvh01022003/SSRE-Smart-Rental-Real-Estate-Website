@@ -1,8 +1,7 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { FiEdit2, FiTrash2, FiCheck, FiX, FiUsers, FiFolder, FiFileText, FiInbox, FiSearch } from "react-icons/fi";
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 import Chart from 'chart.js/auto';
-
 
 const Card = ({ chartId, title, subtitle, footerText, onClick }) => (
     <div className="bg-white rounded-lg shadow-md p-4 m-2 w-full cursor-pointer" onClick={onClick}>
@@ -19,7 +18,7 @@ const Card = ({ chartId, title, subtitle, footerText, onClick }) => (
 
 const Modal = ({ chartId, title, onClose, children }) => (
     <div className="fixed inset-0 bg-gray-800 bg-opacity-75 flex items-center justify-center z-50">
-        <div className="bg-white rounded-lg shadow-md p-4 m-2 w-1/4 h-auto relative"> {/* Adjusted width to w-1/4 */}
+        <div className="bg-white rounded-lg shadow-md p-4 m-2 w-1/4 h-auto relative">
             <button className="absolute top-2 right-2 text-gray-500" onClick={onClose}>
                 <i className="fas fa-times fa-2x"></i>
             </button>
@@ -37,220 +36,6 @@ const Dashboard = () => {
     const [userTimeframe, setUserTimeframe] = useState('week');
     const [revenueTimeframe, setRevenueTimeframe] = useState('week');
     const [combinedTimeframe, setCombinedTimeframe] = useState('month');
-    const [userChart, setUserChart] = useState(null);
-    const [revenueChart, setRevenueChart] = useState(null);
-    const [combinedChart, setCombinedChart] = useState(null);
-    const [modalUserChart, setModalUserChart] = useState(null);
-    const [modalRevenueChart, setModalRevenueChart] = useState(null);
-    const [modalCombinedChart, setModalCombinedChart] = useState(null);
-
-    useEffect(() => {
-        const userChartCtx = document.getElementById('userChart').getContext('2d');
-        const newUserChart = new Chart(userChartCtx, {
-            type: 'bar',
-            data: {
-                labels: ['M', 'T', 'W', 'T', 'F', 'S', 'S'],
-                datasets: [{
-                    label: 'Users',
-                    data: [12, 19, 3, 5, 2, 3, 7],
-                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
-                    borderColor: 'rgba(75, 192, 192, 1)',
-                    borderWidth: 1
-                }]
-            },
-            options: {
-                scales: {
-                    y: {
-                        beginAtZero: true
-                    }
-                }
-            }
-        });
-        setUserChart(newUserChart);
-
-        const revenueChartCtx = document.getElementById('revenueChart').getContext('2d');
-        const newRevenueChart = new Chart(revenueChartCtx, {
-            type: 'line',
-            data: {
-                labels: ['M', 'T', 'W', 'T', 'F', 'S', 'S'],
-                datasets: [{
-                    label: 'Revenue',
-                    data: [0, 100, 200, 300, 400, 500, 400],
-                    backgroundColor: 'rgba(54, 162, 235, 0.2)',
-                    borderColor: 'rgba(54, 162, 235, 1)',
-                    borderWidth: 1
-                }]
-            },
-            options: {
-                scales: {
-                    y: {
-                        beginAtZero: true
-                    }
-                }
-            }
-        });
-        setRevenueChart(newRevenueChart);
-
-        const combinedChartCtx = document.getElementById('combinedChart').getContext('2d');
-        const newCombinedChart = new Chart(combinedChartCtx, {
-            type: 'line',
-            data: {
-                labels: ['Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
-                datasets: [
-                    {
-                        label: 'Users',
-                        data: [0, 100, 200, 300, 400, 500, 400, 300, 500],
-                        backgroundColor: 'rgba(75, 192, 192, 0.2)',
-                        borderColor: 'rgba(75, 192, 192, 1)',
-                        borderWidth: 1
-                    },
-                    {
-                        label: 'Revenue',
-                        data: [0, 50, 150, 250, 350, 450, 350, 250, 450],
-                        backgroundColor: 'rgba(54, 162, 235, 0.2)',
-                        borderColor: 'rgba(54, 162, 235, 1)',
-                        borderWidth: 1
-                    }
-                ]
-            },
-            options: {
-                scales: {
-                    y: {
-                        beginAtZero: true
-                    }
-                }
-            }
-        });
-        setCombinedChart(newCombinedChart);
-    }, []);
-
-    useEffect(() => {
-        if (modalChart) {
-            const modalChartCtx = document.getElementById(modalChart).getContext('2d');
-            const newModalChart = new Chart(modalChartCtx, {
-                type: modalChart === 'userChartModal' ? 'bar' : 'line',
-                data: {
-                    labels: modalChart === 'userChartModal' ? ['M', 'T', 'W', 'T', 'F', 'S', 'S'] : ['M', 'T', 'W', 'T', 'F', 'S', 'S'],
-                    datasets: modalChart === 'combinedChartModal' ? [
-                        {
-                            label: 'Users',
-                            data: [0, 100, 200, 300, 400, 500, 400, 300, 500],
-                            backgroundColor: 'rgba(75, 192, 192, 0.2)',
-                            borderColor: 'rgba(75, 192, 192, 1)',
-                            borderWidth: 1
-                        },
-                        {
-                            label: 'Revenue',
-                            data: [0, 50, 150, 250, 350, 450, 350, 250, 450],
-                            backgroundColor: 'rgba(54, 162, 235, 0.2)',
-                            borderColor: 'rgba(54, 162, 235, 1)',
-                            borderWidth: 1
-                        }
-                    ] : [{
-                        label: modalChart === 'userChartModal' ? 'Users' : 'Revenue',
-                        data: modalChart === 'userChartModal' ? [12, 19, 3, 5, 2, 3, 7] : [0, 100, 200, 300, 400, 500, 400],
-                        backgroundColor: modalChart === 'userChartModal' ? 'rgba(75, 192, 192, 0.2)' : 'rgba(54, 162, 235, 0.2)',
-                        borderColor: modalChart === 'userChartModal' ? 'rgba(75, 192, 192, 1)' : 'rgba(54, 162, 235, 1)',
-                        borderWidth: 1
-                    }]
-                },
-                options: {
-                    scales: {
-                        y: {
-                            beginAtZero: true
-                        }
-                    }
-                }
-            });
-            if (modalChart === 'userChartModal') {
-                setModalUserChart(newModalChart);
-            } else if (modalChart === 'revenueChartModal') {
-                setModalRevenueChart(newModalChart);
-            } else {
-                setModalCombinedChart(newModalChart);
-            }
-        }
-    }, [modalChart]);
-
-    const handleUserTimeframeChange = (timeframe) => {
-        setUserTimeframe(timeframe);
-        const data = {
-            week: [12, 19, 3, 5, 2, 3, 7],
-            month: [50, 60, 70, 80, 90, 100, 110, 120, 130, 140, 150, 160],
-            year: [200, 300, 400, 500, 600, 700, 800, 900, 1000, 1100, 1200, 1300]
-        };
-        const labels = {
-            week: ['M', 'T', 'W', 'T', 'F', 'S', 'S'],
-            month: ['Week 1', 'Week 2', 'Week 3', 'Week 4'],
-            year: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
-        };
-        if (userChart) {
-            userChart.data.labels = labels[timeframe];
-            userChart.data.datasets[0].data = data[timeframe];
-            userChart.update();
-        }
-        if (modalUserChart) {
-            modalUserChart.data.labels = labels[timeframe];
-            modalUserChart.data.datasets[0].data = data[timeframe];
-            modalUserChart.update();
-        }
-    };
-
-    const handleRevenueTimeframeChange = (timeframe) => {
-        setRevenueTimeframe(timeframe);
-        const data = {
-            week: [0, 100, 200, 300, 400, 500, 400],
-            month: [100, 200, 300, 400],
-            quarter: [300, 400, 500, 600],
-            year: [100, 200, 300, 400, 500, 600, 700, 800, 900, 1000, 1100, 1200]
-        };
-        const labels = {
-            week: ['M', 'T', 'W', 'T', 'F', 'S', 'S'],
-            month: ['Week 1', 'Week 2', 'Week 3', 'Week 4'],
-            quarter: ['Q1', 'Q2', 'Q3', 'Q4'],
-            year: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
-        };
-        if (revenueChart) {
-            revenueChart.data.labels = labels[timeframe];
-            revenueChart.data.datasets[0].data = data[timeframe];
-            revenueChart.update();
-        }
-        if (modalRevenueChart) {
-            modalRevenueChart.data.labels = labels[timeframe];
-            modalRevenueChart.data.datasets[0].data = data[timeframe];
-            modalRevenueChart.update();
-        }
-    };
-
-    const handleCombinedTimeframeChange = (timeframe) => {
-        setCombinedTimeframe(timeframe);
-        const data = {
-            month: {
-                users: [0, 100, 200, 300, 400, 500, 400, 300, 500],
-                revenue: [0, 50, 150, 250, 350, 450, 350, 250, 450]
-            },
-            year: {
-                users: [0, 100, 200, 300, 400, 500, 400, 300, 500, 600, 700, 800],
-                revenue: [0, 50, 150, 250, 350, 450, 350, 250, 450, 550, 650, 750]
-            }
-        };
-        const labels = {
-            month: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
-            year: ['2019', '2020', '2021', '2022', '2023', '2024', '2025', '2026', '2027', '2028', '2029', '2030']
-        };
-        if (combinedChart) {
-            combinedChart.data.labels = labels[timeframe];
-            combinedChart.data.datasets[0].data = data[timeframe].users;
-            combinedChart.data.datasets[1].data = data[timeframe].revenue;
-            combinedChart.update();
-        }
-        if (modalCombinedChart) {
-            modalCombinedChart.data.labels = labels[timeframe];
-            modalCombinedChart.data.datasets[0].data = data[timeframe].users;
-            modalCombinedChart.data.datasets[1].data = data[timeframe].revenue;
-            modalCombinedChart.update();
-        }
-    };
     const [activeTab, setActiveTab] = useState("users");
     const [searchTerm, setSearchTerm] = useState("");
     const [currentPage, setCurrentPage] = useState(1);
@@ -328,6 +113,291 @@ const Dashboard = () => {
         setCategories(items);
     };
 
+    // Refs để lưu các instance của Chart
+    const userChartRef = useRef(null);
+    const revenueChartRef = useRef(null);
+    const combinedChartRef = useRef(null);
+    const modalUserChartRef = useRef(null);
+    const modalRevenueChartRef = useRef(null);
+    const modalCombinedChartRef = useRef(null);
+
+    useEffect(() => {
+        // Tạo User Chart
+        const userChartCtx = document.getElementById('userChart').getContext('2d');
+        if (userChartRef.current) {
+            userChartRef.current.destroy();
+        }
+        userChartRef.current = new Chart(userChartCtx, {
+            type: 'bar',
+            data: {
+                labels: ['M', 'T', 'W', 'T', 'F', 'S', 'S'],
+                datasets: [{
+                    label: 'Users',
+                    data: [12, 19, 3, 5, 2, 3, 7],
+                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                    borderColor: 'rgba(75, 192, 192, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+
+        // Tạo Revenue Chart
+        const revenueChartCtx = document.getElementById('revenueChart').getContext('2d');
+        if (revenueChartRef.current) {
+            revenueChartRef.current.destroy();
+        }
+        revenueChartRef.current = new Chart(revenueChartCtx, {
+            type: 'line',
+            data: {
+                labels: ['M', 'T', 'W', 'T', 'F', 'S', 'S'],
+                datasets: [{
+                    label: 'Revenue',
+                    data: [0, 100, 200, 300, 400, 500, 400],
+                    backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                    borderColor: 'rgba(54, 162, 235, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+
+        // Tạo Combined Chart
+        const combinedChartCtx = document.getElementById('combinedChart').getContext('2d');
+        if (combinedChartRef.current) {
+            combinedChartRef.current.destroy();
+        }
+        combinedChartRef.current = new Chart(combinedChartCtx, {
+            type: 'line',
+            data: {
+                labels: ['Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+                datasets: [
+                    {
+                        label: 'Users',
+                        data: [0, 100, 200, 300, 400, 500, 400, 300, 500],
+                        backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                        borderColor: 'rgba(75, 192, 192, 1)',
+                        borderWidth: 1
+                    },
+                    {
+                        label: 'Revenue',
+                        data: [0, 50, 150, 250, 350, 450, 350, 250, 450],
+                        backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                        borderColor: 'rgba(54, 162, 235, 1)',
+                        borderWidth: 1
+                    }
+                ]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+
+        // Cleanup khi component unmount
+        return () => {
+            if (userChartRef.current) userChartRef.current.destroy();
+            if (revenueChartRef.current) revenueChartRef.current.destroy();
+            if (combinedChartRef.current) combinedChartRef.current.destroy();
+            if (modalUserChartRef.current) modalUserChartRef.current.destroy();
+            if (modalRevenueChartRef.current) modalRevenueChartRef.current.destroy();
+            if (modalCombinedChartRef.current) modalCombinedChartRef.current.destroy();
+        };
+    }, []);
+
+    useEffect(() => {
+        if (modalChart) {
+            const modalChartCtx = document.getElementById(modalChart).getContext('2d');
+
+            // Hủy Chart cũ nếu có
+            if (
+                (modalChart === 'userChartModal' && modalUserChartRef.current) ||
+                (modalChart === 'revenueChartModal' && modalRevenueChartRef.current) ||
+                (modalChart === 'combinedChartModal' && modalCombinedChartRef.current)
+            ) {
+                if (modalChart === 'userChartModal' && modalUserChartRef.current) {
+                    modalUserChartRef.current.destroy();
+                }
+                if (modalChart === 'revenueChartModal' && modalRevenueChartRef.current) {
+                    modalRevenueChartRef.current.destroy();
+                }
+                if (modalChart === 'combinedChartModal' && modalCombinedChartRef.current) {
+                    modalCombinedChartRef.current.destroy();
+                }
+            }
+
+            // Tạo mới Chart modal
+            if (modalChart === 'userChartModal') {
+                modalUserChartRef.current = new Chart(modalChartCtx, {
+                    type: 'bar',
+                    data: {
+                        labels: ['M', 'T', 'W', 'T', 'F', 'S', 'S'],
+                        datasets: [{
+                            label: 'Users',
+                            data: [12, 19, 3, 5, 2, 3, 7],
+                            backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                            borderColor: 'rgba(75, 192, 192, 1)',
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        scales: {
+                            y: {
+                                beginAtZero: true
+                            }
+                        }
+                    }
+                });
+            } else if (modalChart === 'revenueChartModal') {
+                modalRevenueChartRef.current = new Chart(modalChartCtx, {
+                    type: 'line',
+                    data: {
+                        labels: ['M', 'T', 'W', 'T', 'F', 'S', 'S'],
+                        datasets: [{
+                            label: 'Revenue',
+                            data: [0, 100, 200, 300, 400, 500, 400],
+                            backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                            borderColor: 'rgba(54, 162, 235, 1)',
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        scales: {
+                            y: {
+                                beginAtZero: true
+                            }
+                        }
+                    }
+                });
+            } else if (modalChart === 'combinedChartModal') {
+                modalCombinedChartRef.current = new Chart(modalChartCtx, {
+                    type: 'line',
+                    data: {
+                        labels: ['Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+                        datasets: [
+                            {
+                                label: 'Users',
+                                data: [0, 100, 200, 300, 400, 500, 400, 300, 500],
+                                backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                                borderColor: 'rgba(75, 192, 192, 1)',
+                                borderWidth: 1
+                            },
+                            {
+                                label: 'Revenue',
+                                data: [0, 50, 150, 250, 350, 450, 350, 250, 450],
+                                backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                                borderColor: 'rgba(54, 162, 235, 1)',
+                                borderWidth: 1
+                            }
+                        ]
+                    },
+                    options: {
+                        scales: {
+                            y: {
+                                beginAtZero: true
+                            }
+                        }
+                    }
+                });
+            }
+        }
+    }, [modalChart]);
+
+    const handleUserTimeframeChange = (timeframe) => {
+        setUserTimeframe(timeframe);
+        const data = {
+            week: [12, 19, 3, 5, 2, 3, 7],
+            month: [50, 60, 70, 80, 90, 100, 110, 120, 130, 140, 150, 160],
+            year: [200, 300, 400, 500, 600, 700, 800, 900, 1000, 1100, 1200, 1300]
+        };
+        const labels = {
+            week: ['M', 'T', 'W', 'T', 'F', 'S', 'S'],
+            month: ['Week 1', 'Week 2', 'Week 3', 'Week 4'],
+            year: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+        };
+        if (userChartRef.current) {
+            userChartRef.current.data.labels = labels[timeframe];
+            userChartRef.current.data.datasets[0].data = data[timeframe];
+            userChartRef.current.update();
+        }
+        if (modalUserChartRef.current) {
+            modalUserChartRef.current.data.labels = labels[timeframe];
+            modalUserChartRef.current.data.datasets[0].data = data[timeframe];
+            modalUserChartRef.current.update();
+        }
+    };
+
+    const handleRevenueTimeframeChange = (timeframe) => {
+        setRevenueTimeframe(timeframe);
+        const data = {
+            week: [0, 100, 200, 300, 400, 500, 400],
+            month: [100, 200, 300, 400],
+            quarter: [300, 400, 500, 600],
+            year: [100, 200, 300, 400, 500, 600, 700, 800, 900, 1000, 1100, 1200]
+        };
+        const labels = {
+            week: ['M', 'T', 'W', 'T', 'F', 'S', 'S'],
+            month: ['Week 1', 'Week 2', 'Week 3', 'Week 4'],
+            quarter: ['Q1', 'Q2', 'Q3', 'Q4'],
+            year: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+        };
+        if (revenueChartRef.current) {
+            revenueChartRef.current.data.labels = labels[timeframe];
+            revenueChartRef.current.data.datasets[0].data = data[timeframe];
+            revenueChartRef.current.update();
+        }
+        if (modalRevenueChartRef.current) {
+            modalRevenueChartRef.current.data.labels = labels[timeframe];
+            modalRevenueChartRef.current.data.datasets[0].data = data[timeframe];
+            modalRevenueChartRef.current.update();
+        }
+    };
+
+    const handleCombinedTimeframeChange = (timeframe) => {
+        setCombinedTimeframe(timeframe);
+        const data = {
+            month: {
+                users: [0, 100, 200, 300, 400, 500, 400, 300, 500],
+                revenue: [0, 50, 150, 250, 350, 450, 350, 250, 450]
+            },
+            year: {
+                users: [0, 100, 200, 300, 400, 500, 400, 300, 500, 600, 700, 800],
+                revenue: [0, 50, 150, 250, 350, 450, 350, 250, 450, 550, 650, 750]
+            }
+        };
+        const labels = {
+            month: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+            year: ['2019', '2020', '2021', '2022', '2023', '2024', '2025', '2026', '2027', '2028', '2029', '2030']
+        };
+        if (combinedChartRef.current) {
+            combinedChartRef.current.data.labels = labels[timeframe];
+            combinedChartRef.current.data.datasets[0].data = data[timeframe].users;
+            combinedChartRef.current.data.datasets[1].data = data[timeframe].revenue;
+            combinedChartRef.current.update();
+        }
+        if (modalCombinedChartRef.current) {
+            modalCombinedChartRef.current.data.labels = labels[timeframe];
+            modalCombinedChartRef.current.data.datasets[0].data = data[timeframe].users;
+            modalCombinedChartRef.current.data.datasets[1].data = data[timeframe].revenue;
+            modalCombinedChartRef.current.update();
+        }
+    };
+
     const UsersList = () => (
         <div className="bg-white rounded-lg shadow p-6">
             <div className="flex items-center justify-between mb-6">
@@ -343,7 +413,7 @@ const Dashboard = () => {
                 </div>
             </div>
             <div className="grid gap-4">
-                {users.map((user) => (
+                {users.filter(user => user.name.toLowerCase().includes(searchTerm.toLowerCase())).map((user) => (
                     <div key={user.id} className="flex items-center p-4 border rounded-lg hover:bg-gray-50">
                         <img src={user.avatar} alt={user.name} className="w-10 h-10 rounded-full" />
                         <div className="ml-4">
@@ -458,7 +528,12 @@ const Dashboard = () => {
                             </div>
                             <div className="flex items-center space-x-2">
                                 <span
-                                    className={`px-3 py-1 rounded-full text-sm ${request.status === "approved" ? "bg-green-100 text-green-800" : request.status === "pending" ? "bg-yellow-100 text-yellow-800" : "bg-red-100 text-red-800"}`}
+                                    className={`px-3 py-1 rounded-full text-sm ${request.status === "approved"
+                                        ? "bg-green-100 text-green-800"
+                                        : request.status === "pending"
+                                            ? "bg-yellow-100 text-yellow-800"
+                                            : "bg-red-100 text-red-800"
+                                        }`}
                                 >
                                     {request.status}
                                 </span>
@@ -481,6 +556,7 @@ const Dashboard = () => {
             </div>
         </div>
     );
+
     return (
         <div className="min-h-screen bg-gray-100 p-6">
             <div className="w-full max-w-7xl mx-auto ">
@@ -512,28 +588,88 @@ const Dashboard = () => {
                     {modalChart && (
                         <Modal
                             chartId={modalChart}
-                            title={modalChart === 'userChartModal' ? 'User Statistics' : modalChart === 'revenueChartModal' ? 'Revenue Statistics' : 'User and Revenue'}
+                            title={
+                                modalChart === 'userChartModal'
+                                    ? 'User Statistics'
+                                    : modalChart === 'revenueChartModal'
+                                        ? 'Revenue Statistics'
+                                        : 'User and Revenue'
+                            }
                             onClose={() => setModalChart(null)}
                         >
                             {modalChart === 'userChartModal' && (
                                 <div className="flex justify-center space-x-2 mb-2">
-                                    <button className={`px-2 py-1 rounded ${userTimeframe === 'week' ? 'bg-blue-500 text-white' : 'bg-gray-200'}`} onClick={() => handleUserTimeframeChange('week')}>Week</button>
-                                    <button className={`px-2 py-1 rounded ${userTimeframe === 'month' ? 'bg-blue-500 text-white' : 'bg-gray-200'}`} onClick={() => handleUserTimeframeChange('month')}>Month</button>
-                                    <button className={`px-2 py-1 rounded ${userTimeframe === 'year' ? 'bg-blue-500 text-white' : 'bg-gray-200'}`} onClick={() => handleUserTimeframeChange('year')}>Year</button>
+                                    <button
+                                        className={`px-2 py-1 rounded ${userTimeframe === 'week' ? 'bg-blue-500 text-white' : 'bg-gray-200'
+                                            }`}
+                                        onClick={() => handleUserTimeframeChange('week')}
+                                    >
+                                        Week
+                                    </button>
+                                    <button
+                                        className={`px-2 py-1 rounded ${userTimeframe === 'month' ? 'bg-blue-500 text-white' : 'bg-gray-200'
+                                            }`}
+                                        onClick={() => handleUserTimeframeChange('month')}
+                                    >
+                                        Month
+                                    </button>
+                                    <button
+                                        className={`px-2 py-1 rounded ${userTimeframe === 'year' ? 'bg-blue-500 text-white' : 'bg-gray-200'
+                                            }`}
+                                        onClick={() => handleUserTimeframeChange('year')}
+                                    >
+                                        Year
+                                    </button>
                                 </div>
                             )}
                             {modalChart === 'revenueChartModal' && (
                                 <div className="flex justify-center space-x-2 mb-2">
-                                    <button className={`px-2 py-1 rounded ${revenueTimeframe === 'week' ? 'bg-blue-500 text-white' : 'bg-gray-200'}`} onClick={() => handleRevenueTimeframeChange('week')}>Week</button>
-                                    <button className={`px-2 py-1 rounded ${revenueTimeframe === 'month' ? 'bg-blue-500 text-white' : 'bg-gray-200'}`} onClick={() => handleRevenueTimeframeChange('month')}>Month</button>
-                                    <button className={`px-2 py-1 rounded ${revenueTimeframe === 'quarter' ? 'bg-blue-500 text-white' : 'bg-gray-200'}`} onClick={() => handleRevenueTimeframeChange('quarter')}>Quarter</button>
-                                    <button className={`px-2 py-1 rounded ${revenueTimeframe === 'year' ? 'bg-blue-500 text-white' : 'bg-gray-200'}`} onClick={() => handleRevenueTimeframeChange('year')}>Year</button>
+                                    <button
+                                        className={`px-2 py-1 rounded ${revenueTimeframe === 'week' ? 'bg-blue-500 text-white' : 'bg-gray-200'
+                                            }`}
+                                        onClick={() => handleRevenueTimeframeChange('week')}
+                                    >
+                                        Week
+                                    </button>
+                                    <button
+                                        className={`px-2 py-1 rounded ${revenueTimeframe === 'month' ? 'bg-blue-500 text-white' : 'bg-gray-200'
+                                            }`}
+                                        onClick={() => handleRevenueTimeframeChange('month')}
+                                    >
+                                        Month
+                                    </button>
+                                    <button
+                                        className={`px-2 py-1 rounded ${revenueTimeframe === 'quarter' ? 'bg-blue-500 text-white' : 'bg-gray-200'
+                                            }`}
+                                        onClick={() => handleRevenueTimeframeChange('quarter')}
+                                    >
+                                        Quarter
+                                    </button>
+                                    <button
+                                        className={`px-2 py-1 rounded ${revenueTimeframe === 'year' ? 'bg-blue-500 text-white' : 'bg-gray-200'
+                                            }`}
+                                        onClick={() => handleRevenueTimeframeChange('year')}
+                                    >
+                                        Year
+                                    </button>
                                 </div>
                             )}
                             {modalChart === 'combinedChartModal' && (
                                 <div className="flex justify-center space-x-2 mb-2">
-                                    <button className={`px-2 py-1 rounded ${combinedTimeframe === 'month' ? 'bg-blue-500 text-white' : 'bg-gray-200'}`} onClick={() => handleCombinedTimeframeChange('month')}>Month</button>
-                                    <button className={`px-2 py-1 rounded ${combinedTimeframe === 'year' ? 'bg-blue-500 text-white' : 'bg-gray-200'}`} onClick={() => handleCombinedTimeframeChange('year')}>Year</button>
+                                    <button
+                                        className={`px-2 py-1 rounded ${combinedTimeframe === 'month' ? 'bg-blue-500 text-white' : 'bg-gray-200'
+                                            }`}
+                                        onClick={() => handleCombinedTimeframeChange('month')}
+                                    >
+                                        Month
+                                    </button>
+                                    <button
+                                        className={`px-2 py-1 rounded ${combinedTimeframe === 'year' ? 'bg-blue-500 text-white' : 'bg-gray-200'
+                                            }`}
+                                        onClick={() => handleCombinedTimeframeChange('year')}
+                                    >
+                                        Year
+                                    </button>
                                 </div>
                             )}
                         </Modal>
@@ -544,28 +680,32 @@ const Dashboard = () => {
                 <div className="flex space-x-4 mb-6">
                     <button
                         onClick={() => setActiveTab("users")}
-                        className={`flex items-center space-x-2 px-4 py-2 rounded-lg ${activeTab === "users" ? "bg-blue-500 text-white" : "bg-white"}`}
+                        className={`flex items-center space-x-2 px-4 py-2 rounded-lg ${activeTab === "users" ? "bg-blue-500 text-white" : "bg-white"
+                            }`}
                     >
                         <FiUsers />
                         <span>Users</span>
                     </button>
                     <button
                         onClick={() => setActiveTab("categories")}
-                        className={`flex items-center space-x-2 px-4 py-2 rounded-lg ${activeTab === "categories" ? "bg-blue-500 text-white" : "bg-white"}`}
+                        className={`flex items-center space-x-2 px-4 py-2 rounded-lg ${activeTab === "categories" ? "bg-blue-500 text-white" : "bg-white"
+                            }`}
                     >
                         <FiFolder />
                         <span>Categories</span>
                     </button>
                     <button
                         onClick={() => setActiveTab("posts")}
-                        className={`flex items-center space-x-2 px-4 py-2 rounded-lg ${activeTab === "posts" ? "bg-blue-500 text-white" : "bg-white"}`}
+                        className={`flex items-center space-x-2 px-4 py-2 rounded-lg ${activeTab === "posts" ? "bg-blue-500 text-white" : "bg-white"
+                            }`}
                     >
                         <FiFileText />
                         <span>Posts</span>
                     </button>
                     <button
                         onClick={() => setActiveTab("requests")}
-                        className={`flex items-center space-x-2 px-4 py-2 rounded-lg ${activeTab === "requests" ? "bg-blue-500 text-white" : "bg-white"}`}
+                        className={`flex items-center space-x-2 px-4 py-2 rounded-lg ${activeTab === "requests" ? "bg-blue-500 text-white" : "bg-white"
+                            }`}
                     >
                         <FiInbox />
                         <span>Requests</span>
@@ -579,7 +719,6 @@ const Dashboard = () => {
                     {activeTab === "requests" && <RequestManagement />}
                 </div>
             </div>
-
         </div>
     );
 };

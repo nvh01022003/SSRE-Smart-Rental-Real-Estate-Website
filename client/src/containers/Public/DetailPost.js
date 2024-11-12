@@ -3,7 +3,6 @@ import { useParams } from 'react-router-dom';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Navigation, Pagination } from 'swiper/modules';
 import 'react-image-lightbox/style.css'; // Import CSS cho lightbox
-import Lightbox from 'react-image-lightbox';
 import icons from '../../ultils/icons';
 import { useSelector } from 'react-redux';
 import axios from 'axios';
@@ -15,9 +14,42 @@ import 'swiper/css';
 import 'swiper/css/navigation';
 import 'swiper/css/pagination';
 
+import Slider from "react-slick";
+import "slick-carousel/slick/slick.css";
+import "slick-carousel/slick/slick-theme.css";
+
 import { FaFlag, FaMapMarkerAlt, FaDollarSign, FaClock } from 'react-icons/fa'; // Importing relevant icons
 
+import Loading from '../../components/Loading';
+
+const CustomPrevArrow = (props) => {
+    const { className, style, onClick } = props;
+    return (
+        <button
+            className={`${className} absolute top-1/2 left-2 transform -translate-y-1/2 z-50 bg-white text-black rounded-full p-8 shadow-lg`}
+            style={{ ...style, display: "block", fontSize: "32px" }}
+            onClick={onClick}
+        >
+            &#9664;
+        </button>
+    );
+};
+
+const CustomNextArrow = (props) => {
+    const { className, style, onClick } = props;
+    return (
+        <button
+            className={`${className} absolute top-1/2 right-2 transform -translate-y-1/2 z-50 bg-white text-black rounded-full p-8 shadow-lg`}
+            style={{ ...style, display: "block", fontSize: "32px" }}
+            onClick={onClick}
+        >
+            &#9654;
+        </button>
+    );
+};
+
 const { RiCrop2Line } = icons;
+
 
 const DetailPost = () => {
     const navigate = useNavigate();
@@ -149,14 +181,26 @@ const DetailPost = () => {
 
     //check nếu chưa có data
     if (!data) {
-        return <div>Loading...</div>;
+        return <div><Loading /></div>;
     }
+    console.log(data)
+
+    const settings = {
+        dots: true,
+        infinite: data.images.length > 1,
+        speed: 500,
+        slidesToShow: 1,
+        slidesToScroll: 1,
+        initialSlide: currentImage,
+        afterChange: (current) => setCurrentImage(current),
+        arrows: data.images.length > 1,
+    };
 
     return (
         <div className="container mx-auto py-4 px-6">
             {/* Slideshow phần hình ảnh */}
             <div className="mb-4">
-                <div className="relative w-full h-[400px] bg-gray-200">
+                <div className="relative w-full h-[400px] bg-gray-200 cursor-pointer hover:bg-gray-300 transition duration-300 rounded-lg border-2 border-gray-300 hover:border-gray-500">
                     <Swiper
                         modules={[Navigation, Pagination]}
                         navigation
@@ -172,7 +216,7 @@ const DetailPost = () => {
                                     <img
                                         src={img}
                                         alt={`preview-${index}`}
-                                        className="w-full h-full object-contain"
+                                        className="w-full h-full object-contain rounded-lg shadow-lg hover:shadow-xl transition duration-300"
                                     />
                                 </SwiperSlide>
                             ))
@@ -182,42 +226,68 @@ const DetailPost = () => {
                     </Swiper>
                 </div>
             </div>
+
+
             {isOpen && (
-                <Lightbox
-                    mainSrc={data.images[currentImage]}
-                    nextSrc={data.images[(currentImage + 1) % data.images.length]}
-                    prevSrc={data.images[(currentImage + data.images.length - 1) % data.images.length]}
-                    onCloseRequest={closeLightbox}
-                    onMovePrevRequest={() =>
-                        setCurrentImage((currentImage + data.images.length - 1) % data.images.length)
-                    }
-                    onMoveNextRequest={() =>
-                        setCurrentImage((currentImage + 1) % data.images.length)
-                    }
-                    imageCaption={`Image ${currentImage + 1} of ${data.images.length}`} // Tùy chỉnh chú thích ảnh nếu cần
-                />
+                <div className="fixed inset-0 bg-gray-700 bg-opacity-50 flex items-center justify-center z-50">
+                    <div className="relative w-full max-w-4xl rounded-lg shadow-xl p-4">
+                        <button
+                            className="absolute top-2 right-2 z-50 bg-white text-black rounded-full p-2 shadow-lg hover:text-white hover:bg-red-500 transition-colors duration-300"
+                            onClick={closeLightbox}
+                            style={{
+                                fontSize: "20px",
+                                width: "40px",
+                                height: "40px",
+                                borderRadius: "50%",
+                                boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
+                                display: "flex",
+                                justifyContent: "center",
+                                alignItems: "center",
+                                transition: "all 0.3s ease",
+                            }}
+                        >
+                            &times;
+                        </button>
+
+                        <Slider
+                            {...settings}
+                            prevArrow={<CustomPrevArrow />}
+                            nextArrow={<CustomNextArrow />}
+                        >
+                            {data.images.map((img, index) => (
+                                <div key={index}>
+                                    <img
+                                        src={img}
+                                        alt={`preview-${index}`}
+                                        className="w-full h-[500px] object-cover rounded-lg shadow-md"
+                                    />
+                                </div>
+                            ))}
+                        </Slider>
+                    </div>
+                </div>
             )}
 
             {/* Thông tin bài đăng */}
             <div className="mb-5">
                 {/* Title with stars */}
-                <h1 className="text-2xl font-bold text-red-600 mb-5 flex-wrap">
+                <h1 className="text-3xl font-medium text-red-600 mb-5 flex-wrap uppercase">
                     {data.title}
                 </h1>
 
                 {/* Address with icon */}
-                <div className="flex items-center text-gray-500 mb-5">
+                <div className="text-xl flex items-center text-gray-600 mb-5">
                     <FaMapMarkerAlt className="mr-2" /> {/* Address icon */}
                     <span className="font-semibold">Địa chỉ : </span> {/* Label */}
                     <span className='ml-1'>{`${data.address.detail_address}, ${data.address.district}, ${data.address.city}`}</span> {/* Address data */}
                 </div>
 
                 {/* Price, Acreage, and Update Info with Icons */}
-                <div className="flex items-center w-full mt-2">
+                <div className="text-xl flex items-center w-full mt-2">
                     {/* Price with icon */}
                     <div className="flex items-center w-[25%]">
                         <FaDollarSign className=" text-green-600 mt-0.5" /> {/* Price icon */}
-                        <span className="text-xl font-semibold text-green-600">{formatPrice(data.price)}/tháng</span>
+                        <span className="font-semibold text-green-600">{formatPrice(data.price)}/tháng</span>
                     </div>
 
                     {/* Acreage with icon */}
@@ -240,15 +310,15 @@ const DetailPost = () => {
             </div>
 
             {/* Thông tin mô tả */}
-            <div className="mb-4 ">
-                <h2 className="text-lg font-semibold mb-1">Thông tin mô tả</h2>
-                <p>{data.description}</p>
+            <div className="mb-4 mt-10">
+                <h2 className="text-xl font-semibold mb-2">Thông tin mô tả</h2>
+                <p className='text-gray-700'>{data.description}</p>
             </div>
 
-            <div className='flex gap-5'>
+            <div className='flex gap-5 mt-10'>
                 {/* Đặc điểm tin đăng */}
                 <div className='w-[50%]'>
-                    <h2 className="text-lg font-semibold mb-1">Đặc điểm tin đăng</h2>
+                    <h2 className="text-xl font-semibold mb-2">Đặc điểm tin đăng</h2>
 
                     <div className="mb-5 border  rounded-md bg-gray-50 ">
                         <table className="w-full text-normal">
@@ -287,10 +357,9 @@ const DetailPost = () => {
                 </div>
 
                 {/* Thông tin liên hệ */}
-                {/* Thông tin liên hệ */}
                 <div className='w-[50%] '>
                     <div>
-                        <h2 className="text-lg font-semibold mb-2">Thông tin liên hệ</h2>
+                        <h2 className="text-xl font-semibold mb-3">Thông tin liên hệ</h2>
                         {data.user.img_avt && (
                             <img
                                 src={data.user.img_avt}
@@ -323,10 +392,10 @@ const DetailPost = () => {
             </div>
 
             {/* Bản đồ */}
-            <div className="mb-10">
-                <h2 className="text-lg font-semibold mb-1">Bản đồ</h2>
+            <div className="mb-10 mt-10">
+                <h2 className="text-xl font-semibold mb-3">Bản đồ</h2>
                 {/* Address */}
-                <div className="flex items-center text-gray-500 mb-5">
+                <div className="text-normal flex items-center text-gray-600 mb-5">
                     <span className="font-semibold">Địa chỉ : </span> {/* Label */}
                     <span className='ml-1'>{`${data.address.detail_address}, ${data.address.district}, ${data.address.city}`}</span> {/* Address data */}
                 </div>

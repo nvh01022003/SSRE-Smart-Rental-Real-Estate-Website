@@ -216,3 +216,127 @@ export const fetchUpgradeRequests = (token, page) => async (dispatch) => {
         });
     }
 };
+
+// Fetch All Type Posts with Pagination
+export const fetchTypePosts = (token, page = 1) => async (dispatch) => {
+    dispatch({ type: actionTypes.FETCH_TYPE_POSTS_REQUEST });
+    try {
+        const response = await axios.get(`http://localhost:5000/api/v1/admin/showAllTypePost?page=${page}`, {
+            headers: {
+                'token': `${token}`,
+            },
+        });
+        if (response.data.err === 0) {
+            dispatch({
+                type: actionTypes.FETCH_TYPE_POSTS_SUCCESS,
+                payload: response.data.postType,
+                pagination: response.data.pagination,
+            });
+        } else {
+            dispatch({
+                type: actionTypes.FETCH_TYPE_POSTS_FAILURE,
+                payload: response.data.msg || 'Error fetching type posts.',
+            });
+        }
+    } catch (error) {
+        dispatch({
+            type: actionTypes.FETCH_TYPE_POSTS_FAILURE,
+            payload: error.message || 'Error fetching type posts.',
+        });
+    }
+};
+
+// Create a New Type Post
+export const createTypePost = (token, name, price) => async (dispatch) => {
+    dispatch({ type: actionTypes.CREATE_TYPE_POST_REQUEST });
+    try {
+        const response = await axios.post(
+            'http://localhost:5000/api/v1/admin/createTypePost',
+            { name, price },
+            {
+                headers: {
+                    'token': `${token}`,
+                },
+            }
+        );
+        if (response.data.err === 0) {
+            dispatch({
+                type: actionTypes.CREATE_TYPE_POST_SUCCESS,
+                payload: response.data.postType,
+            });
+        } else {
+            dispatch({
+                type: actionTypes.CREATE_TYPE_POST_FAILURE,
+                payload: response.data.msg || 'Error creating type post.',
+            });
+        }
+    } catch (error) {
+        dispatch({
+            type: actionTypes.CREATE_TYPE_POST_FAILURE,
+            payload: error.message || 'Error creating type post.',
+        });
+    }
+};
+
+// Update an Existing Type Post
+export const updateTypePost = (token, typePostId, name, price) => async (dispatch) => {
+    dispatch({ type: actionTypes.UPDATE_TYPE_POST_REQUEST });
+    try {
+        const response = await axios.put(
+            `http://localhost:5000/api/v1/admin/updateTypePost/${typePostId}`,
+            { name, price },
+            {
+                headers: {
+                    'token': `${token}`,
+                },
+            }
+        );
+        if (response.data.err === 0) {
+            dispatch({
+                type: actionTypes.UPDATE_TYPE_POST_SUCCESS,
+                payload: response.data.postType,
+            });
+        } else {
+            dispatch({
+                type: actionTypes.UPDATE_TYPE_POST_FAILURE,
+                payload: response.data.msg || 'Error updating type post.',
+            });
+        }
+    } catch (error) {
+        dispatch({
+            type: actionTypes.UPDATE_TYPE_POST_FAILURE,
+            payload: error.message || 'Error updating type post.',
+        });
+    }
+};
+
+// Delete a Type Post
+export const deleteTypePost = (token, typePostId) => async (dispatch) => {
+    dispatch({ type: actionTypes.DELETE_TYPE_POST_REQUEST });
+    try {
+        const response = await axios.delete(
+            `http://localhost:5000/api/v1/admin/deleteTypePost/${typePostId}`,
+            {
+                headers: {
+                    'token': `${token}`,
+                },
+            }
+        );
+        if (response.data.err === 0) {
+            dispatch({
+                type: actionTypes.DELETE_TYPE_POST_SUCCESS,
+                payload: typePostId,
+            });
+        } else {
+            dispatch({
+                type: actionTypes.DELETE_TYPE_POST_FAILURE,
+                payload: response.data.msg || 'Error deleting type post.',
+            });
+        }
+    } catch (error) {
+        dispatch({
+            type: actionTypes.DELETE_TYPE_POST_FAILURE,
+            payload: error.message || 'Error deleting type post.',
+        });
+    }
+};

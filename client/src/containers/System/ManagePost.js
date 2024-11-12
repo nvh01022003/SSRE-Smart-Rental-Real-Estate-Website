@@ -7,8 +7,11 @@ import { apiGetPubliccitys, apiGetPublicDistrict, apiGetPublicWard } from '../..
 import Swal from 'sweetalert2';
 import { fetchCategories } from '../../store/actions';
 import { Loading } from '../../components';
+import { FaTrash } from 'react-icons/fa';
+import { useNavigate } from 'react-router-dom';
 
 const ManagePost = () => {
+    const navigate = useNavigate();
     const dispatch = useDispatch();
     const [posts, setPosts] = useState([]);
     const [search, setSearch] = useState("");
@@ -136,7 +139,7 @@ const ManagePost = () => {
 
         if (result.isConfirmed) {
             try {
-                const response = await axios.delete(`http://localhost:5000/api/v1/user/ladnlord/deletePost/${id}`, {
+                const response = await axios.put(`http://localhost:5000/api/v1/user/ladnlord/softDeletePost/${id}`, {}, {
                     headers: {
                         'token': `${token}`
                     }
@@ -362,33 +365,28 @@ const ManagePost = () => {
     };
 
     return (
-        <div className='container mx-auto px-4 py-8'>
-            <div className='mb-10 flex items-center justify-between'>
-                <h1 className='text-3xl font-bold text-gray-800'>Quản lý tin đăng</h1>
-                <div className='flex items-center'>
-                    <div className='relative mr-4'>
+        <div className='container mx-auto px-4 pt-8 pb-6'>
+            <div className='bg-white shadow-md rounded-lg p-6'>
+                <h1 className='text-3xl md:text-4xl font-bold text-gray-800 text-center pb-4 border-b border-gray-200 mb-5'>Quản lý tin đăng</h1>
+                <div className='flex items-center justify-center'>
+                    <div className='relative mr-28'>
                         <input
                             type="text"
                             placeholder="Tìm kiếm theo tiêu đề..."
                             className='pl-10 pr-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500'
+                            style={{ width: '561px' }}
                             value={search}
                             onChange={handleSearch}
                         />
                         <FaSearch className='absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400' />
                     </div>
-                    {/* <button
-                        onClick={() => setShowDeleted(!showDeleted)}
-                        className="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded transition duration-300 flex items-center mr-4"
-                    >
-                        {showDeleted ? <FaUndo className="mr-2" /> : <FaTrash className="mr-2" />}
-                        {showDeleted ? 'Tin đang hiển thị' : 'Tin đã xóa'}
-                    </button> */}
 
                     {/* Dropdown cho danh mục */}
-                    <div className='mr-4'>
+                    <div className='mr-4 ml-6'>
                         <select
                             value={selectedCategory}
                             onChange={handleCategoryChange}
+                            style={{ width: '180px' }}
                             className='px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500'
                         >
                             <option value="all">Tất cả danh mục</option>
@@ -398,422 +396,431 @@ const ManagePost = () => {
                         </select>
                     </div>
                     <button
+                        onClick={() => navigate('/he-thong/quan-ly-bai-dang/tin-da-xoa')}
+                        className="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded transition duration-300 flex items-center mr-4"
+                    >
+                        <FaTrash className="mr-2" />
+                        Tin đã xóa
+                    </button>
+                    <button
                         onClick={() => window.location.href = '/he-thong/tao-moi-bai-dang'}
                         className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded transition duration-300 flex items-center"
                     >
                         <FaPlus className="mr-2" /> Thêm mới
                     </button>
                 </div>
-            </div>
 
-            <div className="overflow-x-auto bg-white shadow-md rounded-lg mt-5">
-                <table className="min-w-full border-collapse border border-gray-200">
-                    <thead>
-                        <tr>
-                            <th className='border border-gray-200 py-2 '>Mã tin</th>
-                            <th className='border border-gray-200 px-4 py-2 '>Tiêu đề</th>
-                            <th className='border border-gray-200  py-2'>
-                                <div className="flex flex-col">
-                                    <span>Giá thuê</span>
-                                    <span>(VNĐ/tháng)</span>
-                                </div>
-                            </th>
-                            <th className='border border-gray-200  py-2'>
-                                <div className="flex flex-col">
-                                    <span>Diện tích</span>
-                                    <span>(m²)</span>
-                                </div>
-                            </th>
-                            <th className='border border-gray-200 px-4 py-2 '>Ngày đăng</th>
-                            <th className='border border-gray-200  px-4 py-2 '>Ảnh</th>
-                            <th className='border border-gray-200 px-4 py-2 '>Danh mục</th>
-                            <th className='border border-gray-200 px-4 py-2 '>Chức năng</th>
-                        </tr>
-                    </thead>
-                    <tbody className="divide-y divide-gray-300">
-                        {isLoading && <div className="text-center">Đang tải...</div>}
-                        {currentPosts.length === 0 ? (
-                            <tr>
-                                <td colSpan="7" className="text-center py-4">Không có tin đăng nào</td>
-                            </tr>
-                        ) : (
-                            currentPosts.map(post => (
-                                <tr key={post.id} className="hover:bg-gray-50 transition duration-300">
-                                    <td className='border border-gray-200 py-2 text-center align-middle'>{post.id}</td>
-                                    <td className='border border-gray-200 px-4 py-2 truncate max-w-xs'>{post.title}</td> {/* Title truncation */}
-                                    <td className='border border-gray-200 py-2 text-center align-middle'>{post.price}</td>
-                                    <td className='border border-gray-200  py-2 text-center align-middle'>{post.acreage}</td>
-                                    <td className='border border-gray-200 px-4 py-2 text-center align-middle'>{formatDate(post.createdAt)}</td>
-                                    <td className='border border-gray-200 px-4 py-2 text-center align-middle'>
-                                        <img
-                                            src={JSON.parse(post.Image.img_url_list)[0]}
-                                            alt={post.title}
-                                            className="w-20 h-20 object-cover rounded"
-                                        />
-                                    </td>
-                                    <td className='border border-gray-200  py-2 text-center align-middle'>{post.Category.category_name || 'Không có danh mục'}</td>
-                                    <td className='border border-gray-200  py-2 text-center align-middle'>
-                                        <button onClick={() => handleView(post)} className="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded mr-2 transition duration-300">Xem</button>
-                                        <button onClick={() => handleEdit(post)} className="bg-yellow-500 hover:bg-yellow-600 text-white px-3 py-1 rounded mr-2 transition duration-300">Sửa</button>
-                                        <button onClick={() => handleDelete(post.id)} className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded transition duration-300">Xóa</button>
-                                    </td>
+                <div className="overflow-x-auto bg-white shadow-md rounded-lg mt-5 max-h-[calc(100vh-149px)] overflow-y-auto">
+                    <div className="h-[calc(60vh-65px)]">
+                        <table className="min-w-full border-collapse border border-gray-200 ">
+                            <thead className="sticky top-0 bg-gray-100">
+                                <tr className="font-semibold text-gray-700 uppercase tracking-wider">
+                                    <th className='border border-gray-200 py-2 '>Mã tin</th>
+                                    <th className='border border-gray-200 px-4 py-2 '>Tiêu đề</th>
+                                    <th className='border border-gray-200  py-2'>
+                                        <div className="flex flex-col">
+                                            <span>Giá thuê</span>
+                                            <span>(VNĐ/tháng)</span>
+                                        </div>
+                                    </th>
+                                    <th className='border border-gray-200  py-2'>
+                                        <div className="flex flex-col">
+                                            <span>Diện tích</span>
+                                            <span>(m²)</span>
+                                        </div>
+                                    </th>
+                                    <th className='border border-gray-200 px-4 py-2 '>Ngày đăng</th>
+                                    <th className='border border-gray-200  px-4 py-2 '>Ảnh</th>
+                                    <th className='border border-gray-200 px-4 py-2 '>Danh mục</th>
+                                    <th className='border border-gray-200 px-4 py-2 '>Chức năng</th>
                                 </tr>
-                            ))
-                        )}
-                    </tbody>
-                </table>
-            </div>
-
-            {/* Pagination */}
-            <div className="flex flex-col md:flex-row justify-between items-center mt-4">
-                <div className="flex items-center mb-4 md:mb-0">
-                    <label className="mr-2 text-gray-500">Hiển thị</label>
-                    <select
-                        value={itemsPerPage}
-                        onChange={(e) => {
-                            setItemsPerPage(Number(e.target.value));
-                            setCurrentPage(1); // Reset to the first page when items per page changes
-                        }}
-                        className="border border-gray-300 rounded px-2 py-1"
-                    >
-                        <option value={4}>4</option>
-                        <option value={8}>8</option>
-                        <option value={16}>16</option>
-                    </select>
-                    <span className="ml-2 text-gray-500">giao dịch mỗi trang</span>
-                </div>
-                <div className="flex items-center">
-                    <button onClick={handlePreviousPage} className="px-4 py-2 bg-gray-200 rounded-full mr-2" disabled={currentPage === 1}>
-                        Trước
-                    </button>
-                    <span className="text-gray-500">{currentPage} trên {totalPages} trang</span>
-                    <button onClick={handleNextPage} className="px-4 py-2 bg-gray-200 rounded-full ml-2" disabled={currentPage === totalPages}>
-                        Sau
-                    </button>
-                </div>
-            </div>
-
-            {isModalOpen && (
-                <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full flex items-center justify-center">
-                    <div className="bg-white p-4 md:p-8 rounded-lg shadow-xl w-full max-w-6xl">
-                        <h3 className="text-xl md:text-2xl font-bold mb-4 md:mb-6 text-gray-800">{isEditing ? 'Chỉnh sửa bài đăng' : 'Chi tiết bài đăng'}</h3>
-                        {isLoading ? (
-                            <div><Loading /></div>
-                        ) : (
-                            selectedPost && (
-                                <form onSubmit={handleSave} className="space-y-4">
-                                    <div className="grid grid-cols-1 md:grid-cols-6 gap-4">
-                                        <div className="relative col-span-1 md:col-span-1">
-                                            <label className="block text-sm font-medium text-gray-700 mb-1">Mã tin</label>
-                                            <input
-                                                type="text"
-                                                value={selectedPost.id}
-                                                onChange={(e) => setSelectedPost({ ...selectedPost, id: e.target.value })}
-                                                className="w-full border border-gray-300 rounded px-3 py-2"
-                                                disabled
-                                            />
-                                        </div>
-                                        <div className="relative col-span-1 md:col-span-1">
-                                            <label className="block text-sm font-medium text-gray-700 mb-1">Giá (VNĐ / tháng)</label>
-                                            <input
-                                                type="text"
-                                                value={selectedPost.price}
-                                                onChange={(e) => handlePriceChange(e)}
-                                                className="w-full border border-gray-300 rounded px-3 py-2"
-                                                disabled={!isEditing}
-                                            />
-                                            {errors.price && (
-                                                <p className="text-red-500 text-xs absolute top-full left-0 mt-1">{errors.price}</p>
-                                            )}
-                                        </div>
-                                        <div className="relative col-span-1 md:col-span-1">
-                                            <label className="block text-sm font-medium text-gray-700 mb-1">Diện tích (m²)</label>
-                                            <input
-                                                type="text"
-                                                value={selectedPost.acreage}
-                                                onChange={(e) => handleAcreageChange(e)}
-                                                className="w-full border border-gray-300 rounded px-3 py-2"
-                                                disabled={!isEditing}
-                                            />
-                                            {errors.acreage && (
-                                                <p className="text-red-500 text-xs absolute top-full left-0 mt-1">{errors.acreage}</p>
-                                            )}
-                                        </div>
-                                        <div className="relative col-span-1 md:col-span-1">
-                                            <label className="block text-sm font-medium text-gray-700 mb-1">Ngày đăng</label>
-                                            <input
-                                                type="text"
-                                                value={new Date(selectedPost.createdAt).toLocaleDateString('vi-VN')}
-                                                className="w-full border border-gray-300 rounded px-3 py-2"
-                                                disabled
-                                            />
-                                        </div>
-                                        <div className="relative col-span-1 md:col-span-1">
-                                            <label className="block text-sm font-medium text-gray-700 mb-1">Ngày cập nhật</label>
-                                            <input
-                                                type="text"
-                                                value={new Date(selectedPost.updatedAt).toLocaleDateString('vi-VN')}
-                                                className="w-full border border-gray-300 rounded px-3 py-2"
-                                                disabled
-                                            />
-                                        </div>
-                                        <div className="relative col-span-1 md:col-span-1">
-                                            <label className="block text-sm font-medium text-gray-700 mb-1">Ngày hết hạn</label>
-                                            <input
-                                                type="text"
-                                                value={new Date(selectedPost.Overview.expire).toLocaleDateString('vi-VN')}
-                                                className="w-full border border-gray-300 rounded px-3 py-2"
-                                                disabled
-                                            />
-                                        </div>
-                                    </div>
-                                    <div className="relative">
-                                        <label className="block text-sm font-medium text-gray-700 mb-1">Tiêu đề</label>
-                                        <input
-                                            type="text"
-                                            value={selectedPost.title}
-                                            onChange={(e) => setSelectedPost({ ...selectedPost, title: e.target.value })}
-                                            className="w-full border border-gray-300 rounded px-3 py-2"
-                                            disabled={!isEditing}
-                                        />
-                                        {errors.title && (
-                                            <p className="text-red-500 text-xs absolute top-full left-0 mt-1">{errors.title}</p>
-                                        )}
-                                    </div>
-                                    <div className="relative">
-                                        <label className="block text-sm font-medium text-gray-700 mb-1">Mô tả</label>
-                                        <textarea
-                                            value={selectedPost.description}
-                                            onChange={(e) => setSelectedPost({ ...selectedPost, description: e.target.value })}
-                                            className="w-full border border-gray-300 rounded px-3 py-2"
-                                            rows="3"
-                                            disabled={!isEditing}
-                                        />
-                                        {errors.description && (
-                                            <p className="text-red-500 text-xs absolute top-full left-0 mt-1">{errors.description}</p>
-                                        )}
-                                    </div>
-                                    <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
-                                        <div className="relative col-span-1 md:col-span-1">
-                                            <label className="block text-sm font-medium text-gray-700 mb-1">Danh mục</label>
-                                            {isEditing ? (
-                                                <select
-                                                    value={selectedPost?.Category?.category_name || ''}
-                                                    onChange={(e) => {
-                                                        const updatedCategory = e.target.value;
-                                                        setSelectedPost(prev => ({
-                                                            ...prev,
-                                                            Category: {
-                                                                ...prev.Category,
-                                                                category_name: updatedCategory
-                                                            }
-                                                        }));
-                                                    }}
-                                                    className="w-full border border-gray-300 rounded px-3 py-2"
-                                                >
-                                                    {categories.map(category => (
-                                                        <option key={category.id} value={category.category_name}>{category.category_name}</option>
-                                                    ))}
-                                                </select>
-                                            ) : (
-                                                <input
-                                                    type="text"
-                                                    value={selectedPost?.Category?.category_name || ''}
-                                                    className="w-full border border-gray-300 rounded px-3 py-2"
-                                                    disabled
+                            </thead>
+                            <tbody className="divide-y divide-gray-300">
+                                {isLoading && <div className="text-center">Đang tải...</div>}
+                                {currentPosts.length === 0 ? (
+                                    <tr>
+                                        <td colSpan="7" className="text-center py-4">Không có tin đăng nào</td>
+                                    </tr>
+                                ) : (
+                                    currentPosts.map(post => (
+                                        <tr key={post.id} className="hover:bg-gray-50 transition duration-300">
+                                            <td className='border border-gray-200 py-2 text-center align-middle'>{post.id}</td>
+                                            <td className='border border-gray-200 px-4 py-2 truncate max-w-xs'>{post.title}</td> {/* Title truncation */}
+                                            <td className='border border-gray-200 py-2 text-center align-middle'>{post.price}</td>
+                                            <td className='border border-gray-200  py-2 text-center align-middle'>{post.acreage}</td>
+                                            <td className='border border-gray-200 px-4 py-2 text-center align-middle'>{formatDate(post.createdAt)}</td>
+                                            <td className='border border-gray-200 px-4 py-2 text-center align-middle'>
+                                                <img
+                                                    src={JSON.parse(post.Image.img_url_list)[0]}
+                                                    alt={post.title}
+                                                    className="w-[60px] h-[60px] object-cover rounded"
                                                 />
-                                            )}
-                                        </div>
-                                        <div className="relative col-span-1 md:col-span-1">
-                                            <label className="block text-sm font-medium text-gray-700 mb-1">Đối tượng cho thuê</label>
-                                            {isEditing ? (
-                                                <select
-                                                    value={selectedPost.Overview.target}
-                                                    onChange={(e) =>
-                                                        setSelectedPost({
-                                                            ...selectedPost,
-                                                            Overview: { ...selectedPost.Overview, target: Number(e.target.value) }
-                                                        })
-                                                    }
-                                                    className="w-full border border-gray-300 rounded px-3 py-2"
-                                                >
-                                                    <option value="0">Tất cả</option>
-                                                    <option value="1">Nam</option>
-                                                    <option value="2">Nữ</option>
-                                                </select>
-                                            ) : (
-                                                <input
-                                                    type="text"
-                                                    value={
-                                                        selectedPost.Overview.target === "0"
-                                                            ? "Tất cả"
-                                                            : selectedPost.Overview.target === "1"
-                                                                ? "Nam"
-                                                                : "Nữ"
-                                                    }
-                                                    className="w-full border border-gray-300 rounded px-3 py-2"
-                                                    disabled
-                                                />
-                                            )}
-                                        </div>
-                                        <div className="relative col-span-1 md:col-span-1">
-                                            <label className="block text-sm font-medium text-gray-700 mb-1">Tỉnh/Thành phố</label>
-                                            {isEditing ? (
-                                                <select
-                                                    value={selectedPost.Address.city}
-                                                    onChange={(e) =>
-                                                        setSelectedPost({
-                                                            ...selectedPost,
-                                                            Address: { ...selectedPost.Address, city: e.target.value }
-                                                        })
-                                                    }
-                                                    className="w-full border border-gray-300 rounded px-3 py-2"
-                                                >
-                                                    <option value="">Chọn tỉnh/thành phố</option>
-                                                    {cities.map((city) => (
-                                                        <option key={city.province_id} value={city.province_name}>
-                                                            {city.province_name}
-                                                        </option>
-                                                    ))}
-                                                </select>
-                                            ) : (
-                                                <input
-                                                    type="text"
-                                                    value={selectedPost.Address.city}
-                                                    className="w-full border border-gray-300 rounded px-3 py-2"
-                                                    disabled
-                                                />
-                                            )}
-                                            {errors.city && (
-                                                <p className="text-red-500 text-xs absolute top-full left-0 mt-1">{errors.city}</p>
-                                            )}
-                                        </div>
-                                        <div className="relative col-span-1 md:col-span-1">
-                                            <label className="block text-sm font-medium text-gray-700 mb-1">Quận/Huyện</label>
-                                            {isEditing ? (
-                                                <select
-                                                    value={selectedPost.Address.district}
-                                                    onChange={(e) =>
-                                                        setSelectedPost({
-                                                            ...selectedPost,
-                                                            Address: { ...selectedPost.Address, district: e.target.value }
-                                                        })
-                                                    }
-                                                    className="w-full border border-gray-300 rounded px-3 py-2"
-                                                >
-                                                    <option value="">Chọn quận/huyện</option>
-                                                    {districts.map((district) => (
-                                                        <option key={district.district_id} value={district.district_name}>
-                                                            {district.district_name}
-                                                        </option>
-                                                    ))}
-                                                </select>
-                                            ) : (
-                                                <input
-                                                    type="text"
-                                                    value={selectedPost.Address.district}
-                                                    className="w-full border border-gray-300 rounded px-3 py-2"
-                                                    disabled
-                                                />
-                                            )}
-                                            {errors.district && (
-                                                <p className="text-red-500 text-xs absolute top-full left-0 mt-1">{errors.district}</p>
-                                            )}
-                                        </div>
-                                        <div className="relative col-span-1 md:col-span-1">
-                                            <label className="block text-sm font-medium text-gray-700 mb-1">Số nhà, đường</label>
-                                            <input
-                                                type="text"
-                                                value={selectedPost.Address.detail_address}
-                                                onChange={(e) =>
-                                                    setSelectedPost({
-                                                        ...selectedPost,
-                                                        Address: { ...selectedPost.Address, detail_address: e.target.value }
-                                                    })
-                                                }
-                                                className="w-full border border-gray-300 rounded px-3 py-2"
-                                                disabled={!isEditing}
-                                            />
-                                            {errors.detail_address && (
-                                                <p className="text-red-500 text-xs absolute top-full left-0 mt-1">{errors.detail_address}</p>
-                                            )}
-                                        </div>
-                                    </div>
-                                    <div className="relative col-span-3">
-                                        <label className="block text-sm font-medium text-gray-700 mb-1">Hình ảnh</label>
-                                        {isEditing ? (
-                                            <div>
-                                                <div className="grid grid-cols-4 gap-4 mb-4">
-                                                    {imagesPreview.length > 0 ? (
-                                                        imagesPreview.map((url, index) => (
-                                                            <div key={index} className="relative group">
-                                                                <img
-                                                                    src={url}
-                                                                    alt={`Selected Image ${index + 1}`}
-                                                                    className="w-[70px] h-[70px] rounded-lg shadow-md transition-transform transform hover:scale-105"
-                                                                />
-                                                                <button
-                                                                    type="button"
-                                                                    onClick={() => handleDeleteImage(url)}
-                                                                    className="absolute top-2 right-2 bg-red-500 text-white rounded-full p-2 opacity-0 group-hover:opacity-100 transition-opacity"
-                                                                >
-                                                                    X
-                                                                </button>
-                                                            </div>
-                                                        ))
-                                                    ) : (
-                                                        parseImageUrls(selectedPost.Image.img_url_list).map((url, index) => (
-                                                            <img
-                                                                key={index}
-                                                                src={url}
-                                                                alt={`Post Image ${index + 1}`}
-                                                                className="w-[70px] h-[70px] rounded-lg shadow-md"
-                                                            />
-                                                        ))
-                                                    )}
-                                                </div>
-                                                <input
-                                                    type="file"
-                                                    id="file"
-                                                    name="images"
-                                                    onChange={handleFiles}
-                                                    className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100 transition-colors"
-                                                    multiple
-                                                    accept=".jpeg,.jpg,.png,.gif"
-                                                />
-                                            </div>
-                                        ) : (
-                                            <div className="grid grid-cols-4 gap-4">
-                                                {parseImageUrls(selectedPost.Image.img_url_list).map((url, index) => (
-                                                    <img
-                                                        key={index}
-                                                        src={url}
-                                                        alt={`Post Image ${index + 1}`}
-                                                        className="w-[140px] h-[140px] rounded-lg shadow-md transition-transform transform hover:scale-105"
-                                                    />
-                                                ))}
-                                            </div>
-                                        )}
-                                    </div>
-                                    <div className="mt-8 flex justify-end">
-                                        <button onClick={handleCloseModal} className="bg-gray-300 hover:bg-gray-400 text-gray-800 px-6 py-2 rounded transition duration-300">Đóng</button>
-                                        {isEditing && (
-                                            isActionLoading ? (
-                                                <div className="flex items-center">
-                                                    <Loading /> {/* Replace this with your actual Loading component */}
-                                                    <span className="ml-2">Đang cập nhật...</span>
-                                                </div>
-                                            ) : (
-                                                <button type="submit" className="bg-green-500 hover:bg-green-600 text-white px-6 py-2 rounded transition duration-300 ml-4">Cập Nhật</button>
-                                            )
-                                        )}
-                                    </div>
-                                </form>
-                            )
-                        )}
+                                            </td>
+                                            <td className='border border-gray-200  py-2 text-center align-middle'>{post.Category.category_name || 'Không có danh mục'}</td>
+                                            <td className='border border-gray-200  py-2 text-center align-middle'>
+                                                <button onClick={() => handleView(post)} className="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded mr-2 transition duration-300">Xem</button>
+                                                <button onClick={() => handleEdit(post)} className="bg-yellow-500 hover:bg-yellow-600 text-white px-3 py-1 rounded mr-2 transition duration-300">Sửa</button>
+                                                <button onClick={() => handleDelete(post.id)} className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded transition duration-300">Xóa</button>
+                                            </td>
+                                        </tr>
+                                    ))
+                                )}
+                            </tbody>
+                        </table>
                     </div>
                 </div>
-            )}
+
+                {/* Pagination */}
+                <div className="flex flex-col md:flex-row justify-between items-center mt-4">
+                    <div className="flex items-center mb-4 md:mb-0">
+                        <label className="mr-2 text-gray-500">Hiển thị</label>
+                        <select
+                            value={itemsPerPage}
+                            onChange={(e) => {
+                                setItemsPerPage(Number(e.target.value));
+                                setCurrentPage(1); // Reset to the first page when items per page changes
+                            }}
+                            className="border border-gray-300 rounded px-2 py-1"
+                        >
+                            <option value={4}>4</option>
+                            <option value={8}>8</option>
+                            <option value={16}>16</option>
+                        </select>
+                        <span className="ml-2 text-gray-500">giao dịch mỗi trang</span>
+                    </div>
+                    <div className="flex items-center">
+                        <button onClick={handlePreviousPage} className="px-4 py-2 bg-gray-200 rounded-full mr-2" disabled={currentPage === 1}>
+                            Trước
+                        </button>
+                        <span className="text-gray-500">{currentPage} trên {totalPages} trang</span>
+                        <button onClick={handleNextPage} className="px-4 py-2 bg-gray-200 rounded-full ml-2" disabled={currentPage === totalPages}>
+                            Sau
+                        </button>
+                    </div>
+                </div>
+
+                {isModalOpen && (
+                    <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full flex items-center justify-center">
+                        <div className="bg-white p-4 md:p-8 rounded-lg shadow-xl w-full max-w-6xl">
+                            <h3 className="text-xl md:text-2xl font-bold mb-4 md:mb-6 text-gray-800">{isEditing ? 'Chỉnh sửa bài đăng' : 'Chi tiết bài đăng'}</h3>
+                            {isLoading ? (
+                                <div><Loading /></div>
+                            ) : (
+                                selectedPost && (
+                                    <form onSubmit={handleSave} className="space-y-4">
+                                        <div className="grid grid-cols-1 md:grid-cols-6 gap-4">
+                                            <div className="relative col-span-1 md:col-span-1">
+                                                <label className="block text-sm font-medium text-gray-700 mb-1">Mã tin</label>
+                                                <input
+                                                    type="text"
+                                                    value={selectedPost.id}
+                                                    onChange={(e) => setSelectedPost({ ...selectedPost, id: e.target.value })}
+                                                    className="w-full border border-gray-300 rounded px-3 py-2"
+                                                    disabled
+                                                />
+                                            </div>
+                                            <div className="relative col-span-1 md:col-span-1">
+                                                <label className="block text-sm font-medium text-gray-700 mb-1">Giá (VNĐ / tháng)</label>
+                                                <input
+                                                    type="text"
+                                                    value={selectedPost.price}
+                                                    onChange={(e) => handlePriceChange(e)}
+                                                    className="w-full border border-gray-300 rounded px-3 py-2"
+                                                    disabled={!isEditing}
+                                                />
+                                                {errors.price && (
+                                                    <p className="text-red-500 text-xs absolute top-full left-0 mt-1">{errors.price}</p>
+                                                )}
+                                            </div>
+                                            <div className="relative col-span-1 md:col-span-1">
+                                                <label className="block text-sm font-medium text-gray-700 mb-1">Diện tích (m²)</label>
+                                                <input
+                                                    type="text"
+                                                    value={selectedPost.acreage}
+                                                    onChange={(e) => handleAcreageChange(e)}
+                                                    className="w-full border border-gray-300 rounded px-3 py-2"
+                                                    disabled={!isEditing}
+                                                />
+                                                {errors.acreage && (
+                                                    <p className="text-red-500 text-xs absolute top-full left-0 mt-1">{errors.acreage}</p>
+                                                )}
+                                            </div>
+                                            <div className="relative col-span-1 md:col-span-1">
+                                                <label className="block text-sm font-medium text-gray-700 mb-1">Ngày đăng</label>
+                                                <input
+                                                    type="text"
+                                                    value={new Date(selectedPost.createdAt).toLocaleDateString('vi-VN')}
+                                                    className="w-full border border-gray-300 rounded px-3 py-2"
+                                                    disabled
+                                                />
+                                            </div>
+                                            <div className="relative col-span-1 md:col-span-1">
+                                                <label className="block text-sm font-medium text-gray-700 mb-1">Ngày cập nhật</label>
+                                                <input
+                                                    type="text"
+                                                    value={new Date(selectedPost.updatedAt).toLocaleDateString('vi-VN')}
+                                                    className="w-full border border-gray-300 rounded px-3 py-2"
+                                                    disabled
+                                                />
+                                            </div>
+                                            <div className="relative col-span-1 md:col-span-1">
+                                                <label className="block text-sm font-medium text-gray-700 mb-1">Ngày hết hạn</label>
+                                                <input
+                                                    type="text"
+                                                    value={new Date(selectedPost.Overview.expire).toLocaleDateString('vi-VN')}
+                                                    className="w-full border border-gray-300 rounded px-3 py-2"
+                                                    disabled
+                                                />
+                                            </div>
+                                        </div>
+                                        <div className="relative">
+                                            <label className="block text-sm font-medium text-gray-700 mb-1">Tiêu đề</label>
+                                            <input
+                                                type="text"
+                                                value={selectedPost.title}
+                                                onChange={(e) => setSelectedPost({ ...selectedPost, title: e.target.value })}
+                                                className="w-full border border-gray-300 rounded px-3 py-2"
+                                                disabled={!isEditing}
+                                            />
+                                            {errors.title && (
+                                                <p className="text-red-500 text-xs absolute top-full left-0 mt-1">{errors.title}</p>
+                                            )}
+                                        </div>
+                                        <div className="relative">
+                                            <label className="block text-sm font-medium text-gray-700 mb-1">Mô tả</label>
+                                            <textarea
+                                                value={selectedPost.description}
+                                                onChange={(e) => setSelectedPost({ ...selectedPost, description: e.target.value })}
+                                                className="w-full border border-gray-300 rounded px-3 py-2"
+                                                rows="3"
+                                                disabled={!isEditing}
+                                            />
+                                            {errors.description && (
+                                                <p className="text-red-500 text-xs absolute top-full left-0 mt-1">{errors.description}</p>
+                                            )}
+                                        </div>
+                                        <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
+                                            <div className="relative col-span-1 md:col-span-1">
+                                                <label className="block text-sm font-medium text-gray-700 mb-1">Danh mục</label>
+                                                {isEditing ? (
+                                                    <select
+                                                        value={selectedPost?.Category?.category_name || ''}
+                                                        onChange={(e) => {
+                                                            const updatedCategory = e.target.value;
+                                                            setSelectedPost(prev => ({
+                                                                ...prev,
+                                                                Category: {
+                                                                    ...prev.Category,
+                                                                    category_name: updatedCategory
+                                                                }
+                                                            }));
+                                                        }}
+                                                        className="w-full border border-gray-300 rounded px-3 py-2"
+                                                    >
+                                                        {categories.map(category => (
+                                                            <option key={category.id} value={category.category_name}>{category.category_name}</option>
+                                                        ))}
+                                                    </select>
+                                                ) : (
+                                                    <input
+                                                        type="text"
+                                                        value={selectedPost?.Category?.category_name || ''}
+                                                        className="w-full border border-gray-300 rounded px-3 py-2"
+                                                        disabled
+                                                    />
+                                                )}
+                                            </div>
+                                            <div className="relative col-span-1 md:col-span-1">
+                                                <label className="block text-sm font-medium text-gray-700 mb-1">Đối tượng cho thuê</label>
+                                                {isEditing ? (
+                                                    <select
+                                                        value={selectedPost.Overview.target}
+                                                        onChange={(e) =>
+                                                            setSelectedPost({
+                                                                ...selectedPost,
+                                                                Overview: { ...selectedPost.Overview, target: Number(e.target.value) }
+                                                            })
+                                                        }
+                                                        className="w-full border border-gray-300 rounded px-3 py-2"
+                                                    >
+                                                        <option value="0">Tất cả</option>
+                                                        <option value="1">Nam</option>
+                                                        <option value="2">Nữ</option>
+                                                    </select>
+                                                ) : (
+                                                    <input
+                                                        type="text"
+                                                        value={
+                                                            selectedPost.Overview.target === "0"
+                                                                ? "Tất cả"
+                                                                : selectedPost.Overview.target === "1"
+                                                                    ? "Nam"
+                                                                    : "Nữ"
+                                                        }
+                                                        className="w-full border border-gray-300 rounded px-3 py-2"
+                                                        disabled
+                                                    />
+                                                )}
+                                            </div>
+                                            <div className="relative col-span-1 md:col-span-1">
+                                                <label className="block text-sm font-medium text-gray-700 mb-1">Tỉnh/Thành phố</label>
+                                                {isEditing ? (
+                                                    <select
+                                                        value={selectedPost.Address.city}
+                                                        onChange={(e) =>
+                                                            setSelectedPost({
+                                                                ...selectedPost,
+                                                                Address: { ...selectedPost.Address, city: e.target.value }
+                                                            })
+                                                        }
+                                                        className="w-full border border-gray-300 rounded px-3 py-2"
+                                                    >
+                                                        <option value="">Chọn tỉnh/thành phố</option>
+                                                        {cities.map((city) => (
+                                                            <option key={city.province_id} value={city.province_name}>
+                                                                {city.province_name}
+                                                            </option>
+                                                        ))}
+                                                    </select>
+                                                ) : (
+                                                    <input
+                                                        type="text"
+                                                        value={selectedPost.Address.city}
+                                                        className="w-full border border-gray-300 rounded px-3 py-2"
+                                                        disabled
+                                                    />
+                                                )}
+                                                {errors.city && (
+                                                    <p className="text-red-500 text-xs absolute top-full left-0 mt-1">{errors.city}</p>
+                                                )}
+                                            </div>
+                                            <div className="relative col-span-1 md:col-span-1">
+                                                <label className="block text-sm font-medium text-gray-700 mb-1">Quận/Huyện</label>
+                                                {isEditing ? (
+                                                    <select
+                                                        value={selectedPost.Address.district}
+                                                        onChange={(e) =>
+                                                            setSelectedPost({
+                                                                ...selectedPost,
+                                                                Address: { ...selectedPost.Address, district: e.target.value }
+                                                            })
+                                                        }
+                                                        className="w-full border border-gray-300 rounded px-3 py-2"
+                                                    >
+                                                        <option value="">Chọn quận/huyện</option>
+                                                        {districts.map((district) => (
+                                                            <option key={district.district_id} value={district.district_name}>
+                                                                {district.district_name}
+                                                            </option>
+                                                        ))}
+                                                    </select>
+                                                ) : (
+                                                    <input
+                                                        type="text"
+                                                        value={selectedPost.Address.district}
+                                                        className="w-full border border-gray-300 rounded px-3 py-2"
+                                                        disabled
+                                                    />
+                                                )}
+                                                {errors.district && (
+                                                    <p className="text-red-500 text-xs absolute top-full left-0 mt-1">{errors.district}</p>
+                                                )}
+                                            </div>
+                                            <div className="relative col-span-1 md:col-span-1">
+                                                <label className="block text-sm font-medium text-gray-700 mb-1">Số nhà, đường</label>
+                                                <input
+                                                    type="text"
+                                                    value={selectedPost.Address.detail_address}
+                                                    onChange={(e) =>
+                                                        setSelectedPost({
+                                                            ...selectedPost,
+                                                            Address: { ...selectedPost.Address, detail_address: e.target.value }
+                                                        })
+                                                    }
+                                                    className="w-full border border-gray-300 rounded px-3 py-2"
+                                                    disabled={!isEditing}
+                                                />
+                                                {errors.detail_address && (
+                                                    <p className="text-red-500 text-xs absolute top-full left-0 mt-1">{errors.detail_address}</p>
+                                                )}
+                                            </div>
+                                        </div>
+                                        <div className="relative col-span-3">
+                                            <label className="block text-sm font-medium text-gray-700 mb-1">Hình ảnh</label>
+                                            {isEditing ? (
+                                                <div>
+                                                    <div className="grid grid-cols-4 gap-4 mb-4">
+                                                        {imagesPreview.length > 0 ? (
+                                                            imagesPreview.map((url, index) => (
+                                                                <div key={index} className="relative group">
+                                                                    <img
+                                                                        src={url}
+                                                                        alt={`Selected Image ${index + 1}`}
+                                                                        className="w-[70px] h-[70px] rounded-lg shadow-md transition-transform transform hover:scale-105"
+                                                                    />
+                                                                    <button
+                                                                        type="button"
+                                                                        onClick={() => handleDeleteImage(url)}
+                                                                        className="absolute top-2 right-2 bg-red-500 text-white rounded-full p-2 opacity-0 group-hover:opacity-100 transition-opacity"
+                                                                    >
+                                                                        X
+                                                                    </button>
+                                                                </div>
+                                                            ))
+                                                        ) : (
+                                                            parseImageUrls(selectedPost.Image.img_url_list).map((url, index) => (
+                                                                <img
+                                                                    key={index}
+                                                                    src={url}
+                                                                    alt={`Post Image ${index + 1}`}
+                                                                    className="w-[70px] h-[70px] rounded-lg shadow-md"
+                                                                />
+                                                            ))
+                                                        )}
+                                                    </div>
+                                                    <input
+                                                        type="file"
+                                                        id="file"
+                                                        name="images"
+                                                        onChange={handleFiles}
+                                                        className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100 transition-colors"
+                                                        multiple
+                                                        accept=".jpeg,.jpg,.png,.gif"
+                                                    />
+                                                </div>
+                                            ) : (
+                                                <div className="grid grid-cols-4 gap-4">
+                                                    {parseImageUrls(selectedPost.Image.img_url_list).map((url, index) => (
+                                                        <img
+                                                            key={index}
+                                                            src={url}
+                                                            alt={`Post Image ${index + 1}`}
+                                                            className="w-[140px] h-[140px] rounded-lg shadow-md transition-transform transform hover:scale-105"
+                                                        />
+                                                    ))}
+                                                </div>
+                                            )}
+                                        </div>
+                                        <div className="mt-8 flex justify-end">
+                                            <button onClick={handleCloseModal} className="bg-gray-300 hover:bg-gray-400 text-gray-800 px-6 py-2 rounded transition duration-300">Đóng</button>
+                                            {isEditing && (
+                                                isActionLoading ? (
+                                                    <div className="flex items-center">
+                                                        <Loading /> {/* Replace this with your actual Loading component */}
+                                                        <span className="ml-2">Đang cập nhật...</span>
+                                                    </div>
+                                                ) : (
+                                                    <button type="submit" className="bg-green-500 hover:bg-green-600 text-white px-6 py-2 rounded transition duration-300 ml-4">Cập Nhật</button>
+                                                )
+                                            )}
+                                        </div>
+                                    </form>
+                                )
+                            )}
+                        </div>
+                    </div>
+                )}
+            </div>
         </div>
     )
 }
