@@ -16,7 +16,7 @@
     "framer-motion": "^11.11.11",
     "lodash": "^4.17.21",
     "moment": "^2.29.4",
-    "react": "^18.3.1",
+    "react": "^18.2.0",
     "react-beautiful-dnd": "^13.1.1",
     "react-datepicker": "^7.5.0",
     "react-datetime": "^3.2.0",
@@ -37,6 +37,7 @@
     "sweetalert2": "^11.4.29",
     "swiper": "^11.1.14",
     "thunk": "0.0.1",
+    "use-sync-external-store": "^1.2.2",
     "web-vitals": "^2.1.4"
   },
   "scripts": {

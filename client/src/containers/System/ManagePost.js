@@ -139,7 +139,7 @@ const ManagePost = () => {
 
         if (result.isConfirmed) {
             try {
-                const response = await axios.delete(`http://localhost:5000/api/v1/user/ladnlord/deletePost/${id}`, {
+                const response = await axios.put(`http://localhost:5000/api/v1/user/ladnlord/softDeletePost/${id}`, {}, {
                     headers: {
                         'token': `${token}`
                     }
