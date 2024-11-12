@@ -134,8 +134,8 @@ const createPaymentRequest = async (amount, orderId, id) => {
     var requestType = "payWithMethod";
     const requestId = orderId;
     const orderInfo = "Thanh toán với MoMo";
-    const redirectUrl = "https://webhook.site/redirect/success";
-    const ipnUrl = "https://217d-2402-800-6238-1230-9104-ebf4-35f1-6aaa.ngrok-free.app/api/v1/user/callbackMOMO";
+    const redirectUrl = "http://localhost:3000/he-thong/nap-tien/momo";
+    const ipnUrl = "https://f074-2405-4802-95cf-c330-98f5-7040-f691-1806.ngrok-free.app/api/v1/user/callbackMOMO";
     const expireTime = Math.floor(Date.now() / 1000) + 5 * 60;
 
 
