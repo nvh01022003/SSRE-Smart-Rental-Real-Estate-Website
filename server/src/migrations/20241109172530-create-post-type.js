@@ -16,7 +16,7 @@ module.exports = {
         type: Sequelize.DECIMAL
       },
       desc: {
-        type: Sequelize.TEXrT
+        type: Sequelize.TEXT
       },
       createdAt: {
         allowNull: false,
