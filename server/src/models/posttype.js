@@ -16,7 +16,8 @@ module.exports = (sequelize, DataTypes) => {
   }
   PostType.init({
     name: DataTypes.STRING,
-    price: DataTypes.DECIMAL
+    price: DataTypes.DECIMAL,
+    desc: DataTypes.TEXT,
   }, {
     sequelize,
     modelName: 'PostType',
