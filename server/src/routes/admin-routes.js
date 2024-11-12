@@ -9,7 +9,6 @@ const managerUserController = require("../controller/admin/manager-user-controll
 const managerCategoryController = require("../controller/admin/manager-category-controller.js")
 const managerPostController = require("../controller/admin/manager-post-controller.js")
 const managerPaymentController = require("../controller/admin/manager-payment-controller.js")
-
 const img = require("../middleware/upload/uploadImg")
 const multer = require('multer');
 const storage = multer.memoryStorage();
@@ -79,3 +78,13 @@ router.put("/restorePost/:postId", authentication.authenticateToken, authorizati
 
 //MANAGE PAYMENT
 router.get("/showAllTransaction", authentication.authenticateToken, managerPaymentController.AllTransactionHistory)
+
+// MANAGE TYPE POST
+// create type post
+router.post("/createTypePost", authentication.authenticateToken, authorization.checkRoleAdmin, managerPostController.createTypePost)
+// update type post by id
+router.put("/updateTypePost/:typePostId", authentication.authenticateToken, authorization.checkRoleAdmin, managerPostController.updateTypePost)
+// delete type post by id
+router.delete("/deleteTypePost/:typePostId", authentication.authenticateToken, authorization.checkRoleAdmin, managerPostController.deleteTypePost)
+// show all type post có pagination
+router.get("/showAllTypePost", authentication.authenticateToken, managerPostController.showAllTypePost)
