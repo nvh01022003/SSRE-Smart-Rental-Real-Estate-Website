@@ -3,26 +3,23 @@ const {
   Model
 } = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
-  class Image extends Model {
+  class PostType extends Model {
     /**
      * Helper method for defining associations.
      * This method is not a part of Sequelize lifecycle.
      * The `models/index` file will call this method automatically.
      */
-    static associate({ Post }) {
-      this.hasOne(Post, { foreignKey: 'img_id' },
-        {
-          onUpdate: 'CASCADE',
-          onDelete: 'CASCADE'
-        }
-      )
+    static associate(models) {
+      // define association here
+      this.hasMany(models.Post, { foreignKey: 'postType_id' });
     }
   }
-  Image.init({
-    img_url_list: DataTypes.TEXT
+  PostType.init({
+    name: DataTypes.STRING,
+    price: DataTypes.DECIMAL
   }, {
     sequelize,
-    modelName: 'Image',
+    modelName: 'PostType',
   });
-  return Image;
+  return PostType;
 };

@@ -157,13 +157,14 @@ const Payment = () => {
             <Route path={path.BANK_TRANSFER} element={<BankTransfer />} />
             <Route path="*" element={
                 <div className="container mx-auto p-4 md:p-6">
-                    <div className="bg-white shadow-md rounded-lg p-6 shadow mb-6">
+                    <div className="bg-white shadow-lg rounded-lg p-6 mb-6">
                         <h1 className="text-3xl md:text-4xl font-bold text-gray-800 text-center py-4 border-b border-gray-200">
                             Nạp tiền vào tài khoản
                         </h1>
-                        <div className="flex flex-col md:flex-row gap-4 mt-5">
-                            <div className="flex-auto flex flex-col gap-8 bg-white p-6 rounded shadow h-full items-center">
-                                <h2 className="text-2xl md:text-2xl font-semibold mb-4 text-gray-800">
+                        <div className="flex flex-col md:flex-row gap-6 mt-6">
+                            {/* Phần Chọn Phương Thức Nạp Tiền */}
+                            <div className="flex-auto flex flex-col gap-8 bg-white p-6 rounded-lg shadow-lg items-center">
+                                <h2 className="text-xl md:text-2xl font-semibold text-gray-800">
                                     Mời bạn chọn phương thức nạp tiền
                                 </h2>
                                 <div className="flex flex-col md:flex-row space-x-0 md:space-x-28">
@@ -198,29 +199,31 @@ const Payment = () => {
                                     </MomoButton>
                                 </div>
                             </div>
-                            <div className="w-full md:w-1/3 bg-white p-6 rounded shadow flex flex-col h-full">
-                                <div className="bg-white p-4 rounded shadow text-center mb-6 flex-1">
-                                    <p className="text-lg font-semibold">
+
+                            {/* Phần Thông Tin Số Dư và Tùy Chọn */}
+                            <div className="w-full md:w-1/3 bg-white p-6 rounded-lg shadow-lg flex flex-col">
+                                <div className="bg-gray-50 p-4 rounded-lg shadow-md text-center mb-6">
+                                    <p className="text-lg font-semibold text-gray-700">
                                         Số dư tài khoản
                                     </p>
                                     <p className="text-2xl text-green-600 font-bold">
                                         {convertToWords(balance)}
                                     </p>
                                 </div>
-                                <div className="space-y-2">
+                                <div className="space-y-3 px-4 py-6 bg-gray-50 rounded-lg shadow-md">
                                     <button
-                                        className="w-full bg-gray-500 text-white py-2 rounded btn-secondary"
+                                        className="w-full bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 rounded-lg transition duration-200 ease-in-out"
                                         onClick={() => navigate(path.DEPOSITE_HISTORY)}
                                     >
                                         Lịch sử nạp tiền
                                     </button>
                                     <button
-                                        className="w-full bg-gray-500 text-white py-2 rounded btn-secondary"
+                                        className="w-full bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 rounded-lg transition duration-200 ease-in-out"
                                         onClick={() => navigate(path.HISTORY_PAYMENT)}
                                     >
                                         Lịch sử thanh toán
                                     </button>
-                                    <button className="w-full bg-gray-500 text-white py-2 rounded btn-secondary">
+                                    <button className="w-full bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 rounded-lg transition duration-200 ease-in-out">
                                         Bảng giá dịch vụ
                                     </button>
                                 </div>
@@ -228,6 +231,7 @@ const Payment = () => {
                         </div>
                     </div>
                 </div>
+
 
             } />
         </Routes>

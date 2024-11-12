@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchCategories, createCategory, updateCategory, deleteCategory } from "../../store/actions/admin";
-import { FaTrashAlt, FaEdit, FaEye } from "react-icons/fa";
 import Swal from "sweetalert2";
 
 const ManageCategory = () => {
@@ -16,6 +15,9 @@ const ManageCategory = () => {
     const categories = useSelector((state) => state.app.categories);
     const [errors, setErrors] = useState({});
     const { token } = useSelector((state) => state.auth);
+
+    const [currentPage, setCurrentPage] = useState(1);
+    const [itemsPerPage, setItemsPerPage] = useState(5);
 
     useEffect(() => {
         const delayFetch = setTimeout(() => {
@@ -45,10 +47,25 @@ const ManageCategory = () => {
     };
 
     const handleDeleteSelected = () => {
-        selectedCategories.forEach(categoryId => dispatch(deleteCategory(categoryId, token)));
-        dispatch(fetchCategories(token));
-        Swal.fire('Success', 'Xóa toàn bộ chuyên mục thành công !', 'success');
-        setSelectedCategories([]);
+        Swal.fire({
+            title: 'Bạn có chắc chắn muốn xóa các chuyên mục này?',
+            text: "Hành động này không thể hoàn tác!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#3085d6',
+            confirmButtonText: 'Có, xóa!',
+            cancelButtonText: 'Không, hủy!'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                selectedCategories.forEach(categoryId => dispatch(deleteCategory(categoryId, token)));
+                setTimeout(() => {
+                    dispatch(fetchCategories(token));
+                }, 1);
+                Swal.fire('', 'Xóa toàn bộ chuyên mục thành công!', 'success');
+                setSelectedCategories([]);
+            }
+        });
     };
 
     const openModal = (category) => {
@@ -82,8 +99,6 @@ const ManageCategory = () => {
         setErrors({});
     };
 
-   
-    
     const handleUpdateCategory = async () => {
         if (currentCategory) {
             if (!validate()) return;
@@ -134,31 +149,56 @@ const ManageCategory = () => {
 
     const validate = () => {
         const newErrors = {};
-        const specialCharPattern = /[^a-zA-Z0-9\sÀÁÂÃÈÉÊÌÍÒÓÔÕÙÚĂĐĨŨƠàáâãèéêìíòóôõùúăđĩũơƯĂẠẢẤẦẨẪẬẮẰẲẴẶẸẺẼỀỀỂưăạảấầẩẫậắằẳẵặẹẻẽềềểỄỆỈỊỌỎỐỒỔỖỘỚỜỞỠỢỤỦỨỪễệỉịọỏốồổỗộớờởỡợụủứừỬỮỰỲỴÝỶỸửữựỳỵỷỹ]/;
+        // Cập nhật biểu thức chính quy để cho phép ký tự tiếng Việt và loại bỏ ký tự đặc biệt
+        const specialCharPattern = /[^a-zA-Z0-9\sÀÁÂÃÈÉÊÌÍÒÓÔÕÙÚĂĐĨŨƠƯàáâãèéêìíòóôõùúăđĩũơưẠẢẤẦẨẪẬẮẰẲẴẶẸẺẼỀỂỄỆỈỊỌỎỐỒỔỖỘỚỜỞỠỢỤỦỨỪỬỮỰỲỴÝỶỸạảấầẩẫậắằẳẵặẹẻẽềểễệỉịọỏốồổỗộớờởỡợụủứừửữựỳỵỷỹ]/;
 
-        if (!currentCategory.category_name.trim()) {
+        // Lấy tên chuyên mục và loại bỏ các dấu cách không chuẩn (non-breaking spaces)
+        let categoryNameTrimmed = currentCategory.category_name.trim();
+        categoryNameTrimmed = categoryNameTrimmed.replace(/\u00A0/g, " "); // Loại bỏ dấu cách không chuẩn
+
+        // Chuyển tên chuyên mục thành chữ thường để kiểm tra dễ dàng hơn
+        categoryNameTrimmed = categoryNameTrimmed.toLowerCase();
+
+        console.log("Trimmed and lowercased category name:", categoryNameTrimmed); // Kiểm tra giá trị sau khi xử lý
+
+        // Kiểm tra nếu tên chuyên mục trống
+        if (!categoryNameTrimmed) {
             newErrors.category_name = 'Tên chuyên mục không được để trống';
-        } else if (specialCharPattern.test(currentCategory.category_name.trim())) {
+        }
+        // Kiểm tra nếu tên chuyên mục chứa ký tự đặc biệt
+        else if (specialCharPattern.test(categoryNameTrimmed)) {
             newErrors.category_name = 'Tên chuyên mục không được chứa ký tự đặc biệt';
         }
 
+        // Cập nhật lỗi và trả về kết quả
         setErrors(newErrors);
-        return Object.keys(newErrors).length === 0;
+        return Object.keys(newErrors).length === 0; // Trả về true nếu không có lỗi
     };
+
 
     const validateCreate = () => {
         const newErrors = {};
-        const specialCharPattern = /[^a-zA-Z0-9\s]/;
+        // Updated regex to allow Vietnamese characters and block special characters
+        const specialCharPattern = /[^a-zA-Z0-9\sÀÁÂÃÈÉÊÌÍÒÓÔÕÙÚĂĐĨŨƠƯàáâãèéêìíòóôõùúăđĩũơưẠẢẤẦẨẪẬẮẰẲẴẶẸẺẼỀỂỄỆỈỊỌỎỐỒỔỖỘỚỜỞỠỢỤỦỨỪỬỮỰỲỴÝỶỸạảấầẩẫậắằẳẵặẹẻẽềểễệỉịọỏốồổỗộớờởỡợụủứừửữựỳỵỷỹ]/;
 
-        if (!newCategory.category_name.trim()) {
+        // Lấy tên chuyên mục và loại bỏ các dấu cách không chuẩn (non-breaking spaces)
+        let categoryNameTrimmed = newCategory.category_name.trim();
+        categoryNameTrimmed = categoryNameTrimmed.replace(/\u00A0/g, " "); // Loại bỏ dấu cách không chuẩn
+
+        // Kiểm tra nếu tên chuyên mục trống
+        if (!categoryNameTrimmed) {
             newErrors.category_name = 'Tên chuyên mục không được để trống';
-        } else if (specialCharPattern.test(newCategory.category_name.trim())) {
+        }
+        // Kiểm tra nếu tên chuyên mục chứa ký tự đặc biệt
+        else if (specialCharPattern.test(categoryNameTrimmed)) {
             newErrors.category_name = 'Tên chuyên mục không được chứa ký tự đặc biệt';
         }
 
+        // Cập nhật lỗi và trả về kết quả
         setErrors(newErrors);
-        return Object.keys(newErrors).length === 0;
+        return Object.keys(newErrors).length === 0; // Trả về true nếu không có lỗi
     };
+
 
     const handleDeleteCategory = async (categoryId) => {
         const result = await Swal.fire({
@@ -263,45 +303,6 @@ const ManageCategory = () => {
         category.category_name.toLowerCase().includes(search.toLowerCase())
     );
 
-
-    const [currentPage, setCurrentPage] = useState(1);
-    const [itemsPerPage, setItemsPerPage] = useState(10);
-    const totalPages = Math.ceil(filteredCategories.length / itemsPerPage);
-
-        const handlePreviousPage = () => {
-            if (currentPage > 1) {
-                setCurrentPage(currentPage - 1);
-            }
-        };
-
-        const handleNextPage = () => {
-            if (currentPage < totalPages) {
-                setCurrentPage(currentPage + 1);
-            }
-        };
-
-        // Calculate the data to display on the current page
-        const indexOfLastItem = currentPage * itemsPerPage;
-        const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-        const currentItems = filteredCategories.slice(indexOfFirstItem, indexOfLastItem);
-
-    // const formatDate = (dateString) => {
-    //     const date = new Date(dateString);
-    //     const daysOfWeek = ['Chủ nhật', 'Thứ hai', 'Thứ ba', 'Thứ tư', 'Thứ năm', 'Thứ sáu', 'Thứ bảy'];
-
-    //     const dayName = daysOfWeek[date.getDay()];
-    //     const formattedDate = date.toLocaleDateString('vi-VN', {
-    //         day: '2-digit',
-    //         month: '2-digit',
-    //         year: 'numeric'
-    //     });
-    //     const formattedTime = date.toLocaleTimeString('vi-VN', {
-    //         hour: '2-digit',
-    //         minute: '2-digit'
-    //     });
-
-    //     return `${dayName}, ${formattedTime} ngày ${formattedDate}`;
-    // };
     const formatDate = (dateString) => {
         const date = new Date(dateString);
         return date.toLocaleDateString('vi-VN', {
@@ -311,14 +312,29 @@ const ManageCategory = () => {
         });
     };
 
+    const totalPages = Math.ceil(filteredCategories.length / itemsPerPage);
+    const indexOfLastItem = currentPage * itemsPerPage;
+    const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+    const currentItems = filteredCategories.slice(indexOfFirstItem, indexOfLastItem);
+
+    const handlePreviousPage = () => {
+        if (currentPage > 1) {
+            setCurrentPage(currentPage - 1);
+        }
+    };
+
+    const handleNextPage = () => {
+        if (currentPage < totalPages) {
+            setCurrentPage(currentPage + 1);
+        }
+    };
+
     return (
-        <div className="p-6 md:p-8 bg-white rounded-xl shadow-lg">
-            <h1 className="text-3xl md:text-4xl font-bold text-gray-800 text-center py-4 border-b border-gray-200 mb-4">
-                    Quản lý chuyên mục
-                </h1>
+        <div className="p-4 md:pt-9 md:p-6 md:mb-5 bg-white rounded-lg shadow-lg h-[calc(100vh-84px)] flex flex-col">
+            <h2 className="text-3xl font-medium mb-10">Quản lý chuyên mục</h2>
 
             {/* Search and Create Button */}
-            <div className="flex flex-col md:flex-row mb-4">
+            <div className="flex flex-col md:flex-row mb-8">
                 <input
                     type="text"
                     placeholder="Tìm kiếm chuyên mục theo tên..."
@@ -327,7 +343,7 @@ const ManageCategory = () => {
                     className="border p-2 rounded-md flex-grow mb-2 md:mb-0 md:mr-4"
                 />
                 <button
-                    className="bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600"
+                    className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-md transition duration-300"
                     onClick={openModalCreate}
                 >
                     Tạo mới
@@ -354,66 +370,69 @@ const ManageCategory = () => {
             </div>
 
             {/* Category Table */}
-            <div className="overflow-x-auto">
-                <table className="table-auto w-full text-left">
-                    <thead>
-                        <tr className="bg-gray-100">
-                            <th className="p-2">
-                                <input
-                                    type="checkbox"
-                                    checked={selectedCategories.length === categories.length}
-                                    onChange={toggleSelectAllCategories}
-                                />
-                            </th>
-                            <th className="p-2">ID</th>
-                            <th className="p-2">Tên chuyên mục</th>
-                            <th className="p-2">Ngày đăng</th>
-                            <th className="p-2">Ngày cập nhật</th>
-                            <th className="p-2">Chức năng</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {filteredCategories.map((category) => (
-                            <tr key={category.id} className="border-b">
-                                <td className="p-2">
+            <div className="overflow-x-auto bg-white shadow-md rounded-lg mt-5 flex-1 max-h-[calc(50vh-79px)]">
+                <div className="h-[calc(50vh-130px)]">
+                    <table className="min-w-full border-collapse border border-gray-200">
+                        <thead className="sticky top-0 bg-gray-100">
+                            <tr className="bg-gray-100 font-semibold text-gray-700 uppercase tracking-wider">
+                                <th className='border border-gray-200 px-4 py-2 '>
                                     <input
                                         type="checkbox"
-                                        checked={selectedCategories.includes(category.id)}
-                                        onChange={() => toggleSelectCategory(category.id)}
+                                        checked={selectedCategories.length === categories.length}
+                                        onChange={toggleSelectAllCategories}
                                     />
-                                </td>
-                                <td className="p-2">{category.id}</td>
-                                <td className="p-2">{category.category_name}</td>
-                                <td className="p-2">{formatDate(category.createdAt)}</td>
-                                <td className="p-2">{formatDate(category.updatedAt)}</td>
-                                <td className="p-2">
-                                    <button
-                                        className="bg-blue-500 text-white px-2 py-1 rounded-md mr-2"
-                                        onClick={() => openModalView(category)}
-                                    >
-                                        <FaEye />
-                                    </button>
-                                    <button
-                                        className="bg-yellow-500 text-white px-2 py-1 rounded-md mr-2"
-                                        onClick={() => openModal(category)}
-                                    >
-                                        <FaEdit />
-                                    </button>
-                                    <button
-                                        className="bg-red-500 text-white px-2 py-1 rounded-md"
-                                        onClick={() => handleDeleteCategory(category.id)}
-                                    >
-                                        <FaTrashAlt />
-                                    </button>
-                                </td>
+                                </th>
+                                <th className='border border-gray-200 px-4 py-2 '>ID</th>
+                                <th className='border border-gray-200 px-4 py-2 '>Tên chuyên mục</th>
+                                <th className='border border-gray-200 px-4 py-2 '>Ngày đăng</th>
+                                <th className='border border-gray-200 px-4 py-2 '>Ngày cập nhật</th>
+                                <th className='border border-gray-200 px-4 py-2 '>Chức năng</th>
                             </tr>
-                        ))}
-                    </tbody>
-                </table>
+                        </thead>
+                        <tbody className="overflow-y-auto">
+                            {currentItems.map((category) => (
+                                <tr key={category.id} className="border-b">
+                                    <td className='border border-gray-200 px-4 py-2 text-center align-middle'>
+                                        <input
+                                            type="checkbox"
+                                            checked={selectedCategories.includes(category.id)}
+                                            onChange={() => toggleSelectCategory(category.id)}
+                                        />
+                                    </td>
+                                    <td className='border border-gray-200 px-4 py-2 text-center align-middle'>{category.id}</td>
+                                    <td className='border border-gray-200 px-4 py-2 text-center align-middle'>{category.category_name}</td>
+                                    <td className='border border-gray-200 px-4 py-2 text-center align-middle'>{formatDate(category.createdAt)}</td>
+                                    <td className='border border-gray-200 px-4 py-2 text-center align-middle'>{formatDate(category.updatedAt)}</td>
+                                    <td className='border border-gray-200 px-4 py-2 text-center align-middle'>
+                                        <button
+                                            className="bg-blue-500 hover:bg-blue-600 text-white px-2 py-1 rounded-md mr-2"
+                                            onClick={() => openModalView(category)}
+                                        >
+                                            Xem
+                                        </button>
+                                        <button
+                                            className="bg-yellow-500 hover:bg-yellow-600 text-white px-2 py-1 rounded-md mr-2"
+                                            onClick={() => openModal(category)}
+                                        >
+                                            Sửa
+                                        </button>
+                                        <button
+                                            className="bg-red-500 hover:bg-red-600 text-white px-2 py-1 rounded-md"
+                                            onClick={() => handleDeleteCategory(category.id)}
+                                        >
+                                            Xóa
+                                        </button>
+                                    </td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                </div>
             </div>
 
-            <div className="flex flex-col md:flex-row justify-between items-center mt-4">
-                <div className="flex items-center mb-4 md:mb-0">
+            {/* Pagination Controls */}
+            <div className="flex justify-between items-center sticky bottom-0 bg-white py-4">
+                <div className="flex items-center">
                     <label className="mr-2 text-gray-500">Hiển thị</label>
                     <select
                         value={itemsPerPage}
@@ -424,18 +443,27 @@ const ManageCategory = () => {
                         <option value={10}>10</option>
                         <option value={15}>15</option>
                     </select>
-                    <span className="ml-2 text-gray-500">giao dịch mỗi trang</span>
+                    <span className="ml-2 text-gray-500">chuyên mục mỗi trang</span>
                 </div>
                 <div className="flex items-center">
-                    <button onClick={handlePreviousPage} className="px-4 py-2 bg-gray-200 rounded-full mr-2" disabled={currentPage === 1}>
+                    <button
+                        onClick={handlePreviousPage}
+                        className="px-4 py-2 bg-gray-200 rounded-full mr-2"
+                        disabled={currentPage === 1}
+                    >
                         Trước
                     </button>
                     <span className="text-gray-500">{currentPage} trên {totalPages} trang</span>
-                    <button onClick={handleNextPage} className="px-4 py-2 bg-gray-200 rounded-full ml-2" disabled={currentPage === totalPages}>
+                    <button
+                        onClick={handleNextPage}
+                        className="px-4 py-2 bg-gray-200 rounded-full ml-2"
+                        disabled={currentPage === totalPages}
+                    >
                         Sau
                     </button>
                 </div>
             </div>
+
 
             {/* Create Category Modal */}
             {isModalOpenCreate && (
@@ -443,7 +471,7 @@ const ManageCategory = () => {
                     <div className="bg-white p-6 rounded-lg w-11/12 md:w-1/3">
                         <h3 className="text-xl font-bold mb-4">Tạo mới chuyên mục</h3>
                         <div className="mb-4">
-                            <label>Tên chuyên mục:</label>
+                            <label className="font-semibold">Tên chuyên mục:</label>
                             <input
                                 type="text"
                                 name="category_name"
@@ -477,44 +505,44 @@ const ManageCategory = () => {
                     <div className="bg-white p-6 rounded-lg w-11/12 md:w-1/3">
                         <h3 className="text-xl font-bold mb-4">Chi tiết chuyên mục</h3>
                         <div className="mb-4">
-                            <label>ID:</label>
+                            <label className="font-semibold">ID:</label>
                             <input
                                 type="text"
                                 value={currentCategory.id}
                                 disabled
-                                className="border p-2 rounded-md w-full"
+                                className="border p-2 rounded-md w-full mt-1"
                             />
                         </div>
                         <div className="mb-4">
-                            <label>Tên chuyên mục:</label>
+                            <label className="font-semibold">Tên chuyên mục:</label>
                             <input
                                 type="text"
                                 value={currentCategory.category_name}
                                 disabled
-                                className="border p-2 rounded-md w-full"
+                                className="border p-2 rounded-md w-full mt-1"
                             />
                         </div>
                         <div className="mb-4">
-                            <label>Ngày tạo:</label>
+                            <label className="font-semibold">Ngày tạo:</label>
                             <input
                                 type="text"
                                 value={formatDate(currentCategory.createdAt)}
                                 disabled
-                                className="border p-2 rounded-md w-full"
+                                className="border p-2 rounded-md w-full mt-1"
                             />
                         </div>
                         <div className="mb-4">
-                            <label>Ngày cập nhật:</label>
+                            <label className="font-semibold">Ngày cập nhật:</label>
                             <input
                                 type="text"
                                 value={formatDate(currentCategory.updatedAt)}
                                 disabled
-                                className="border p-2 rounded-md w-full"
+                                className="border p-2 rounded-md w-full mt-1"
                             />
                         </div>
                         <div className="flex justify-end">
                             <button
-                                className="bg-gray-500 text-white px-4 py-2 rounded-md"
+                                className="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-md"
                                 onClick={closeModalView}
                             >
                                 Đóng
@@ -529,34 +557,34 @@ const ManageCategory = () => {
                     <div className="bg-white p-6 rounded-lg w-1/3">
                         <h3 className="text-xl font-bold mb-4">Cập nhật chuyên mục</h3>
                         <div className="mb-4">
-                            <label>ID:</label>
+                            <label className="font-semibold">ID:</label>
                             <input
                                 type="text"
                                 value={currentCategory.id}
                                 disabled
-                                className="border p-2 rounded-md w-full"
+                                className="border p-2 rounded-md w-full mt-1"
                             />
                         </div>
                         <div className="mb-4">
-                            <label>Tên chuyên mục:</label>
+                            <label className="font-semibold">Tên chuyên mục:</label>
                             <input
                                 type="text"
                                 name="category_name"
                                 value={currentCategory.category_name}
                                 onChange={handleInputChange}
-                                className="border p-2 rounded-md w-full"
+                                className="border p-2 rounded-md w-full mt-1"
                             />
                             {errors.category_name && <small className="text-red-500 italic">{errors.category_name}</small>}
                         </div>
                         <div className="flex justify-end">
                             <button
-                                className="bg-gray-500 text-white px-4 py-2 rounded-md mr-2"
+                                className="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-md mr-2"
                                 onClick={closeModal}
                             >
                                 Hủy
                             </button>
                             <button
-                                className="bg-green-500 text-white px-4 py-2 rounded-md"
+                                className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-md"
                                 onClick={handleUpdateCategory}
                             >
                                 Cập nhật

@@ -1,7 +1,7 @@
 import { React, useState } from 'react'
 import { text } from '../../ultils/constant'
 import { Province, ItemSidebar, RelatedPost } from '../../components'
-import { List, Pagination, Search } from './index'
+import { List, Search } from './index'
 
 import { useSelector } from 'react-redux'
 

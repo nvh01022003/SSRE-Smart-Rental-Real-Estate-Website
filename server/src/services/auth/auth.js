@@ -14,6 +14,13 @@ const hashPassWord = (password) => {
 // RESGISTER 
 const registerService = async ({ firstName, lastName, phone, email, password }) => {
     try {
+        // kiểm tra password có ít nhất 6 ký tự
+        if (password.length < 6) {
+            return {
+                err: 1,
+                msg: 'Password must be at least 6 characters'
+            };
+        }
         const hashPass = await hashPassWord(password);
         console.log('Hashed password:', hashPass);
         // Tạo avatar mặc định sử dụng email

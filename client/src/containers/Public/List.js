@@ -124,6 +124,7 @@ const List = ({ categoryCode, searchClicked }) => {
                                     img_avt: item?.User?.img_avt
                                 }}
                                 id={item?.id}
+                                updatedAt={item?.updatedAt}
                             />
                         ))
                     ) : (

@@ -11,6 +11,12 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
+      usersearches.belongsTo(models.User, { foreignKey: 'user_id' },
+        {
+          onUpdate: 'CASCADE',
+          onDelete: 'CASCADE'
+        }
+      );
     }
   }
   usersearches.init({

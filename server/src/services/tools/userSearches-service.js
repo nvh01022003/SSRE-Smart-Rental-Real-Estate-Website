@@ -1,7 +1,7 @@
 const { userSearches, sequelize } = require('../../models/index');
 // save user searches
-const saveUserSearches = async (data, user_id) => {
-    const { minPrice, maxPrice, location, minAcreage, maxAcreage, category_id } = data;
+const saveUserSearches = async (user_id, minPrice, maxPrice, location, minAcreage, maxAcreage, categoryCode) => {
+    console.log('Save user searches 2')
     try {
         const userSearch = await userSearches.create({
             minPrice: minPrice,
@@ -9,9 +9,10 @@ const saveUserSearches = async (data, user_id) => {
             location: location,
             minAcreage: minAcreage,
             maxAcreage: maxAcreage,
-            category_id: category_id,
-            user_id
+            category_id: categoryCode,
+            user_id: 1
         })
+        console.log('Save user searches 3')
         return {
             err: 0,
             msg: userSearch

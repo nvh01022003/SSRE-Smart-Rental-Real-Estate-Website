@@ -126,12 +126,13 @@ const UpgradeAccount = () => {
     }
 
     return (
-        <div className="px-6">
-            <h1 className='text-3xl font-medium py-4 border-b border-gray-200'>Nâng cấp tài khoản</h1>
+        <div className="px-4 md:px-6 lg:px-8 max-w-lg mx-auto bg-white shadow-md rounded-lg p-6 shadow mb-6">
+            <h1 className='text-3xl md:text-4xl font-bold text-gray-800 text-center py-4 border-b border-gray-200'>Nâng cấp tài khoản</h1>
             <form className='flex flex-col pt-8' onSubmit={handleSubmit}>
                 <div className='mb-4'>
-                    <label className='block text-sm font-medium text-gray-700'>Tên đầy đủ</label>
+                    <label className='text-sm text-gray-700 font-medium'>TÊN ĐẦY ĐỦ: </label>
                     <input
+                        placeholder="Nhập tên đầy đủ ..."
                         type="text"
                         name="full_name"
                         value={formData.full_name}
@@ -141,7 +142,7 @@ const UpgradeAccount = () => {
                     {errors.full_name && <small className='text-red-500'>{errors.full_name}</small>}
                 </div>
                 <div className='mb-4'>
-                    <label className='block text-sm font-medium text-gray-700'>Ngày sinh</label>
+                    <label className='text-sm text-gray-700 font-medium'>NGÀY SINH:</label>
                     <input
                         type="date"
                         name="date_of_birth"
@@ -152,8 +153,9 @@ const UpgradeAccount = () => {
                     {errors.date_of_birth && <small className='text-red-500'>{errors.date_of_birth}</small>}
                 </div>
                 <div className='mb-4'>
-                    <label className='block text-sm font-medium text-gray-700'>Địa chỉ</label>
+                    <label className='text-sm text-gray-700 font-medium'>ĐỊA CHỈ:</label>
                     <input
+                        placeholder="Nhập địa chỉ ..."
                         type="text"
                         name="address"
                         value={formData.address}
@@ -163,8 +165,9 @@ const UpgradeAccount = () => {
                     {errors.address && <small className='text-red-500'>{errors.address}</small>}
                 </div>
                 <div className='mb-4'>
-                    <label className='block text-sm font-medium text-gray-700'>Số điện thoại</label>
+                    <label className='text-sm text-gray-700 font-medium'>SỐ ĐIỆN THOẠI:</label>
                     <input
+                        placeholder="Nhập số điện thoại ..."
                         type="text"
                         name="contact"
                         value={formData.contact}
@@ -174,8 +177,9 @@ const UpgradeAccount = () => {
                     {errors.contact && <small className='text-red-500'>{errors.contact}</small>}
                 </div>
                 <div className='mb-4'>
-                    <label className='block text-sm font-medium text-gray-700'>Số CMND/CCCD</label>
+                    <label className='text-sm text-gray-700 font-medium'>SỐ CMND/CCCD:</label>
                     <input
+                        placeholder="Nhập số chứng minh nhân dân ..."
                         type="text"
                         name="citizen_id"
                         value={formData.citizen_id}
@@ -185,7 +189,7 @@ const UpgradeAccount = () => {
                     {errors.citizen_id && <small className='text-red-500'>{errors.citizen_id}</small>}
                 </div>
                 <div className='mb-4'>
-                    <label className='block text-sm font-medium text-gray-700'>Ảnh CMND/CCCD</label>
+                    <label className='text-sm text-gray-700 font-medium'>ẢNH CMND/CCCD:</label>
                     <input
                         type="file"
                         name="id_card_image_url"
@@ -198,7 +202,7 @@ const UpgradeAccount = () => {
                 </div>
                 <button
                     type="submit"
-                    className='bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600'
+                    className='text-xl bg-blue-500 hover:bg-blue-600 text-white font-semibold py-3 px-6 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 transition duration-200 w-full md:w-auto'
                 >
                     Gửi yêu cầu
                 </button>

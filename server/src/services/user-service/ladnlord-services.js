@@ -3,7 +3,7 @@ const gravatar = require("gravatar");
 const { where } = require("sequelize");
 const helper = require("../../helper/check-coordinates");
 const paginationHelper = require("../../helper/pagination");
-const { Post, Address, Category, Image, Overview, Coordinates, sequelize } = require("../../models/index");
+const { Post, Address, Category, Image, Overview, Coordinates, PostType, sequelize, User } = require("../../models/index");
 const middleware = require("../../middleware/upload/uploadImg")
 const { response } = require("express");
 const multer = require('multer');
@@ -28,7 +28,7 @@ const generateRandomCode = () => {
 const createNewPost = async (userId, contentPost, files) => {
     contentPost = JSON.parse(contentPost)  //ép kiểu qua kiểu json vì bên client gửi lên dạng string
     const imageUrls = files;
-    const { title, address, price, description, overview, category_id, acreage, target, expire } = contentPost
+    const { title, address, price, description, overview, category_id, postType_id, acreage, target, expire } = contentPost
     console.log('contentPost', contentPost)
     const addressData = address
     const overviewData = {
@@ -40,11 +40,13 @@ const createNewPost = async (userId, contentPost, files) => {
         expire: expire,
     }
     let addressStr = addressData.detail_address + ", " + addressData.district + ", " + addressData.city
+    console.log('addressStr', addressStr)
     const resCoordinates = await helper.getGeocodingData(addressStr)
     const coordinatesData = {
         lat: resCoordinates.lat,
         lon: resCoordinates.lng
     }
+    console.log('coordinatesData', coordinatesData)
 
     try {
         const [resAddress, resOverview, resCoordinates, resImage] = await Promise.all([
@@ -63,7 +65,8 @@ const createNewPost = async (userId, contentPost, files) => {
             coordinates_id: resCoordinates.id,
             category_id: category_id,
             acreage: acreage,
-            img_id: resImage.id
+            img_id: resImage.id,
+            postType_id: postType_id
         });
         return {
             err: 0,
@@ -246,7 +249,8 @@ const listPost = async (userId) => {
     try {
         const resPost = await Post.findAll({
             where: {
-                user_id: userId
+                user_id: userId,
+                status: 0  // Chỉ lấy các bài đăng có status = 0
             },
             include: [
                 {
@@ -279,6 +283,102 @@ const listPost = async (userId) => {
         }
     }
 }
+// show all soft delete posts
+const showAllSoftDeletePosts = async (userId) => {
+    try {
+        const post = await Post.findAll({
+            where: {
+                user_id: userId,
+                status: 1  // Chỉ lấy các bài đăng có status = 1
+            },
+            order: [['createdAt', 'DESC']], // Sắp xếp theo thời gian tạo, từ mới nhất
+            include: [
+                {
+                    model: Address,
+                    attributes: ['city', 'district', 'detail_address']
+                },
+                {
+                    model: Image,
+                    attributes: ['img_url_list']
+                },
+                {
+                    model: Category,
+                    attributes: ['id', 'category_name']
+                },
+                {
+                    model: User,
+                    attributes: ['firstName', 'lastName', 'email', 'phone', 'img_avt']
+                },
+                {
+                    model: Overview,
+                    attributes: ['target', 'expire']
+                },
+            ]
+        });
+
+        return {
+            err: 0,
+            posts: post
+        };
+    } catch (err) {
+        return {
+            err: 1,
+            posts: [],
+            msg: err
+        };
+    }
+}
+//  Khôi phục bài đăng đã xóa mềm (status = 1) của người dùng cụ thể
+const restoreSoftDeletedPost = async (postId) => {
+    try {
+        // Cập nhật lại status của bài đăng từ 1 (đã xóa mềm) thành 0 (đang hoạt động) của userId xác định
+        const restoredPost = await Post.update(
+            { status: 0 }, // Khôi phục lại status = 0
+            {
+                where: {
+                    id: postId,
+                    status: 1 // Chỉ khôi phục bài đăng có status = 1
+                }
+            }
+        );
+
+        // Kiểm tra kết quả khôi phục
+        if (restoredPost[0] === 1) {
+            return {
+                err: 0,
+                msg: 'Post has been restored successfully.'
+            };
+        } else {
+            return {
+                err: 1,
+                msg: 'Post not found, does not belong to this user, or is already active.'
+            };
+        }
+    } catch (error) {
+        console.error(error);
+        return {
+            err: 1,
+            msg: error.message || 'Failed to restore post.'
+        };
+    }
+};
+// Xóa mềm bài đăng của user
+const softDeletePost = async (postId) => {
+    try {
+        await Post.update(
+            { status: 1 },
+            {
+                where: {
+                    id: postId                }
+            }
+        );
+        return { err: 0, msg: 'Post soft-deleted successfully.' };
+    } catch (error) {
+        return { err: 1, msg: error.message }; 
+    } 
+}; 
+
+
 // LIST POST BY PAGE PAGINATION
 const listPostByPage = async (userId, page) => {
     try {
@@ -332,6 +432,9 @@ const listPostByPage = async (userId, page) => {
         }
     }
 }
+
+
+
 module.exports = {
     createNewPost,
     updateStatusPost,
@@ -340,5 +443,8 @@ module.exports = {
     deleteListPost,
     listPost,
     updateStatusPosts,
-    listPostByPage
+    listPostByPage,
+    showAllSoftDeletePosts,
+    restoreSoftDeletedPost,
+    softDeletePost
 };

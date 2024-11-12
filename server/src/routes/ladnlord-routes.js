@@ -27,4 +27,11 @@ router.get("/listPostByPage", authentication.authenticateToken, authorization.ch
 router.post("/changestatus", authentication.authenticateToken, authorization.checkRoleUser, ladnlordController.updateStatusPosts)
 // delete list post
 router.delete("/deleteListPost", authentication.authenticateToken, authorization.checkRoleUser, ladnlordController.deleteListPost)
+// show soft delete list post
+router.get("/listPostSoftDelete", authentication.authenticateToken, authorization.checkRoleUser, ladnlordController.showAllSoftDeletePosts)
+// restore post
+router.put("/restorePost/:id", authentication.authenticateToken, authorization.checkRoleUser, ladnlordController.restorePost)
+// soft delete post
+router.put("/softDeletePost/:id", authentication.authenticateToken, authorization.checkRoleUser, ladnlordController.softDeletePost)
+
 module.exports = router
