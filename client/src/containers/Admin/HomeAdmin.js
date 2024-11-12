@@ -2,7 +2,7 @@ import React from 'react'
 import * as actions from '../../store/actions'
 import { logout } from '../../store/actions/auth'
 import { useDispatch } from 'react-redux'
-import { AiOutlineLogout, AiOutlineCreditCard } from 'react-icons/ai'
+import { AiOutlineLogout, AiOutlineCreditCard, AiOutlineTags } from 'react-icons/ai'
 import { useState } from "react";
 import { FiHome, FiUsers, FiFolder, FiFileText, FiUserCheck, FiMenu, FiX } from "react-icons/fi";
 import logo from '../../assets/logo.png'
@@ -12,6 +12,7 @@ import ManageRequest from './ManageRequest';
 import ManagePost from './ManagePost';
 import Dashboard from './Dashboard';
 import ManageTransaction from './ManageTransaction';
+import ManageTypePost from './ManageTypePost';
 
 const HomeAdmin = () => {
     const dispatch = useDispatch();
@@ -26,6 +27,7 @@ const HomeAdmin = () => {
         { name: "Quản lý tin đăng", icon: <FiFileText /> },
         { name: "Quản lý yêu cầu", icon: <FiUserCheck /> },
         { name: "Quản lý giao dịch", icon: <AiOutlineCreditCard /> },
+        { name: "Quản lý loại tin", icon: <AiOutlineTags /> },
         { name: "Đăng xuất", icon: <AiOutlineLogout />, action: "logout" }
     ];
 
@@ -59,7 +61,7 @@ const HomeAdmin = () => {
                             />
                             {isSidebarOpen && (
                                 // <h1 className="text-xl font-bold ml-2">Smart Rental Real Estate</h1>
-                                <div className='text-xl font-semibold block pb-1'>
+                                <div className='text-lg font-semibold block pb-1'>
                                     Smart Rental Real Estate
                                 </div>
                             )}
@@ -108,6 +110,9 @@ const HomeAdmin = () => {
                     )}
                     {activeTab === "Quản lý giao dịch" && (
                         <ManageTransaction />
+                    )}
+                    {activeTab === "Quản lý loại tin" && (
+                        <ManageTypePost />
                     )}
                 </div>
             </div>

@@ -3,7 +3,7 @@ const gravatar = require("gravatar");
 const { where } = require("sequelize");
 const helper = require("../../helper/check-coordinates");
 const paginationHelper = require("../../helper/pagination");
-const { Post, Address, Category, Image, Overview, Coordinates, PostType, sequelize } = require("../../models/index");
+const { Post, Address, Category, Image, Overview, Coordinates, Wallet, PostType, sequelize } = require("../../models/index");
 const middleware = require("../../middleware/upload/uploadImg")
 const { response } = require("express");
 const multer = require('multer');
@@ -28,7 +28,7 @@ const generateRandomCode = () => {
 const createNewPost = async (userId, contentPost, files) => {
     contentPost = JSON.parse(contentPost)  //ép kiểu qua kiểu json vì bên client gửi lên dạng string
     const imageUrls = files;
-    const { title, address, price, description, overview, category_id, postType_id, acreage, target, expire } = contentPost
+    const { title, address, price, description, overview, category_id, postType_id, acreage, target, expire, totalPayment } = contentPost
 
     console.log('contentPost', contentPost)
     const addressData = address

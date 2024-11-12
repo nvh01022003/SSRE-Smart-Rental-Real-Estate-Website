@@ -1,7 +1,7 @@
 const InputFormV3 = ({ value, setValue, name, label, unit, small }) => {
     return (
         <div>
-            <label htmlFor={name}>{label}</label>
+            <label htmlFor={name}>{label} <span className='text-red-500'>*</span></label>
             <div className='flex items-center'>
                 <input
                     type='text'

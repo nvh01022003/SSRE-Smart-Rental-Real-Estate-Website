@@ -1,15 +1,22 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useState, useRef } from 'react';
 import { Overview, Address, Loading, Button } from '../../../components';
 import icons from '../../../ultils/icons';
 import axios from 'axios';
 import Swal from 'sweetalert2';
 import { useSelector } from 'react-redux';
+import { useLocation } from 'react-router-dom';
 
 const { BsCameraFill, ImBin } = icons;
 
 const CreatePost = () => {
+    const location = useLocation();
+    const { selectedTypePostId } = location.state || {};
+
+    const { token } = useSelector(state => state.auth);
     const [payload, setPayload] = useState({
         category_id: '',
+        postType_id: selectedTypePostId || '',
+        totalPayment: 0,
         title: '',
         price: 0,
         acreage: 0,
@@ -32,9 +39,10 @@ const CreatePost = () => {
     });
     const [imagesPreview, setImagesPreview] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
-    const { token } = useSelector(state => state.auth);
+
 
     const [errorMessages, setErrorMessages] = useState({
+        postType_id: '',
         title: '',
         description: '',
         price: '',
@@ -100,6 +108,13 @@ const CreatePost = () => {
 
     const handleSubmit = async () => {
         setIsLoading(true);
+
+        // Validate postType_id
+        if (!payload.postType_id) {
+            setErrorMessages(prev => ({ ...prev, postType_id: 'Vui lòng chọn loại tin đăng.' }));
+        } else {
+            setErrorMessages(prev => ({ ...prev, postType_id: '' }));
+        }
 
         // Validate address and overview fields
         const isAddressValid = addressRef.current.validateFields();
@@ -227,7 +242,7 @@ const CreatePost = () => {
 
     return (
         <div className="container mx-auto p-4 md:p-6">
-            {role === 'tenant' ? (
+            {role === 'tenants' ? (
                 <div className='bg-white shadow-md rounded-lg p-6'>
                     <h1 className='text-3xl md:text-4xl font-bold text-gray-800 text-center py-4 border-b border-gray-200'>Đăng tin mới</h1>
                     <div className='flex flex-col md:flex-row gap-2 mt-10 font-medium text-lg'>
@@ -250,7 +265,7 @@ const CreatePost = () => {
                                 <Overview ref={overviewRef} payload={payload} setPayload={setPayload} handleInputChange={handleInputChange} />
                             </div>
                             <div className='w-full mb-5'>
-                                <h2 className='font-semibold text-xl py-4'>Hình ảnh</h2>
+                                <h2 className='font-semibold text-xl py-4'>Hình ảnh <span className='text-red-500'>*</span></h2>
                                 <small className='text-gray-600'>Cập nhật hình ảnh rõ ràng sẽ cho thuê nhanh hơn</small>
                                 <div className='w-full'>
                                     <label className='w-full border-2 h-[200px] mt-4 mb-1 gap-4 flex flex-col items-center justify-center border-gray-400 border-dashed rounded-md' htmlFor="file">
