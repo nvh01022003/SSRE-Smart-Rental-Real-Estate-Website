@@ -65,15 +65,14 @@ const ServicePrice = () => {
                                 </div>
 
                                 <div className="mt-8 space-y-4">
-                                    {item.features && item.features.map((feature, featureIndex) => (
-                                        <div
-                                            className="flex items-center space-x-3"
-                                            key={featureIndex}
-                                        >
-                                            <FiCheckCircle className="h-5 w-5 text-green-500 flex-shrink-0" />
-                                            <span className="text-gray-600">{feature}</span>
-                                        </div>
-                                    ))}
+                                    <div className="flex flex-col space-y-1">
+                                        {item.desc.split('.').filter(sentence => sentence.trim() !== '').map((sentence, index) => (
+                                            <div key={index} className="flex items-center space-x-3">
+                                                <FiCheckCircle className="h-5 w-5 text-green-500 flex-shrink-0" />
+                                                <span className="text-gray-600">{sentence.trim()}</span>
+                                            </div>
+                                        ))}
+                                    </div>
                                 </div>
 
                                 <motion.button

@@ -226,6 +226,13 @@ const CreatePost = () => {
                     });
                 }
             }
+            else {
+                Swal.fire('Thất bại', 'Lỗi khi tạo bài đăng !', 'error');
+                console.log('error', response.data)
+                setPayload({
+                    images: []
+                });
+            }
 
         } catch (error) {
             console.error('Error creating post:', error);
@@ -239,7 +246,7 @@ const CreatePost = () => {
     if (isLoading) {
         return <Loading />;
     }
-
+    console.log('payload', payload);
     return (
         <div className="container mx-auto p-4 md:p-6">
             {role === 'tenants' ? (

@@ -353,7 +353,7 @@ const ManageCategory = () => {
             {/* Bulk Delete */}
             <div className="flex flex-col md:flex-row justify-between items-center mb-4">
                 <button
-                    className={`bg-red-500 text-white px-4 py-2 rounded-md ${selectedCategories.length === 0 ? "opacity-50 cursor-not-allowed" : ""}`}
+                    className={`bg-red-500 hover:bg-red-600 transition duration-300 text-white px-4 py-2 rounded-md ${selectedCategories.length === 0 ? "opacity-50 cursor-not-allowed" : ""}`}
                     onClick={handleDeleteSelected}
                     disabled={selectedCategories.length === 0}
                 >
@@ -405,19 +405,19 @@ const ManageCategory = () => {
                                     <td className='border border-gray-200 px-4 py-2 text-center align-middle'>{formatDate(category.updatedAt)}</td>
                                     <td className='border border-gray-200 px-4 py-2 text-center align-middle'>
                                         <button
-                                            className="bg-blue-500 hover:bg-blue-600 text-white px-2 py-1 rounded-md mr-2"
+                                            className="bg-blue-500 hover:bg-blue-600 text-white px-2 py-1 rounded-md mr-2 transition duration-300"
                                             onClick={() => openModalView(category)}
                                         >
                                             Xem
                                         </button>
                                         <button
-                                            className="bg-yellow-500 hover:bg-yellow-600 text-white px-2 py-1 rounded-md mr-2"
+                                            className="bg-yellow-500 hover:bg-yellow-600 text-white px-2 py-1 rounded-md mr-2 transition duration-300"
                                             onClick={() => openModal(category)}
                                         >
                                             Sửa
                                         </button>
                                         <button
-                                            className="bg-red-500 hover:bg-red-600 text-white px-2 py-1 rounded-md"
+                                            className="bg-red-500 hover:bg-red-600 text-white px-2 py-1 rounded-md transition duration-300"
                                             onClick={() => handleDeleteCategory(category.id)}
                                         >
                                             Xóa
@@ -483,13 +483,13 @@ const ManageCategory = () => {
                         </div>
                         <div className="flex justify-end">
                             <button
-                                className="bg-gray-500 text-white px-4 py-2 rounded-md mr-2"
+                                className="bg-gray-500 text-white px-4 py-2 rounded-md mr-2 transition duration-300"
                                 onClick={closeModalCreate}
                             >
                                 Hủy
                             </button>
                             <button
-                                className="bg-green-500 text-white px-4 py-2 rounded-md"
+                                className="bg-green-500 text-white px-4 py-2 rounded-md transition duration-300"
                                 onClick={handleCreateCategory}
                             >
                                 Tạo mới
@@ -542,7 +542,7 @@ const ManageCategory = () => {
                         </div>
                         <div className="flex justify-end">
                             <button
-                                className="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-md"
+                                className="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-md transition duration-300"
                                 onClick={closeModalView}
                             >
                                 Đóng
@@ -578,13 +578,13 @@ const ManageCategory = () => {
                         </div>
                         <div className="flex justify-end">
                             <button
-                                className="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-md mr-2"
+                                className="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-md mr-2 transition duration-300"
                                 onClick={closeModal}
                             >
                                 Hủy
                             </button>
                             <button
-                                className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-md"
+                                className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-md transition duration-300"
                                 onClick={handleUpdateCategory}
                             >
                                 Cập nhật
