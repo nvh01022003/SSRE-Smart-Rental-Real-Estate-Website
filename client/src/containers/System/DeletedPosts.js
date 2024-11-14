@@ -8,8 +8,9 @@ import { fetchCategories } from '../../store/actions';
 import { Loading } from '../../components';
 import { useNavigate } from 'react-router-dom';
 import { FaSearch } from 'react-icons/fa';
-
+import { Breadcrumb } from '../../components';
 const DeletedPosts = () => {
+    const breadcrumbItems = []
     const navigate = useNavigate();
     const dispatch = useDispatch();
     const [posts, setPosts] = useState([]);
@@ -194,28 +195,30 @@ const DeletedPosts = () => {
         const date = new Date(dateString);
         return date.toLocaleDateString('vi-VN');
     };
-
+    const formatCurrency = (amount) => {
+        return Math.floor(amount).toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+    };
     return (
         <div className='container mx-auto px-4 py-8'>
+            <Breadcrumb items={breadcrumbItems} />
             <div className='bg-white shadow-md rounded-lg p-6'>
                 <h1 className='text-3xl md:text-4xl font-bold text-gray-800 text-center py-4 border-b border-gray-200'>Danh sách tin đã xóa</h1>
-                <div className="flex mt-5 gap-10">
-                    <div className='relative mb-4 md:mr-4 w-full md:w-[85%] '> {/* Thay đổi chiều rộng cho di động */}
+                <div className="flex flex-col md:flex-row mt-5 gap-4">
+                    <div className='relative mb-4 w-full md:w-[85%]'>
                         <input
                             type="text"
                             placeholder="Tìm kiếm theo tiêu đề..."
-                            className='pl-10 pr-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 w-full' // Thêm w-full để ô tìm kiếm chiếm toàn bộ chiều rộng
+                            className='pl-10 pr-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 w-full'
                             value={search}
                             onChange={handleSearch}
                         />
                         <FaSearch className='absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400' />
                     </div>
-                    {/* Dropdown cho danh mục */}
-                    <div className='mb-4 w-full md:w-[15%] justify-end'> {/* Thay đổi chiều rộng cho di động */}
+                    <div className='mb-4 w-full md:w-[20%]'>
                         <select
                             value={selectedCategory}
                             onChange={handleCategoryChange}
-                            className='px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ' // Thêm w-full để dropdown chiếm toàn bộ chiều rộng
+                            className='w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500'
                         >
                             <option value="all">Tất cả danh mục</option>
                             {categories.map(category => (
@@ -223,9 +226,8 @@ const DeletedPosts = () => {
                             ))}
                         </select>
                     </div>
-                    </div>
-                <div className="overflow-x-auto bg-white shadow-md rounded-lg mt-5 ">
-                    
+                </div>
+                <div className="overflow-x-auto bg-white shadow-md rounded-lg mt-5">
                     <table className="min-w-full border-collapse border border-gray-200">
                         <thead className="sticky top-0 bg-gray-100">
                             <tr className="font-semibold text-gray-700 uppercase tracking-wider">
@@ -253,35 +255,35 @@ const DeletedPosts = () => {
                             {isLoading && <div className="text-center">Đang tải...</div>}
                             {currentPosts.length === 0 ? (
                                 <tr>
-                                    <td colSpan="7" className="text-center py-4">Không có tin đăng nào</td>
+                                    <td colSpan="8" className="text-center py-4">Không có tin đăng nào</td>
                                 </tr>
                             ) : (
                                 currentPosts.map(post => (
                                     <tr key={post.id} className="hover:bg-gray-50 transition duration-300">
-                                        <td className='border border-gray-200 py-2 text-center align-middle'>{post.id}</td>
-                                        <td className='border border-gray-200 px-4 py-2 truncate max-w-xs'>{post.title}</td> {/* Title truncation */}
-                                        <td className='border border-gray-200 py-2 text-center align-middle'>{post.price}</td>
-                                        <td className='border border-gray-200  py-2 text-center align-middle'>{post.acreage}</td>
-                                        <td className='border border-gray-200 px-4 py-2 text-center align-middle'>{formatDate(post.createdAt)}</td>
-                                        <td className='border border-gray-200 px-4 py-2 text-center align-middle'>
+                                        <td className='border border-gray-200 py-2 text-center'>{post.id}</td>
+                                        <td className='border border-gray-200 px-4 py-2 truncate'>{post.title}</td>
+                                        <td className='border border-gray-200 py-2 text-center'>{formatCurrency(post.price)}</td>
+                                        <td className='border border-gray-200 py-2 text-center'>{post.acreage}</td>
+                                        <td className='border border-gray-200 px-4 py-2 text-center'>{formatDate(post.createdAt)}</td>
+                                        <td className='border border-gray-200 px-4 py-2 text-center'>
                                             <img
                                                 src={JSON.parse(post.Image.img_url_list)[0]}
                                                 alt={post.title}
                                                 className="w-20 h-20 object-cover rounded"
                                             />
                                         </td>
-                                        <td className='border border-gray-200  py-2 text-center align-middle'>{post.Category.category_name || 'Không có danh mục'}</td>
-                                        <td className='border border-gray-200  py-2 text-center align-middle'>
-                                            <button onClick={() => handleView(post)} className="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded mr-2 transition duration-300">Xem</button>
-                                            <button onClick={() => handleRestore(post.id)} className="bg-yellow-500 hover:bg-yellow-600 text-white px-3 py-1 rounded mr-2 transition duration-300">Khôi phục</button>
-                                            <button onClick={() => handleDelete(post.id)} className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded transition duration-300">Xóa</button>
+                                        <td className='border border-gray-200 py-2 text-center'>{post.Category.category_name || 'Không có danh mục'}</td>
+                                        <td className='border border-gray-200 py-2 text-center'>
+                                            <button onClick={() => handleView(post)} className="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded mr-2">Xem</button>
+                                            <button onClick={() => handleRestore(post.id)} className="bg-yellow-500 hover:bg-yellow-600 text-white px-3 py-1 rounded mr-2">Khôi phục</button>
+                                            <button onClick={() => handleDelete(post.id)} className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded">Xóa</button>
                                         </td>
                                     </tr>
                                 ))
                             )}
                         </tbody>
                     </table>
-                    </div>
+                </div>
                 {/* Pagination */}
                 <div className="flex flex-col md:flex-row justify-between items-center mt-4">
                     <div className="flex items-center mb-4 md:mb-0">
@@ -290,7 +292,7 @@ const DeletedPosts = () => {
                             value={itemsPerPage}
                             onChange={(e) => {
                                 setItemsPerPage(Number(e.target.value));
-                                setCurrentPage(1); // Reset to the first page when items per page changes
+                                setCurrentPage(1);
                             }}
                             className="border border-gray-300 rounded px-2 py-1"
                         >

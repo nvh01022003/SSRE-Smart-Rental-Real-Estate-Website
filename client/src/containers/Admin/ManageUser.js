@@ -392,7 +392,7 @@ const ManageUser = () => {
                 />
                 <select value={role} onChange={handleRoleChange} className="border border-gray-400 p-2 rounded-md">
                     <option value="all">Tất cả vai trò</option>
-                    <option value="tenant">Người thuê</option>
+                    <option value="tenants">Người thuê</option>
                     <option value="ladnlord">Chủ nhà</option>
                 </select>
             </div>
@@ -453,7 +453,7 @@ const ManageUser = () => {
                                     <td className='border border-gray-200 px-4 py-2 text-left align-middle'>{user.email}</td>
                                     <td className='border border-gray-200 px-4 py-2 text-center align-middle'>{user.phone}</td>
                                     <td className="border border-gray-200 px-4 py-2 text-center align-middle hidden md:table-cell">
-                                        {user.role === "tenant" ? "Người thuê" : user.role === "ladnlord" ? "Chủ nhà" : user.role}
+                                        {user.role === "tenants" ? "Người thuê" : user.role === "ladnlord" ? "Chủ nhà" : user.role}
                                     </td>
                                     <td className="border border-gray-200 px-4 py-2 text-center align-middle hidden md:table-cell">
                                         <img src={user.img_avt} alt={user.firstName} className="w-[30px] h-[30px] rounded-full object-cover mx-auto" />
@@ -572,7 +572,7 @@ const ManageUser = () => {
                             <label className="font-semibold">Vai trò:</label>
                             <input
                                 name="role"
-                                value={currentUser.role === "tenant" ? "Người thuê" : currentUser.role === "ladnlord" ? "Chủ nhà" : currentUser.role}
+                                value={currentUser.role === "tenants" ? "Người thuê" : currentUser.role === "ladnlord" ? "Chủ nhà" : currentUser.role}
                                 disabled
                                 className="border p-2 rounded-md w-full"
                             />

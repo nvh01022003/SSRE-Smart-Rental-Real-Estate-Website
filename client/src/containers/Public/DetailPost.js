@@ -55,7 +55,7 @@ const DetailPost = () => {
     const navigate = useNavigate();
     const { id } = useParams();
     const token = useSelector(state => state.auth);
-
+    const [typePosts, setTypePosts] = useState([]);
     const [data, setData] = useState(null);
     const [isOpen, setIsOpen] = useState(false);
     const [currentImage, setCurrentImage] = useState(0);
@@ -71,6 +71,21 @@ const DetailPost = () => {
                 console.error('Error fetching user role:', error);
             }
         };
+        const fetchTypePost = async () => {
+            try {
+                const res = await axios.get('http://localhost:5000/api/v1/admin/showAllTypePost', {
+                    headers: {
+                        'token': `${token}`,
+                    }
+                });
+                if (res.data.err === 0) {
+                    setTypePosts(res.data.postType);
+                }
+            } catch (error) {
+                console.error('Error fetching typePosts:', error);
+            }
+        };
+        fetchTypePost();
         fetchData();
     }, [id, token]);
 
@@ -312,7 +327,11 @@ const DetailPost = () => {
             {/* Thông tin mô tả */}
             <div className="mb-4 mt-10">
                 <h2 className="text-xl font-semibold mb-2">Thông tin mô tả</h2>
-                <p className='text-gray-700'>{data.description}</p>
+                {data.description.split('.').filter(sentence => sentence.trim() !== '').map((sentence, index) => (
+                    <div key={index} className="flex items-center space-x-3">
+                        <span className="text-gray-700">{sentence.trim()}.</span>
+                    </div>
+                ))}
             </div>
 
             <div className='flex gap-5 mt-10'>
@@ -336,18 +355,23 @@ const DetailPost = () => {
                                     </td>
                                 </tr>
                                 <tr className='h-8'>
+                                    <td className="font-normal pl-2">Loại tin : </td>
+                                    <td className='text-red-500'>{typePosts.find(postType => postType.id === parseInt(data.postType_id))?.name || data.postType_id}</td>
+                                </tr>
+                                <tr className='bg-gray-200 h-8'>
                                     <td className="font-normal pl-2">Khu vực : </td>
                                     <td>{data.overviews.area}</td>
                                 </tr>
-                                <tr className='bg-gray-200 h-8'>
+                                <tr className='h-8'>
                                     <td className="font-normal pl-2">Đối tượng cho thuê : </td>
                                     <td>{getTargetLabel(data.overviews.target)}</td>
                                 </tr>
-                                <tr className='h-8'>
+
+                                <tr className='bg-gray-200 h-8'>
                                     <td className="font-normal pl-2">Ngày đăng : </td>
                                     <td>{formatDate(data.createdAt)}</td>
                                 </tr>
-                                <tr className="bg-gray-200 h-8">
+                                <tr className="h-8">
                                     <td className="font-normal pl-2">Ngày hết hạn : </td>
                                     <td>{formatDate(data.overviews.expire)}</td>
                                 </tr>

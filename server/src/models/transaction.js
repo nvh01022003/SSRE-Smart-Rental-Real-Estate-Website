@@ -11,12 +11,16 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate({ Wallet }) {
       // define association here
+
+      // this.belongsTo(Wallet, { foreignKey: 'wallet_id' });
+
       this.belongsTo(Wallet, { foreignKey: 'wallet_id' },
         {
           onUpdate: 'CASCADE',
           onDelete: 'CASCADE'
         }
       );
+
     }
   }
   Transaction.init({

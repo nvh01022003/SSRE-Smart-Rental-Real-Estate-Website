@@ -1,54 +1,58 @@
+// src/containers/Admin/ManageTypePost.js
+
 import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchCategories, createCategory, updateCategory, deleteCategory } from "../../store/actions/admin";
+import {
+    fetchTypePosts,
+    createTypePost,
+    updateTypePost,
+    deleteTypePost,
+} from "../../store/actions/admin";
 import Swal from "sweetalert2";
 
-const ManageCategory = () => {
+const ManageTypePost = () => {
     const dispatch = useDispatch();
     const [search, setSearch] = useState("");
-    const [selectedCategories, setSelectedCategories] = useState([]);
+    const [selectedTypePosts, setSelectedTypePosts] = useState([]);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isModalOpenView, setIsModalOpenView] = useState(false);
-    const [isModalOpenCreate, setIsModalOpenCreate] = useState(false); // State to control create modal
-    const [currentCategory, setCurrentCategory] = useState(null);
-    const [newCategory, setNewCategory] = useState({ category_name: '' }); // State for new category
-    const categories = useSelector((state) => state.app.categories);
+    const [isModalOpenCreate, setIsModalOpenCreate] = useState(false);
+    const [currentTypePost, setCurrentTypePost] = useState(null);
+    const [newTypePost, setNewTypePost] = useState({ name: '', price: '' });
     const [errors, setErrors] = useState({});
     const { token } = useSelector((state) => state.auth);
+    const { typePosts } = useSelector((state) => state.admin);
 
     const [currentPage, setCurrentPage] = useState(1);
     const [itemsPerPage, setItemsPerPage] = useState(5);
 
     useEffect(() => {
-        const delayFetch = setTimeout(() => {
-            dispatch(fetchCategories(token));
-        }, 1);
-        return () => clearTimeout(delayFetch);
+        dispatch(fetchTypePosts(token));
     }, [dispatch, token]);
 
     const handleSearch = (e) => {
         setSearch(e.target.value);
     };
 
-    const toggleSelectCategory = (id) => {
-        if (selectedCategories.includes(id)) {
-            setSelectedCategories(selectedCategories.filter(categoryId => categoryId !== id));
+    const toggleSelectTypePost = (id) => {
+        if (selectedTypePosts.includes(id)) {
+            setSelectedTypePosts(selectedTypePosts.filter((typePostId) => typePostId !== id));
         } else {
-            setSelectedCategories([...selectedCategories, id]);
+            setSelectedTypePosts([...selectedTypePosts, id]);
         }
     };
 
-    const toggleSelectAllCategories = () => {
-        if (selectedCategories.length === categories.length) {
-            setSelectedCategories([]);
+    const toggleSelectAllTypePosts = () => {
+        if (selectedTypePosts.length === typePosts.length) {
+            setSelectedTypePosts([]);
         } else {
-            setSelectedCategories(categories.map(category => category.id));
+            setSelectedTypePosts(typePosts.map((typePost) => typePost.id));
         }
     };
 
     const handleDeleteSelected = () => {
         Swal.fire({
-            title: 'Bạn có chắc chắn muốn xóa các chuyên mục này?',
+            title: 'Bạn có chắc chắn muốn xóa các loại tin này?',
             text: "Hành động này không thể hoàn tác!",
             icon: 'warning',
             showCancelButton: true,
@@ -58,35 +62,35 @@ const ManageCategory = () => {
             cancelButtonText: 'Không, hủy!'
         }).then((result) => {
             if (result.isConfirmed) {
-                selectedCategories.forEach(categoryId => dispatch(deleteCategory(categoryId, token)));
+                selectedTypePosts.forEach((typePostId) => dispatch(deleteTypePost(token, typePostId)));
                 setTimeout(() => {
-                    dispatch(fetchCategories(token));
-                }, 1);
-                Swal.fire('', 'Xóa toàn bộ chuyên mục thành công!', 'success');
-                setSelectedCategories([]);
+                    dispatch(fetchTypePosts(token));
+                }, 1000);
+                Swal.fire('', 'Xóa toàn bộ loại tin thành công!', 'success');
+                setSelectedTypePosts([]);
             }
         });
     };
 
-    const openModal = (category) => {
-        setCurrentCategory(category);
+    const openModal = (typePost) => {
+        setCurrentTypePost(typePost);
         setIsModalOpen(true);
     };
 
     const closeModal = () => {
         setIsModalOpen(false);
-        setCurrentCategory(null);
+        setCurrentTypePost(null);
         setErrors({});
     };
 
-    const openModalView = (category) => {
-        setCurrentCategory(category);
+    const openModalView = (typePost) => {
+        setCurrentTypePost(typePost);
         setIsModalOpenView(true);
     };
 
     const closeModalView = () => {
         setIsModalOpenView(false);
-        setCurrentCategory(null);
+        setCurrentTypePost(null);
     };
 
     const openModalCreate = () => {
@@ -95,114 +99,118 @@ const ManageCategory = () => {
 
     const closeModalCreate = () => {
         setIsModalOpenCreate(false);
-        setNewCategory({ category_name: '' });
+        setNewTypePost({ name: '', price: '' });
         setErrors({});
     };
 
-    const handleUpdateCategory = async () => {
-        if (currentCategory) {
-            if (!validate()) return;
+    const handleUpdateTypePost = async () => {
+        if (currentTypePost) {
+            if (!validateUpdate()) return;
 
             try {
-                await dispatch(updateCategory(currentCategory.id, currentCategory, token));
-                Swal.fire('Thành công', 'Cập nhật chuyên mục thành công !', 'success');
+                await dispatch(updateTypePost(token, currentTypePost.id, currentTypePost.name, currentTypePost.price));
+                Swal.fire('Thành công', 'Cập nhật loại tin thành công!', 'success');
                 setTimeout(() => closeModal(), 1000);
-                await dispatch(fetchCategories(token));
+                await dispatch(fetchTypePosts(token));
             } catch (error) {
                 console.error(error);
-                if (error.response.data.err === 1) {
-                    setErrors({ category_name: 'Tên chuyên mục đã tồn tại !' });
-                } else {
-                    Swal.fire('Lỗi', 'Lỗi khi cập nhật thông tin chuyên mục !', 'error');
-                }
+                Swal.fire('Lỗi', 'Lỗi khi cập nhật thông tin loại tin!', 'error');
             }
         }
     };
 
-    const handleCreateCategory = async () => {
+    const handleCreateTypePost = async () => {
         if (!validateCreate()) return;
 
         try {
-            await dispatch(createCategory(newCategory, token));
-            Swal.fire('Thành công', 'Tạo mới chuyên mục thành công !', 'success');
+            await dispatch(createTypePost(token, newTypePost.name, newTypePost.price));
+            Swal.fire('Thành công', 'Tạo mới loại tin thành công!', 'success');
             setTimeout(() => closeModalCreate(), 1000);
-            await dispatch(fetchCategories(token));
+            await dispatch(fetchTypePosts(token));
         } catch (error) {
             console.error(error);
-            if (error.response.data.err === 1) {
-                setErrors({ category_name: 'Tên chuyên mục đã tồn tại !' });
-            } else {
-                Swal.fire('Lỗi', 'Lỗi khi tạo mới chuyên mục !', 'error');
-            }
+            Swal.fire('Lỗi', 'Lỗi khi tạo mới loại tin!', 'error');
         }
     };
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;
-        setCurrentCategory({ ...currentCategory, [name]: value });
+        setCurrentTypePost({ ...currentTypePost, [name]: value });
     };
 
-    const handleNewCategoryChange = (e) => {
+    const handleNewTypePostChange = (e) => {
         const { name, value } = e.target;
-        setNewCategory({ ...newCategory, [name]: value });
+        setNewTypePost({ ...newTypePost, [name]: value });
     };
 
-    const validate = () => {
+    // Hàm validateUpdate
+    const validateUpdate = () => {
         const newErrors = {};
-        // Cập nhật biểu thức chính quy để cho phép ký tự tiếng Việt và loại bỏ ký tự đặc biệt
+        const trimmedName = currentTypePost.name.trim();
+
+        // Biểu thức chính quy cho phép ký tự tiếng Việt và chặn ký tự đặc biệt
         const specialCharPattern = /[^a-zA-Z0-9\sÀÁÂÃÈÉÊÌÍÒÓÔÕÙÚĂĐĨŨƠƯàáâãèéêìíòóôõùúăđĩũơưẠẢẤẦẨẪẬẮẰẲẴẶẸẺẼỀỂỄỆỈỊỌỎỐỒỔỖỘỚỜỞỠỢỤỦỨỪỬỮỰỲỴÝỶỸạảấầẩẫậắằẳẵặẹẻẽềểễệỉịọỏốồổỗộớờởỡợụủứừửữựỳỵỷỹ]/;
 
-        // Lấy tên chuyên mục và loại bỏ các dấu cách không chuẩn (non-breaking spaces)
-        let categoryNameTrimmed = currentCategory.category_name.trim();
-        categoryNameTrimmed = categoryNameTrimmed.replace(/\u00A0/g, " "); // Loại bỏ dấu cách không chuẩn
-
-        // Chuyển tên chuyên mục thành chữ thường để kiểm tra dễ dàng hơn
-        categoryNameTrimmed = categoryNameTrimmed.toLowerCase();
-
-        console.log("Trimmed and lowercased category name:", categoryNameTrimmed); // Kiểm tra giá trị sau khi xử lý
-
-        // Kiểm tra nếu tên chuyên mục trống
-        if (!categoryNameTrimmed) {
-            newErrors.category_name = 'Tên chuyên mục không được để trống';
-        }
-        // Kiểm tra nếu tên chuyên mục chứa ký tự đặc biệt
-        else if (specialCharPattern.test(categoryNameTrimmed)) {
-            newErrors.category_name = 'Tên chuyên mục không được chứa ký tự đặc biệt';
+        if (!trimmedName) {
+            newErrors.name = 'Tên loại tin không được để trống';
+        } else if (specialCharPattern.test(trimmedName)) {
+            newErrors.name = 'Tên loại tin không được chứa ký tự đặc biệt';
+        } else {
+            // Kiểm tra tên trùng với các loại tin khác
+            const isDuplicate = typePosts.some(
+                (typePost) =>
+                    typePost.name.toLowerCase() === trimmedName.toLowerCase() &&
+                    typePost.id !== currentTypePost.id
+            );
+            if (isDuplicate) {
+                newErrors.name = 'Tên loại tin đã tồn tại';
+            }
         }
 
-        // Cập nhật lỗi và trả về kết quả
+        if (!currentTypePost.price) {
+            newErrors.price = 'Giá không được để trống';
+        } else if (isNaN(currentTypePost.price) || currentTypePost.price <= 0) {
+            newErrors.price = 'Giá phải là số dương';
+        }
+
         setErrors(newErrors);
-        return Object.keys(newErrors).length === 0; // Trả về true nếu không có lỗi
+        return Object.keys(newErrors).length === 0;
     };
 
-
+    // Hàm validateCreate
     const validateCreate = () => {
         const newErrors = {};
-        // Updated regex to allow Vietnamese characters and block special characters
+        const trimmedName = newTypePost.name.trim();
+
         const specialCharPattern = /[^a-zA-Z0-9\sÀÁÂÃÈÉÊÌÍÒÓÔÕÙÚĂĐĨŨƠƯàáâãèéêìíòóôõùúăđĩũơưẠẢẤẦẨẪẬẮẰẲẴẶẸẺẼỀỂỄỆỈỊỌỎỐỒỔỖỘỚỜỞỠỢỤỦỨỪỬỮỰỲỴÝỶỸạảấầẩẫậắằẳẵặẹẻẽềểễệỉịọỏốồổỗộớờởỡợụủứừửữựỳỵỷỹ]/;
 
-        // Lấy tên chuyên mục và loại bỏ các dấu cách không chuẩn (non-breaking spaces)
-        let categoryNameTrimmed = newCategory.category_name.trim();
-        categoryNameTrimmed = categoryNameTrimmed.replace(/\u00A0/g, " "); // Loại bỏ dấu cách không chuẩn
-
-        // Kiểm tra nếu tên chuyên mục trống
-        if (!categoryNameTrimmed) {
-            newErrors.category_name = 'Tên chuyên mục không được để trống';
+        if (!trimmedName) {
+            newErrors.name = 'Tên loại tin không được để trống';
+        } else if (specialCharPattern.test(trimmedName)) {
+            newErrors.name = 'Tên loại tin không được chứa ký tự đặc biệt';
+        } else {
+            // Kiểm tra tên trùng với các loại tin đã tồn tại
+            const isDuplicate = typePosts.some(
+                (typePost) => typePost.name.toLowerCase() === trimmedName.toLowerCase()
+            );
+            if (isDuplicate) {
+                newErrors.name = 'Tên loại tin đã tồn tại';
+            }
         }
-        // Kiểm tra nếu tên chuyên mục chứa ký tự đặc biệt
-        else if (specialCharPattern.test(categoryNameTrimmed)) {
-            newErrors.category_name = 'Tên chuyên mục không được chứa ký tự đặc biệt';
+
+        if (!newTypePost.price) {
+            newErrors.price = 'Giá không được để trống';
+        } else if (isNaN(newTypePost.price) || newTypePost.price <= 0) {
+            newErrors.price = 'Giá phải là số dương';
         }
 
-        // Cập nhật lỗi và trả về kết quả
         setErrors(newErrors);
-        return Object.keys(newErrors).length === 0; // Trả về true nếu không có lỗi
+        return Object.keys(newErrors).length === 0;
     };
 
-
-    const handleDeleteCategory = async (categoryId) => {
+    const handleDeleteTypePost = async (typePostId) => {
         const result = await Swal.fire({
-            title: 'Bạn có chắc muốn xóa chuyên mục này ?',
+            title: 'Bạn có chắc muốn xóa loại tin này?',
             showCancelButton: true,
             confirmButtonText: 'Có',
             cancelButtonText: 'Không',
@@ -246,10 +254,10 @@ const ManageCategory = () => {
 
         if (result.isConfirmed) {
             try {
-                await dispatch(deleteCategory(categoryId, token));
+                await dispatch(deleteTypePost(token, typePostId));
                 Swal.fire({
-                    title: 'Xóa thành công !',
-                    text: 'Chuyên mục đã được xóa !',
+                    title: 'Xóa thành công!',
+                    text: 'Loại tin đã được xóa!',
                     icon: 'success',
                     buttonsStyling: false,
                     didOpen: () => {
@@ -270,12 +278,12 @@ const ManageCategory = () => {
                     `,
                 });
                 setTimeout(() => {
-                    dispatch(fetchCategories(token));
-                }, 1);
+                    dispatch(fetchTypePosts(token));
+                }, 1000);
             } catch (error) {
                 Swal.fire({
                     title: 'Error',
-                    text: 'Xóa chuyên mục thất bại !',
+                    text: 'Xóa loại tin thất bại!',
                     icon: 'error',
                     buttonsStyling: false,
                     didOpen: () => {
@@ -299,8 +307,8 @@ const ManageCategory = () => {
         }
     };
 
-    const filteredCategories = categories.filter(category =>
-        category.category_name.toLowerCase().includes(search.toLowerCase())
+    const filteredTypePosts = typePosts.filter((typePost) =>
+        typePost.name.toLowerCase().includes(search.toLowerCase())
     );
 
     const formatDate = (dateString) => {
@@ -308,14 +316,14 @@ const ManageCategory = () => {
         return date.toLocaleDateString('vi-VN', {
             day: '2-digit',
             month: '2-digit',
-            year: 'numeric'
+            year: 'numeric',
         });
     };
 
-    const totalPages = Math.ceil(filteredCategories.length / itemsPerPage);
+    const totalPages = Math.ceil(filteredTypePosts.length / itemsPerPage);
     const indexOfLastItem = currentPage * itemsPerPage;
     const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-    const currentItems = filteredCategories.slice(indexOfFirstItem, indexOfLastItem);
+    const currentItems = filteredTypePosts.slice(indexOfFirstItem, indexOfLastItem);
 
     const handlePreviousPage = () => {
         if (currentPage > 1) {
@@ -331,13 +339,13 @@ const ManageCategory = () => {
 
     return (
         <div className="p-4 md:pt-9 md:p-6 md:mb-5 bg-white rounded-lg shadow-lg h-[calc(100vh-84px)] flex flex-col">
-            <h2 className="text-3xl font-medium mb-10">Quản lý chuyên mục</h2>
+            <h2 className="text-3xl font-medium mb-10">Quản lý loại tin</h2>
 
             {/* Search and Create Button */}
             <div className="flex flex-col md:flex-row mb-8">
                 <input
                     type="text"
-                    placeholder="Tìm kiếm chuyên mục theo tên..."
+                    placeholder="Tìm kiếm loại tin theo tên..."
                     value={search}
                     onChange={handleSearch}
                     className="border p-2 rounded-md flex-grow mb-2 md:mb-0 md:mr-4"
@@ -353,23 +361,23 @@ const ManageCategory = () => {
             {/* Bulk Delete */}
             <div className="flex flex-col md:flex-row justify-between items-center mb-4">
                 <button
-                    className={`bg-red-500 hover:bg-red-600 transition duration-300 text-white px-4 py-2 rounded-md ${selectedCategories.length === 0 ? "opacity-50 cursor-not-allowed" : ""}`}
+                    className={`bg-red-500 hover:bg-red-600 transition duration-300 text-white px-4 py-2 rounded-md ${selectedTypePosts.length === 0 ? "opacity-50 cursor-not-allowed" : ""}`}
                     onClick={handleDeleteSelected}
-                    disabled={selectedCategories.length === 0}
+                    disabled={selectedTypePosts.length === 0}
                 >
-                    Xóa chuyên mục đã chọn
+                    Xóa loại tin đã chọn
                 </button>
                 <div className="flex items-center mt-2 md:mt-0">
                     <input
                         type="checkbox"
-                        checked={selectedCategories.length === categories.length}
-                        onChange={toggleSelectAllCategories}
+                        checked={selectedTypePosts.length === typePosts.length}
+                        onChange={toggleSelectAllTypePosts}
                     />
                     <span className="ml-2">Chọn tất cả</span>
                 </div>
             </div>
 
-            {/* Category Table */}
+            {/* Type Post Table */}
             <div className="overflow-x-auto bg-white shadow-md rounded-lg mt-5 flex-1 max-h-[calc(50vh-79px)]">
                 <div className="h-[calc(50vh-130px)]">
                     <table className="min-w-full border-collapse border border-gray-200">
@@ -378,47 +386,49 @@ const ManageCategory = () => {
                                 <th className='border border-gray-200 px-4 py-2 '>
                                     <input
                                         type="checkbox"
-                                        checked={selectedCategories.length === categories.length}
-                                        onChange={toggleSelectAllCategories}
+                                        checked={selectedTypePosts.length === typePosts.length}
+                                        onChange={toggleSelectAllTypePosts}
                                     />
                                 </th>
                                 <th className='border border-gray-200 px-4 py-2 '>ID</th>
-                                <th className='border border-gray-200 px-4 py-2 '>Tên chuyên mục</th>
-                                <th className='border border-gray-200 px-4 py-2 '>Ngày đăng</th>
+                                <th className='border border-gray-200 px-4 py-2 '>Tên loại tin</th>
+                                <th className='border border-gray-200 px-4 py-2 '>Giá (VNĐ/ngày)</th>
+                                <th className='border border-gray-200 px-4 py-2 '>Ngày tạo</th>
                                 <th className='border border-gray-200 px-4 py-2 '>Ngày cập nhật</th>
                                 <th className='border border-gray-200 px-4 py-2 '>Chức năng</th>
                             </tr>
                         </thead>
                         <tbody className="overflow-y-auto">
-                            {currentItems.map((category) => (
-                                <tr key={category.id} className="border-b">
+                            {currentItems.map((typePost) => (
+                                <tr key={typePost.id} className="border-b">
                                     <td className='border border-gray-200 px-4 py-2 text-center align-middle'>
                                         <input
                                             type="checkbox"
-                                            checked={selectedCategories.includes(category.id)}
-                                            onChange={() => toggleSelectCategory(category.id)}
+                                            checked={selectedTypePosts.includes(typePost.id)}
+                                            onChange={() => toggleSelectTypePost(typePost.id)}
                                         />
                                     </td>
-                                    <td className='border border-gray-200 px-4 py-2 text-center align-middle'>{category.id}</td>
-                                    <td className='border border-gray-200 px-4 py-2 text-center align-middle'>{category.category_name}</td>
-                                    <td className='border border-gray-200 px-4 py-2 text-center align-middle'>{formatDate(category.createdAt)}</td>
-                                    <td className='border border-gray-200 px-4 py-2 text-center align-middle'>{formatDate(category.updatedAt)}</td>
+                                    <td className='border border-gray-200 px-4 py-2 text-center align-middle'>{typePost.id}</td>
+                                    <td className='border border-gray-200 px-4 py-2 text-center align-middle'>{typePost.name}</td>
+                                    <td className='border border-gray-200 px-4 py-2 text-center align-middle'>{Number(typePost.price).toLocaleString('de-DE')}</td>
+                                    <td className='border border-gray-200 px-4 py-2 text-center align-middle'>{formatDate(typePost.createdAt)}</td>
+                                    <td className='border border-gray-200 px-4 py-2 text-center align-middle'>{formatDate(typePost.updatedAt)}</td>
                                     <td className='border border-gray-200 px-4 py-2 text-center align-middle'>
                                         <button
                                             className="bg-blue-500 hover:bg-blue-600 text-white px-2 py-1 rounded-md mr-2 transition duration-300"
-                                            onClick={() => openModalView(category)}
+                                            onClick={() => openModalView(typePost)}
                                         >
                                             Xem
                                         </button>
                                         <button
                                             className="bg-yellow-500 hover:bg-yellow-600 text-white px-2 py-1 rounded-md mr-2 transition duration-300"
-                                            onClick={() => openModal(category)}
+                                            onClick={() => openModal(typePost)}
                                         >
                                             Sửa
                                         </button>
                                         <button
                                             className="bg-red-500 hover:bg-red-600 text-white px-2 py-1 rounded-md transition duration-300"
-                                            onClick={() => handleDeleteCategory(category.id)}
+                                            onClick={() => handleDeleteTypePost(typePost.id)}
                                         >
                                             Xóa
                                         </button>
@@ -443,7 +453,7 @@ const ManageCategory = () => {
                         <option value={10}>10</option>
                         <option value={15}>15</option>
                     </select>
-                    <span className="ml-2 text-gray-500">chuyên mục mỗi trang</span>
+                    <span className="ml-2 text-gray-500">loại tin mỗi trang</span>
                 </div>
                 <div className="flex items-center">
                     <button
@@ -464,33 +474,43 @@ const ManageCategory = () => {
                 </div>
             </div>
 
-
-            {/* Create Category Modal */}
+            {/* Create Type Post Modal */}
             {isModalOpenCreate && (
                 <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center">
                     <div className="bg-white p-6 rounded-lg w-11/12 md:w-1/3">
-                        <h3 className="text-xl font-bold mb-4">Tạo mới chuyên mục</h3>
+                        <h3 className="text-xl font-bold mb-4">Tạo mới loại tin</h3>
                         <div className="mb-4">
-                            <label className="font-semibold">Tên chuyên mục:</label>
+                            <label className="font-semibold">Tên loại tin:</label>
                             <input
                                 type="text"
-                                name="category_name"
-                                value={newCategory.category_name}
-                                onChange={handleNewCategoryChange}
+                                name="name"
+                                value={newTypePost.name}
+                                onChange={handleNewTypePostChange}
                                 className="border p-2 rounded-md w-full"
                             />
-                            {errors.category_name && <small className="text-red-500 italic">{errors.category_name}</small>}
+                            {errors.name && <small className="text-red-500 italic">{errors.name}</small>}
+                        </div>
+                        <div className="mb-4">
+                            <label className="font-semibold">Giá (VNĐ/ngày):</label>
+                            <input
+                                type="number"
+                                name="price"
+                                value={newTypePost.price}
+                                onChange={handleNewTypePostChange}
+                                className="border p-2 rounded-md w-full"
+                            />
+                            {errors.price && <small className="text-red-500 italic">{errors.price}</small>}
                         </div>
                         <div className="flex justify-end">
                             <button
-                                className="bg-gray-500 text-white px-4 py-2 rounded-md mr-2 transition duration-300"
+                                className="bg-gray-500 text-white px-4 py-2 rounded-md mr-2"
                                 onClick={closeModalCreate}
                             >
                                 Hủy
                             </button>
                             <button
-                                className="bg-green-500 text-white px-4 py-2 rounded-md transition duration-300"
-                                onClick={handleCreateCategory}
+                                className="bg-green-500 text-white px-4 py-2 rounded-md"
+                                onClick={handleCreateTypePost}
                             >
                                 Tạo mới
                             </button>
@@ -499,25 +519,34 @@ const ManageCategory = () => {
                 </div>
             )}
 
-            {/* View Category Modal */}
-            {isModalOpenView && currentCategory && (
+            {/* View Type Post Modal */}
+            {isModalOpenView && currentTypePost && (
                 <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center">
                     <div className="bg-white p-6 rounded-lg w-11/12 md:w-1/3">
-                        <h3 className="text-xl font-bold mb-4">Chi tiết chuyên mục</h3>
+                        <h3 className="text-xl font-bold mb-4">Chi tiết loại tin</h3>
                         <div className="mb-4">
                             <label className="font-semibold">ID:</label>
                             <input
                                 type="text"
-                                value={currentCategory.id}
+                                value={currentTypePost.id}
                                 disabled
                                 className="border p-2 rounded-md w-full mt-1"
                             />
                         </div>
                         <div className="mb-4">
-                            <label className="font-semibold">Tên chuyên mục:</label>
+                            <label className="font-semibold">Tên loại tin:</label>
                             <input
                                 type="text"
-                                value={currentCategory.category_name}
+                                value={currentTypePost.name}
+                                disabled
+                                className="border p-2 rounded-md w-full mt-1"
+                            />
+                        </div>
+                        <div className="mb-4">
+                            <label className="font-semibold">Giá (VNĐ/ngày):</label>
+                            <input
+                                type="text"
+                                value={Number(currentTypePost.price).toLocaleString('de-DE')}
                                 disabled
                                 className="border p-2 rounded-md w-full mt-1"
                             />
@@ -526,7 +555,7 @@ const ManageCategory = () => {
                             <label className="font-semibold">Ngày tạo:</label>
                             <input
                                 type="text"
-                                value={formatDate(currentCategory.createdAt)}
+                                value={formatDate(currentTypePost.createdAt)}
                                 disabled
                                 className="border p-2 rounded-md w-full mt-1"
                             />
@@ -535,7 +564,7 @@ const ManageCategory = () => {
                             <label className="font-semibold">Ngày cập nhật:</label>
                             <input
                                 type="text"
-                                value={formatDate(currentCategory.updatedAt)}
+                                value={formatDate(currentTypePost.updatedAt)}
                                 disabled
                                 className="border p-2 rounded-md w-full mt-1"
                             />
@@ -552,29 +581,41 @@ const ManageCategory = () => {
                 </div>
             )}
 
-            {isModalOpen && currentCategory && (
+            {/* Update Type Post Modal */}
+            {isModalOpen && currentTypePost && (
                 <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center">
                     <div className="bg-white p-6 rounded-lg w-1/3">
-                        <h3 className="text-xl font-bold mb-4">Cập nhật chuyên mục</h3>
+                        <h3 className="text-xl font-bold mb-4">Cập nhật loại tin</h3>
                         <div className="mb-4">
                             <label className="font-semibold">ID:</label>
                             <input
                                 type="text"
-                                value={currentCategory.id}
+                                value={currentTypePost.id}
                                 disabled
                                 className="border p-2 rounded-md w-full mt-1"
                             />
                         </div>
                         <div className="mb-4">
-                            <label className="font-semibold">Tên chuyên mục:</label>
+                            <label className="font-semibold">Tên loại tin:</label>
                             <input
                                 type="text"
-                                name="category_name"
-                                value={currentCategory.category_name}
+                                name="name"
+                                value={currentTypePost.name}
                                 onChange={handleInputChange}
                                 className="border p-2 rounded-md w-full mt-1"
                             />
-                            {errors.category_name && <small className="text-red-500 italic">{errors.category_name}</small>}
+                            {errors.name && <small className="text-red-500 italic">{errors.name}</small>}
+                        </div>
+                        <div className="mb-4">
+                            <label className="font-semibold">Giá (VNĐ/ngày):</label>
+                            <input
+                                type="number"
+                                name="price"
+                                value={currentTypePost.price}
+                                onChange={handleInputChange}
+                                className="border p-2 rounded-md w-full mt-1"
+                            />
+                            {errors.price && <small className="text-red-500 italic">{errors.price}</small>}
                         </div>
                         <div className="flex justify-end">
                             <button
@@ -585,7 +626,7 @@ const ManageCategory = () => {
                             </button>
                             <button
                                 className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-md transition duration-300"
-                                onClick={handleUpdateCategory}
+                                onClick={handleUpdateTypePost}
                             >
                                 Cập nhật
                             </button>
@@ -597,4 +638,4 @@ const ManageCategory = () => {
     );
 };
 
-export default ManageCategory;
+export default ManageTypePost;

@@ -5,13 +5,13 @@ import Swal from 'sweetalert2';
 import { useSelector, useDispatch } from 'react-redux';
 import { Loading } from '../../../components';
 import * as actions from '../../../store/actions';
-
+import { Breadcrumb } from '../../../components';
 const PersonalInfo = () => {
     const dispatch = useDispatch();
     const { user } = useSelector((state) => state.user);
     console.log(user);
     const { token } = useSelector(state => state.auth);
-
+    const breadcrumbItems = [];
     const [isLoading, setIsLoading] = useState(false);
 
     const [formData, setFormData] = useState({
@@ -185,6 +185,7 @@ const PersonalInfo = () => {
 
     return (
         <div className="px-4 md:px-6 max-w-4xl mx-auto">
+            <Breadcrumb items={breadcrumbItems} />
             <div className="bg-white shadow-lg rounded-lg p-8 mb-6 max-w-7xl mx-auto">
                 <h1 className="text-3xl md:text-4xl font-bold text-gray-800 text-center py-4 border-b border-gray-200">
                     Thông tin cá nhân
@@ -251,7 +252,7 @@ const PersonalInfo = () => {
                         </div>
                         <div className="flex justify-center items-center mt-4">
                             <button
-                                className="text-xl bg-blue-500 hover:bg-blue-600 text-white font-semibold py-3 px-6 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 transition duration-200 w-full md:w-auto"
+                                className="btn-update w-full md:w-auto bg-gray-200 text-gray-700 font-bold py-3 px-6 rounded-lg hover:bg-gray-300 transition duration-200"
                                 onClick={handleUpdate}
                             >
                                 Cập Nhật
@@ -271,7 +272,7 @@ const PersonalInfo = () => {
                         <div className="upload-section">
                             <button
                                 type="button"
-                                className="text-xl bg-blue-500 hover:bg-blue-600 text-white font-semibold py-3 px-6 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 transition duration-200 w-full md:w-auto"
+                                className="btn-upload bg-gray-200 hover:bg-gray-300 text-gray-700 font-semibold py-3 px-6 rounded-lg"
                                 onClick={() => document.getElementById('avatar').click()}
                             >
                                 Chọn Ảnh

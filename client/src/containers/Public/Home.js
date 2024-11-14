@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import Header from './Header'
+import { useNavigate } from 'react-router-dom';
 import { Outlet } from 'react-router-dom'
 import { Navigation } from './index'
 import { Contact } from '../../components'
@@ -13,6 +14,7 @@ const Home = () => {
     const { isLoggedIn, token, role } = useSelector(state => state.auth)
     console.log('role', role)
     const dispatch = useDispatch();
+    const navigate = useNavigate();
     const [searchClicked, setSearchClicked] = useState(false);
     const [loading, setLoading] = useState(false); // Bật trạng thái loading khi bắt đầu fetch
 
@@ -31,6 +33,11 @@ const Home = () => {
             fetchUserRole();
         }
     }, [isLoggedIn, token, dispatch, role]);
+    useEffect(() => {
+        if (isLoggedIn && role === 'admin') {
+            navigate('/admin');
+        }
+    }, [isLoggedIn, role, navigate]);
 
     if (isLoggedIn && (role === null || loading)) {
         // Hiển thị spinner hoặc trang trắng khi đang loading

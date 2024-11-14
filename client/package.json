@@ -37,6 +37,7 @@
     "sweetalert2": "^11.4.29",
     "swiper": "^11.1.14",
     "thunk": "0.0.1",
+    "use-sync-external-store": "^1.2.2",
     "web-vitals": "^2.1.4"
   },
   "scripts": {

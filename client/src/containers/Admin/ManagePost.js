@@ -482,7 +482,7 @@ const ManagePost = () => {
 
                 {/* View Post Modal */}
                 {isModalOpenView && currentPost && (
-                    <div className="fixed inset-0 bg-gray-600 overflow-y-auto bg-opacity-50 flex items-center justify-center ">
+                    <div className="fixed inset-0 bg-gray-600 overflow-y-auto bg-opacity-50 flex items-center justify-center z-50">
                         <div
                             ref={modalRef}
                             className="bg-white p-3.5 rounded-lg w-11/12 md:w-2/3 max-h-screen overflow-y-auto relative "
@@ -676,7 +676,7 @@ const ManagePost = () => {
 
                             <div className="mt-10 justify-end flex">
                                 <button
-                                    className="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-md mr-2"
+                                    className="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-md mr-2 transition duration-300"
                                     onClick={closeModalView}
                                 >
                                     Đóng

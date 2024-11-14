@@ -44,7 +44,7 @@ export const register = (payload) => async (dispatch) => {
 export const login = (payload) => async (dispatch) => {
     try {
         const response = await apiLogin(payload);
-        console.log('Login Response:', response); // Log the response
+        //console.log('Login Response:', response); 
 
         // Kiểm tra nếu đăng nhập thành công
         if (response?.err === 0) {
@@ -78,8 +78,8 @@ export const logout = () => {
         dispatch({
             type: actionTypes.LOGOUT
         });
-        const persistor = persistStore(ClearPersistedState);
-        persistor.purge(); // Clear persisted state
+        //const persistor = persistStore(ClearPersistedState);
+        //persistor.purge(); // Clear persisted state
     };
 };
 

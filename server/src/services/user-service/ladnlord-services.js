@@ -3,7 +3,7 @@ const gravatar = require("gravatar");
 const { where } = require("sequelize");
 const helper = require("../../helper/check-coordinates");
 const paginationHelper = require("../../helper/pagination");
-const { Post, Address, Category, Image, Overview, Coordinates, PostType, sequelize, User } = require("../../models/index");
+const { Post, Address, Category, Image, Overview, Coordinates, User, Wallet, PostType, sequelize } = require("../../models/index");
 const middleware = require("../../middleware/upload/uploadImg")
 const { response } = require("express");
 const multer = require('multer');
@@ -28,7 +28,8 @@ const generateRandomCode = () => {
 const createNewPost = async (userId, contentPost, files) => {
     contentPost = JSON.parse(contentPost)  //ép kiểu qua kiểu json vì bên client gửi lên dạng string
     const imageUrls = files;
-    const { title, address, price, description, overview, category_id, postType_id, acreage, target, expire } = contentPost
+    const { title, address, price, description, overview, category_id, postType_id, acreage, target, expire, totalPayment } = contentPost
+
     console.log('contentPost', contentPost)
     const addressData = address
     const overviewData = {
@@ -204,23 +205,51 @@ const updatePost = async (postId, dataUpdate, files) => {
 
 // DELETE POST
 const deletePost = async (postId) => {
+    // try {
+    //     const resPost = await Post.destroy({
+    //         where: {
+    //             id: postId
+    //         }
+    //     })
+    //     return {
+    //         err: 0,
+    //         msg: 'Delete post success',
+    //         post: resPost
+    //     }
+    // } catch (error) {
+    //     console.log(error)
+    //     return {
+    //         err: 1,
+    //         msg: error
+    //     }
+    // }
     try {
-        const resPost = await Post.destroy({
+        // Tìm bài viết theo ID
+        const post = await Post.findOne({
             where: {
                 id: postId
             }
-        })
+        });
+        if (!post) {
+            return {
+                err: 1,
+                msg: 'Post not found'
+            };
+        }
+        // Xóa bài viết, phương thức này sẽ kích hoạt hook beforeDestroy
+        await post.destroy();
+
         return {
             err: 0,
             msg: 'Delete post success',
-            post: resPost
-        }
+            post: post
+        };
     } catch (error) {
-        console.log(error)
+        console.log(error);
         return {
             err: 1,
-            msg: error
-        }
+            msg: error.message
+        };
     }
 }
 // DELETE LIST POST BY LIST ID POST
@@ -260,6 +289,10 @@ const listPost = async (userId) => {
                 {
                     model: Address,
                     attributes: ['city', 'district', 'detail_address']
+                },
+                {
+                    model: User,
+                    attributes: ['firstName', 'lastName', 'email', 'phone', 'img_avt']
                 },
                 {
                     model: Overview,
@@ -369,14 +402,15 @@ const softDeletePost = async (postId) => {
             { status: 1 },
             {
                 where: {
-                    id: postId                }
+                    id: postId
+                }
             }
         );
         return { err: 0, msg: 'Post soft-deleted successfully.' };
     } catch (error) {
-        return { err: 1, msg: error.message }; 
-    } 
-}; 
+        return { err: 1, msg: error.message };
+    }
+};
 
 
 // LIST POST BY PAGE PAGINATION

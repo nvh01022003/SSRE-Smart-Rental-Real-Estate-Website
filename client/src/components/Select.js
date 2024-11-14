@@ -4,7 +4,7 @@ const Select = ({ label, options, value, setValue, type, reset, name }) => {
 
     return (
         <div className='flex flex-col gap-2 flex-1'>
-            <label className='font-medium align-center' htmlFor="select-address">{label}</label>
+            <label className='font-medium align-center' htmlFor="select-address">{label} <span className='text-red-500'>*</span></label>
             <select
                 value={reset ? '' : String(value || '')}  // Đảm bảo giá trị là một chuỗi
                 onChange={(e) => {

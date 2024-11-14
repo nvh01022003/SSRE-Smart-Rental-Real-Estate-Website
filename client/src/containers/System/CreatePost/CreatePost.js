@@ -1,13 +1,13 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { Overview, Address, Loading, Button } from '../../../components';
+import { Overview, Address, Loading, Button,Breadcrumb } from '../../../components';
 import icons from '../../../ultils/icons';
 import axios from 'axios';
 import Swal from 'sweetalert2';
 import { useSelector } from 'react-redux';
-
 const { BsCameraFill, ImBin } = icons;
 
 const CreatePost = () => {
+    const breadcrumbItems = [];
     const [payload, setPayload] = useState({
         category_id: '',
         title: '',
@@ -227,6 +227,7 @@ const CreatePost = () => {
 
     return (
         <div className="container mx-auto p-4 md:p-6">
+            <Breadcrumb items={breadcrumbItems} />
             {role === 'tenant' ? (
                 <div className='bg-white shadow-md rounded-lg p-6'>
                     <h1 className='text-3xl md:text-4xl font-bold text-gray-800 text-center py-4 border-b border-gray-200'>Đăng tin mới</h1>

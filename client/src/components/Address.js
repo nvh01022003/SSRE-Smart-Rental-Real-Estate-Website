@@ -188,7 +188,7 @@ const Address = forwardRef(({ setPayload, handleInputChange, resetForm }, ref) =
 
                 <div className='w-full md:w-[28%] pt-5'>
                     <InputFormNumberHouse
-                        label={<span className="text-base font-medium text-gray-800">Số nhà, tên đường</span>}
+                        label={<span className="text-base font-medium text-gray-800">Số nhà, tên đường <span className='text-red-500'>*</span></span>}
                         value={detail_address || ''}
                         setValue={(e) => {
                             setdetail_address(e.target.value);

@@ -1,16 +1,39 @@
-import React, { useState, useEffect } from "react";
-import axios from 'axios';
-import { useSelector } from 'react-redux';
-import Loading from "./Loading";
+import React, { useState } from "react"
+import Header from "../Header"
+import { Breadcrumb } from '../../../components';
+const fakeData = [
+    {
+        time: '2023-10-01 10:00',
+        activityType: 'Deposit',
+        postId: 'POST123456',
+        postType: 'Premium',
+        balance: '1,000,000đ',
+        fee: '50,000đ',
+        remaining: '950,000đ',
+        status: 'Completed'
+    },
+    {
+        time: '2023-10-02 14:30',
+        activityType: 'Withdrawal',
+        postId: 'POST123457',
+        postType: 'Standard',
+        balance: '950,000đ',
+        fee: '20,000đ',
+        remaining: '930,000đ',
+        status: 'Pending'
+    },
+    // Add more fake data as needed
+];
+const formatDate = (dateTimeString) => {
+    const [date, time] = dateTimeString.split(' ');
+    const [year, month, day] = date.split('-');
+    return `${day}-${month}-${year} ${time}`;
+};
 
-const DepositeHistory = () => {
+const HistoryPayment = () => {
     const [currentPage, setCurrentPage] = useState(1);
     const [itemsPerPage, setItemsPerPage] = useState(10);
-    const [transactions, setTransactions] = useState([]);
-    const [loading, setLoading] = useState(true);
-    const token = useSelector(state => state.auth.token);
-
-    const totalPages = Math.ceil(transactions.length / itemsPerPage);
+    const totalPages = Math.ceil(fakeData.length / itemsPerPage);
 
     const handlePreviousPage = () => {
         if (currentPage > 1) {
@@ -24,72 +47,47 @@ const DepositeHistory = () => {
         }
     };
 
-    // Fetch deposit history from the API
-    useEffect(() => {
-        const fetchDepositHistory = async () => {
-            try {
-                const res = await axios.get('http://localhost:5000/api/v1/user/depositHistory', {
-                    headers: {
-                        'token': `${token}`,
-                    }
-                });
-                console.log(res)
-                if (res.data.err === 0) {
-                    setTransactions(res.data.transactions);
-                }
-            } catch (error) {
-                console.error('Error fetching deposit history:', error);
-            } finally {
-                setLoading(false);
-            }
-        };
-        fetchDepositHistory();
-    }, [token]);
-
     // Calculate the data to display on the current page
     const indexOfLastItem = currentPage * itemsPerPage;
     const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-    const currentItems = transactions.slice(indexOfFirstItem, indexOfLastItem);
-    console.log(currentItems);
-    console.log(transactions);
-    // Function to format date
-    const formatDate = (dateString) => {
-        const date = new Date(dateString);
-        return date.toLocaleDateString('vi-VN');
-    };
-
-    if (loading) {
-        return <Loading />;
-    }
-
+    const currentItems = fakeData.slice(indexOfFirstItem, indexOfLastItem);
+    const breadcrumbItems = []
     return (
         <div>
+            <Breadcrumb items={breadcrumbItems}/>
             <div className='px-6'>
+                
                 <div className='bg-white shadow-md rounded-lg p-6 mb-6'>
                     <h1 className='text-3xl md:text-4xl font-bold text-gray-800 text-center py-4 border-b border-gray-200'>
-                        Lịch sử nạp tiền
+                        Lịch sử thanh toán
                     </h1>
-                    <div className='flex flex-col md:flex-row gap-4'>
+                    <div className='flex flex-col gap-4'>
                         <div className="py-4 flex flex-col gap-8 flex-auto">
-                            <div className="overflow-x-auto"> {/* Thêm div này */}
+                            <div className="overflow-x-auto"> {/* Thêm div này để cuộn ngang */}
                                 <table className="min-w-full border-collapse border border-gray-200">
                                     <thead>
                                         <tr>
-                                            <th className="border border-gray-200 px-4 py-2">Ngày nạp</th>
-                                            <th className="border border-gray-200 px-4 py-2">Mã giao dịch</th>
-                                            <th className="border border-gray-200 px-4 py-2">Phương thức</th>
-                                            <th className="border border-gray-200 px-4 py-2">Số tiền</th>
+                                            <th className="border border-gray-200 px-4 py-2">Thời gian</th>
+                                            <th className="border border-gray-200 px-4 py-2">Loại hoạt động</th>
+                                            <th className="border border-gray-200 px-4 py-2">Mã tin đăng</th>
+                                            <th className="border border-gray-200 px-4 py-2">Loại tin</th>
+                                            <th className="border border-gray-200 px-4 py-2">Số dư</th>
+                                            <th className="border border-gray-200 px-4 py-2">Phí</th>
+                                            <th className="border border-gray-200 px-4 py-2">Còn lại</th>
                                             <th className="border border-gray-200 px-4 py-2">Trạng thái</th>
                                         </tr>
                                     </thead>
                                     <tbody>
                                         {currentItems.map((item, index) => (
                                             <tr key={index}>
-                                                <td className="border border-gray-200 px-4 py-2 text-center align-middle">{formatDate(item.createdAt)}</td>
-                                                <td className="border border-gray-200 px-4 py-2 text-center align-middle">{item.paycode}</td>
-                                                <td className="border border-gray-200 px-4 py-2 text-center align-middle">{item.paycode.startsWith('MOMO') ? 'MoMo' : 'Chuyển khoản'}</td>
-                                                <td className="border border-gray-200 px-4 py-2 text-center align-middle">{item.amount}</td>
-                                                <td className="border border-gray-200 px-4 py-2 text-center align-middle">{item.status}</td>
+                                                <td className="border border-gray-200 px-4 py-2 text-center">{formatDate(item.time)}</td>
+                                                <td className="border border-gray-200 px-4 py-2 text-center">{item.activityType}</td>
+                                                <td className="border border-gray-200 px-4 py-2 text-center">{item.postId}</td>
+                                                <td className="border border-gray-200 px-4 py-2 text-center">{item.postType}</td>
+                                                <td className="border border-gray-200 px-4 py-2 text-center">{item.balance}</td>
+                                                <td className="border border-gray-200 px-4 py-2 text-center">{item.fee}</td>
+                                                <td className="border border-gray-200 px-4 py-2 text-center">{item.remaining}</td>
+                                                <td className="border border-gray-200 px-4 py-2 text-center">{item.status}</td>
                                             </tr>
                                         ))}
                                     </tbody>
@@ -125,7 +123,6 @@ const DepositeHistory = () => {
             </div>
         </div>
 
-    );
+    )
 }
-
-export default DepositeHistory;
+export default HistoryPayment;

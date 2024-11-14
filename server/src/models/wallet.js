@@ -11,6 +11,10 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate({ User, Transaction, UpgradeRequest }) {
       // define association here
+
+      // this.belongsTo(User, { foreignKey: 'user_id' });
+      // this.hasMany(Transaction, { foreignKey: "wallet_id" })
+
       this.belongsTo(User, { foreignKey: 'user_id' },
         {
           onUpdate: 'CASCADE',
@@ -24,6 +28,7 @@ module.exports = (sequelize, DataTypes) => {
           onDelete: 'CASCADE'
         }
       )
+
     }
   }
   Wallet.init({
