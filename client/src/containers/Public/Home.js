@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import Header from './Header'
-import { useNavigate } from 'react-router-dom'; // Add this import
+import { useNavigate } from 'react-router-dom';
 import { Outlet } from 'react-router-dom'
 import { Navigation } from './index'
 import { Contact } from '../../components'

@@ -66,7 +66,7 @@ const Province = ({ searchClicked }) => {
         if (!searchParamsObject.page) searchParamsObject.page = 1; // Default to page 1 if not provided
 
         dispatch(getPostsLimit(searchParamsObject));
-        console.log('searchParamsObject', searchParamsObject);
+        //console.log('searchParamsObject', searchParamsObject);
     }, [dispatch, searchParams, searchClicked, provinces]);
 
     const handleProvinceClick = (province) => {

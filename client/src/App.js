@@ -31,8 +31,8 @@ function App() {
 
   useEffect(() => {
     // Clear localStorage items related to authentication
-    localStorage.removeItem('persist:auth');
-    localStorage.removeItem('persist:root');
+    //localStorage.removeItem('persist:auth');
+    //localStorage.removeItem('persist:root');
 
     // Set a timeout to dispatch setUserInfo after 1 second
     const timer = setTimeout(() => {
