@@ -13,6 +13,7 @@ import styled from 'styled-components';
 import momo from '../../../assets/momo.png'
 import credit from '../../../assets/credit.svg';
 import ServicePrice from './ServicePrice';
+import { Breadcrumb } from '../../../components';
 
 const ButtonBase = styled.button`
   display: inline-block;
@@ -116,6 +117,7 @@ const BankTransferButton = styled(ButtonBase)`
 `;
 
 const Payment = () => {
+    const breadcrumbItems = [];
     const navigate = useNavigate();
     const [showMomoModal, setShowMomoModal] = useState(false);
     const token = useSelector(state => state.auth.token);
@@ -159,6 +161,7 @@ const Payment = () => {
             <Route path={path.SERVICE_PRICE} element={<ServicePrice />} />
             <Route path="*" element={
                 <div className="container mx-auto p-4 md:p-6">
+                    <Breadcrumb items={breadcrumbItems} />
                     <div className="bg-white shadow-lg rounded-lg p-6 mb-6">
                         <h1 className="text-3xl md:text-4xl font-bold text-gray-800 text-center py-4 border-b border-gray-200">
                             Nạp tiền vào tài khoản

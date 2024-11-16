@@ -87,6 +87,7 @@ const Search = ({ setSearchClicked }) => {
             const [minPrice, maxPrice] = queries.priceNumber;
             queryCodesObj.minPrice = parseFloat(minPrice !== undefined ? minPrice : 0);// Default minPrice to 0 if not provided
             queryCodesObj.maxPrice = parseFloat(maxPrice);
+            delete queryCodesObj.priceNumber;
         }
 
         // Map areaNumber to minAcreage and maxAcreage
@@ -94,6 +95,7 @@ const Search = ({ setSearchClicked }) => {
             const [minAcreage, maxAcreage] = queries.areaNumber;
             queryCodesObj.minAcreage = parseInt(minAcreage !== undefined ? minAcreage : 0); // Default minAcreage to 0 if not provided
             queryCodesObj.maxAcreage = parseInt(maxAcreage);
+            delete queryCodesObj.areaNumber;
         }
 
         // Map provinceCode to location
@@ -102,6 +104,7 @@ const Search = ({ setSearchClicked }) => {
             if (selectedProvince) {
                 queryCodesObj.location = selectedProvince.province_name;
             }
+            delete queryCodesObj.provinceCode;
         }
 
         // Map categoryCode to category ID
@@ -110,6 +113,7 @@ const Search = ({ setSearchClicked }) => {
             if (selectedCategory) {
                 queryCodesObj.category = selectedCategory.id
             }
+            delete queryCodesObj.category
         }
 
         if (queries.page) queryCodesObj.page = queries.page;

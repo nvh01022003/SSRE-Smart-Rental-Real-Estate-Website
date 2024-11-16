@@ -2,13 +2,14 @@ import React, { useState, useContext } from 'react';
 import axios from 'axios';
 import Swal from 'sweetalert2';
 import { AuthContext } from '../../Context/AuthContext';
+import { Breadcrumb } from '../../components';
 
 const ChangePass = () => {
     const [oldPass, setOldPass] = useState('');
     const [newPass, setNewPass] = useState('');
     const [confirmPass, setConfirmPass] = useState('');
     const [errors, setErrors] = useState({});
-
+    const breadcrumbItems = [];
     const { token } = useContext(AuthContext);
 
     const validate = () => {
@@ -63,6 +64,7 @@ const ChangePass = () => {
 
     return (
         <div className="px-4 md:px-6 lg:px-8 max-w-lg mx-auto">
+            <Breadcrumb items={breadcrumbItems} />
             <div className="bg-white shadow-md rounded-lg p-6 shadow mb-6">
                 <h1 className="text-3xl md:text-4xl font-bold text-gray-800 text-center py-4 border-b border-gray-200">
                     Đổi mật khẩu 🔒

@@ -110,6 +110,9 @@ const Login = () => {
                 //     navigate('/');
                 // });
                 navigate('/');
+
+                localStorage.setItem('token', response.access_token);
+                localStorage.setItem('isLoggedIn', true);
             } else {
                 Swal.fire('Oops!', response?.msg || 'No response data', 'error');
             }

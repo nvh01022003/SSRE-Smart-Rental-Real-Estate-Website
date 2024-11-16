@@ -1,5 +1,6 @@
 import React, { useState } from "react"
 import Header from "../Header"
+import { Breadcrumb } from '../../../components';
 
 const fakeData = [
     {
@@ -51,9 +52,11 @@ const HistoryPayment = () => {
     const indexOfLastItem = currentPage * itemsPerPage;
     const indexOfFirstItem = indexOfLastItem - itemsPerPage;
     const currentItems = fakeData.slice(indexOfFirstItem, indexOfLastItem);
+    const breadcrumbItems = []
 
     return (
         <div>
+            <Breadcrumb items={breadcrumbItems} />
             <div className='px-6'>
                 <div className='bg-white shadow-md rounded-lg p-6 mb-6'>
                     <h1 className='text-3xl md:text-4xl font-bold text-gray-800 text-center py-4 border-b border-gray-200'>

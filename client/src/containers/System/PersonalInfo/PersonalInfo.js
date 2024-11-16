@@ -5,12 +5,14 @@ import Swal from 'sweetalert2';
 import { useSelector, useDispatch } from 'react-redux';
 import { Loading } from '../../../components';
 import * as actions from '../../../store/actions';
+import { Breadcrumb } from '../../../components';
 
 const PersonalInfo = () => {
     const dispatch = useDispatch();
     const { user } = useSelector((state) => state.user);
     console.log(user);
     const { token } = useSelector(state => state.auth);
+    const breadcrumbItems = [];
 
     const [isLoading, setIsLoading] = useState(false);
 
@@ -185,6 +187,7 @@ const PersonalInfo = () => {
 
     return (
         <div className="px-4 md:px-6 max-w-4xl mx-auto">
+            <Breadcrumb items={breadcrumbItems} />
             <div className="bg-white shadow-lg rounded-lg p-8 mb-6 max-w-7xl mx-auto">
                 <h1 className="text-3xl md:text-4xl font-bold text-gray-800 text-center py-4 border-b border-gray-200">
                     Thông tin cá nhân

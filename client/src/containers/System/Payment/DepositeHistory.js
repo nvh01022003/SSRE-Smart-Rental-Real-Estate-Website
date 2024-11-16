@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import axios from 'axios';
 import { useSelector } from 'react-redux';
 import Loading from "../../../components/Loading";
+import { Breadcrumb } from "../../../components";
 
 const DepositeHistory = () => {
     const [currentPage, setCurrentPage] = useState(1);
@@ -9,6 +10,7 @@ const DepositeHistory = () => {
     const [transactions, setTransactions] = useState([]);
     const [loading, setLoading] = useState(true);
     const token = useSelector(state => state.auth.token);
+    const breadcrumbItems = []
 
     const totalPages = Math.ceil(transactions.length / itemsPerPage);
 
@@ -64,6 +66,7 @@ const DepositeHistory = () => {
 
     return (
         <div>
+            <Breadcrumb items={breadcrumbItems} />
             <div className='px-6'>
                 <div className='bg-white shadow-md rounded-lg p-6 mb-6'>
                     <h1 className='text-3xl md:text-4xl font-bold text-gray-800 text-center py-4 border-b border-gray-200'>

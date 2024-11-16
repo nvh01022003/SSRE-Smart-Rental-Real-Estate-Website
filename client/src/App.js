@@ -24,13 +24,14 @@ import BankTransfer from './containers/System/Payment/BankTransfer';
 import ManagePost from '../src/containers/System/ManagePost';
 import DeletedPosts from './containers/System/DeletedPosts';
 import ServicePrice from './containers/System/Payment/ServicePrice';
+import Breadcrumb from './components/Breadcrumb';
 
 function App() {
   const dispatch = useDispatch();
   const { isLoggedIn, token } = useSelector(state => state.auth);
 
   useEffect(() => {
-    // Clear localStorage items related to authentication
+    // Clear localStorage items related to authenticatio
     //localStorage.removeItem('persist:auth');
     //localStorage.removeItem('persist:root');
 
@@ -44,9 +45,12 @@ function App() {
     // Cleanup the timer on component unmount or before re-running useEffect
     return () => clearTimeout(timer);
   }, [isLoggedIn, dispatch, token]);
-
+  console.log('token', token);
+  console.log('isLoggedIn', isLoggedIn);
   return (
     <div className="bg-primary">
+      {/* <Breadcrumb /> */}
+      {/* <AnimatePresence mode="wait" initial={false}> */}
       <Routes>
         {/* Trang chủ và các route con */}
         <Route path={path.HOME} element={<Home />}>

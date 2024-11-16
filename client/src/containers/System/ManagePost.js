@@ -11,7 +11,6 @@ import { FaTrash } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
 import { Breadcrumb } from '../../components';
 
-
 const ManagePost = () => {
     const breadcrumbItems = [];
     const navigate = useNavigate();
@@ -357,6 +356,10 @@ const ManagePost = () => {
         return date.toLocaleDateString('vi-VN');
     };
 
+    const formatCurrency = (amount) => {
+        return Math.floor(amount).toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+    };
+
     return (
         <div className='container mx-auto px-4 pt-8 pb-6'>
             <Breadcrumb items={breadcrumbItems} />
@@ -397,7 +400,7 @@ const ManagePost = () => {
                         Tin đã xóa
                     </button>
                     <button
-                        onClick={() => window.location.href = '/he-thong/tao-moi-bai-dang'}
+                        onClick={() => navigate('/he-thong/tao-moi-bai-dang')}
                         className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded transition duration-300 flex items-center"
                     >
                         <FaPlus className="mr-2" /> Thêm mới
@@ -440,7 +443,7 @@ const ManagePost = () => {
                                         <tr key={post.id} className="hover:bg-gray-50 transition duration-300">
                                             <td className='border border-gray-200 py-2 text-center align-middle'>{post.id}</td>
                                             <td className='border border-gray-200 px-4 py-2 truncate max-w-xs'>{post.title}</td> {/* Title truncation */}
-                                            <td className='border border-gray-200 py-2 text-center align-middle'>{post.price}</td>
+                                            <td className='border border-gray-200 py-2 text-center align-middle'>{formatCurrency(post.price)}</td>
                                             <td className='border border-gray-200  py-2 text-center align-middle'>{post.acreage}</td>
                                             <td className='border border-gray-200 px-4 py-2 text-center align-middle'>{formatDate(post.createdAt)}</td>
                                             <td className='border border-gray-200 px-4 py-2 text-center align-middle'>
