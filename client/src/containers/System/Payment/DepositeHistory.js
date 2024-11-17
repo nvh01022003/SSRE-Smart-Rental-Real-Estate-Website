@@ -91,7 +91,7 @@ const DepositeHistory = () => {
                                                 <td className="border border-gray-200 px-4 py-2 text-center align-middle">{formatDate(item.createdAt)}</td>
                                                 <td className="border border-gray-200 px-4 py-2 text-center align-middle">{item.paycode}</td>
                                                 <td className="border border-gray-200 px-4 py-2 text-center align-middle">{item.paycode.startsWith('MOMO') ? 'MoMo' : 'Chuyển khoản'}</td>
-                                                <td className="border border-gray-200 px-4 py-2 text-center align-middle">{item.amount}</td>
+                                                <td className="border border-gray-200 px-4 py-2 text-center align-middle">{parseInt(item.amount).toLocaleString('vi-VN')}</td>
                                                 <td className="border border-gray-200 px-4 py-2 text-center align-middle">{item.status}</td>
                                             </tr>
                                         ))}

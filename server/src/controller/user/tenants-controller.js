@@ -98,6 +98,7 @@ const findPostByAll = async (req, res) => {
     const maxAcreage = req.query.maxAcreage ? new Decimal(req.query.maxAcreage) : null;
     const categoryCode = req.query.category
     const page = parseInt(req.query.page)
+    console.log(minPrice, maxPrice, location, minAcreage, maxAcreage, categoryCode, page)
     try {
         const response = await tenanstService.findPostByAll(minPrice, maxPrice, location, minAcreage, maxAcreage, categoryCode, page)
         if (response.msg.listPost.length === 0) {

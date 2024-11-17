@@ -31,6 +31,12 @@ module.exports = {
       transactionType: {
         type: Sequelize.STRING
       },
+      content: {
+        type: Sequelize.STRING
+      },
+      balanceAfterTransaction: {
+        type: Sequelize.DECIMAL
+      },
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE

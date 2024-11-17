@@ -171,7 +171,10 @@ const showDepositHistory = async (req, res) => {
 
         // Find transactions associated with the wallet
         const transactions = await Transaction.findAll({
-            where: { wallet_id: wallet.id },
+            where: {
+                wallet_id: wallet.id,
+                transactionType: 'nạp tiền'
+            },
             attributes: ['paycode', 'createdAt', 'amount', 'status']
         });
 
@@ -182,5 +185,31 @@ const showDepositHistory = async (req, res) => {
     }
 };
 
+const showHistoryPayment = async (req, res) => {
+    try {
+        const userId = req.user.id;
 
-module.exports = { showDepositHistory, createPayment, checkPaymentStatus, handleMoMoCallback, handlePayOSCallback, showBalance }; 
+        // Find the wallet associated with the user
+        const wallet = await Wallet.findOne({ where: { user_id: userId } });
+
+        if (!wallet) {
+            return res.status(404).json({ err: 1, msg: 'Wallet not found' });
+        }
+
+        // Find transactions associated with the wallet
+        const transactions = await Transaction.findAll({
+            where: {
+                wallet_id: wallet.id,
+                transactionType: 'thanh toán'
+            },
+            attributes: ['paycode', 'createdAt', 'amount', 'status', 'content', 'balanceAfterTransaction']
+        });
+
+        return res.status(200).json({ err: 0, transactions });
+    } catch (error) {
+        console.error('Error fetching history payment:', error);
+        return res.status(500).json({ err: 1, msg: 'Internal server error' });
+    }
+};
+
+module.exports = { showHistoryPayment, showDepositHistory, createPayment, checkPaymentStatus, handleMoMoCallback, handlePayOSCallback, showBalance }; 

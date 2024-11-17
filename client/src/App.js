@@ -45,8 +45,7 @@ function App() {
     // Cleanup the timer on component unmount or before re-running useEffect
     return () => clearTimeout(timer);
   }, [isLoggedIn, dispatch, token]);
-  console.log('token', token);
-  console.log('isLoggedIn', isLoggedIn);
+
   return (
     <div className="bg-primary">
       {/* <Breadcrumb /> */}

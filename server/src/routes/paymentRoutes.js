@@ -17,6 +17,6 @@ router.post(('/callbackPayOS'), paymentController.handlePayOSCallback); // Route
 // MANAGE TRANSACTIONS
 // show deposit history
 router.get("/depositHistory", authentication.authenticateToken, authorization.checkRoleUser, paymentController.showDepositHistory);
-
+router.get("/historyPayment", authentication.authenticateToken, authorization.checkRoleUser, paymentController.showHistoryPayment);
 
 module.exports = router;

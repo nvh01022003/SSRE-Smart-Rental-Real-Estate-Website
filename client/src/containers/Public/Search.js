@@ -87,34 +87,35 @@ const Search = ({ setSearchClicked }) => {
             const [minPrice, maxPrice] = queries.priceNumber;
             queryCodesObj.minPrice = parseFloat(minPrice !== undefined ? minPrice : 0);// Default minPrice to 0 if not provided
             queryCodesObj.maxPrice = parseFloat(maxPrice);
-            delete queryCodesObj.priceNumber;
-        }
 
+        }
+        delete queryCodesObj.priceNumber;
         // Map areaNumber to minAcreage and maxAcreage
         if (queries.areaNumber) {
             const [minAcreage, maxAcreage] = queries.areaNumber;
             queryCodesObj.minAcreage = parseInt(minAcreage !== undefined ? minAcreage : 0); // Default minAcreage to 0 if not provided
             queryCodesObj.maxAcreage = parseInt(maxAcreage);
-            delete queryCodesObj.areaNumber;
-        }
 
+        }
+        delete queryCodesObj.areaNumber;
         // Map provinceCode to location
         if (queries.provinceCode) {
             const selectedProvince = provinces.find(province => province.province_id === queries.provinceCode[0]);
             if (selectedProvince) {
                 queryCodesObj.location = selectedProvince.province_name;
             }
-            delete queryCodesObj.provinceCode;
-        }
 
+        }
+        delete queryCodesObj.provinceCode;
         // Map categoryCode to category ID
         if (queries.categoryCode && categories.length > 0) {
             const selectedCategory = categories.find(category => category.id === parseInt(queries.categoryCode[0]));
             if (selectedCategory) {
                 queryCodesObj.category = selectedCategory.id
             }
-            delete queryCodesObj.category
+
         }
+        delete queryCodesObj.category
 
         if (queries.page) queryCodesObj.page = queries.page;
 

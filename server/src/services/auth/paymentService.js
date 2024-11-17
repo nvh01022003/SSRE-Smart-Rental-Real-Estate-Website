@@ -173,6 +173,7 @@ const createPaymentRequest = async (amount, orderId, id) => {
                 paycode: orderId,  // hoặc sử dụng một mã code trả về từ MoMo,
                 amount: amount,
                 status: 'Đang thanh toán bằng MoMo',
+                transactionType: 'nạp tiền',
                 created_at: new Date(),
                 updated_at: new Date()
             });

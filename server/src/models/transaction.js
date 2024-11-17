@@ -28,8 +28,9 @@ module.exports = (sequelize, DataTypes) => {
     paycode: DataTypes.STRING,
     amount: DataTypes.DECIMAL,
     status: DataTypes.STRING,
-    transactionType: DataTypes.STRING
-
+    transactionType: DataTypes.STRING,
+    content: DataTypes.STRING,
+    balanceAfterTransaction: DataTypes.DECIMAL,
   }, {
     sequelize,
     modelName: 'Transaction',
