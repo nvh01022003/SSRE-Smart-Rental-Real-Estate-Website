@@ -24,7 +24,7 @@ module.exports = (sequelize, DataTypes) => {
     paycode: DataTypes.STRING,
     amount: DataTypes.DECIMAL,
     status: DataTypes.STRING,
-    transactionType: DataTypes.STRING
+    transactionType: DataTypes.STRING // nạp vào/ đăng bài
 
   }, {
     sequelize,
