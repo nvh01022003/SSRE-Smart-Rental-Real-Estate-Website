@@ -134,9 +134,7 @@ const Overview = forwardRef(({ payload, setPayload, handleInputChange }, ref) =>
     const handlePriceInput = (value) => {
         // Loại bỏ mọi ký tự không phải số
         const numericValue = value.replace(/\D/g, '');
-        setPayload(prev => ({ ...prev, price: numericValue }));
-
-        handleInputChange('price', numericValue);
+        handleInputChange('price', parseFloat(numericValue));
 
         // Thêm dấu phẩy sau mỗi 3 chữ số
         return formatNumberWithCommas(numericValue);
@@ -146,9 +144,7 @@ const Overview = forwardRef(({ payload, setPayload, handleInputChange }, ref) =>
     const handleAreaInput = (value) => {
         // Loại bỏ các ký tự không phải số
         const numericValue = value.replace(/\D/g, '');
-        setPayload(prev => ({ ...prev, acreage: numericValue }));
-
-        handleInputChange('acreage', numericValue);
+        handleInputChange('acreage', parseFloat(numericValue));
 
         // Thêm dấu phẩy sau mỗi 3 chữ số
         return formatNumberWithCommas(numericValue);
@@ -157,13 +153,12 @@ const Overview = forwardRef(({ payload, setPayload, handleInputChange }, ref) =>
     // Real-time validation logic
     const handleInputChangeWithValidation = (name, value) => {
         handleInputChange(name, value);
-        setPayload(prev => ({ ...prev, [name]: value }));
 
         // Cập nhật payload cho category_id
         if (name === 'category_id') {
             setPayload(prev => ({
                 ...prev,
-                category_id: value // Cập nhật category_id bằng giá trị đã chọn
+                category_id: parseInt(value) // Cập nhật category_id bằng giá trị đã chọn
             }));
         }
 
@@ -179,7 +174,7 @@ const Overview = forwardRef(({ payload, setPayload, handleInputChange }, ref) =>
         if (name === 'postType_id') {
             setPayload(prev => ({
                 ...prev,
-                postType_id: value // Cập nhật target bằng giá trị đã chọn
+                postType_id: parseInt(value) // Cập nhật target bằng giá trị đã chọn
             }));
         }
 

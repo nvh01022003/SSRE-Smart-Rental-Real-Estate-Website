@@ -87,30 +87,35 @@ const Search = ({ setSearchClicked }) => {
             const [minPrice, maxPrice] = queries.priceNumber;
             queryCodesObj.minPrice = parseFloat(minPrice !== undefined ? minPrice : 0);// Default minPrice to 0 if not provided
             queryCodesObj.maxPrice = parseFloat(maxPrice);
-        }
 
+        }
+        delete queryCodesObj.priceNumber;
         // Map areaNumber to minAcreage and maxAcreage
         if (queries.areaNumber) {
             const [minAcreage, maxAcreage] = queries.areaNumber;
             queryCodesObj.minAcreage = parseInt(minAcreage !== undefined ? minAcreage : 0); // Default minAcreage to 0 if not provided
             queryCodesObj.maxAcreage = parseInt(maxAcreage);
-        }
 
+        }
+        delete queryCodesObj.areaNumber;
         // Map provinceCode to location
         if (queries.provinceCode) {
             const selectedProvince = provinces.find(province => province.province_id === queries.provinceCode[0]);
             if (selectedProvince) {
                 queryCodesObj.location = selectedProvince.province_name;
             }
-        }
 
+        }
+        delete queryCodesObj.provinceCode;
         // Map categoryCode to category ID
         if (queries.categoryCode && categories.length > 0) {
             const selectedCategory = categories.find(category => category.id === parseInt(queries.categoryCode[0]));
             if (selectedCategory) {
                 queryCodesObj.category = selectedCategory.id
             }
+
         }
+        delete queryCodesObj.category
 
         if (queries.page) queryCodesObj.page = queries.page;
 
@@ -138,28 +143,7 @@ const Search = ({ setSearchClicked }) => {
     return (
         <>
             {loading && <Loading />} {/* Display loading indicator */}
-            {/* <div className='p-[10px] w-full my-5 bg-[#febb02] rounded-lg flex-col lg:flex-row flex items-center justify-around gap-2' >
-                <span onClick={() => handleShowModal(categories, 'category', 'Tìm tất cả')} className='cursor-pointer flex-1 '>
-                    <SearchItem IconBefore={<MdOutlineHouseSiding />} fontWeight IconAfter={<BsChevronRight color='rgb(156, 163, 175)' />} text={queries.category} defaultText={'Tìm tất cả'} />
-                </span>
-                <span onClick={() => handleShowModal(provinces, 'province', 'Toàn quốc')} className='cursor-pointer flex-1'>
-                    <SearchItem IconBefore={<HiOutlineLocationMarker />} IconAfter={<BsChevronRight color='rgb(156, 163, 175)' />} text={queries.province} defaultText={'Toàn quốc'} />
-                </span>
-                <span onClick={() => handleShowModal(prices, 'price', 'Chọn giá')} className='cursor-pointer flex-1'>
-                    <SearchItem IconBefore={<TbReportMoney />} IconAfter={<BsChevronRight color='rgb(156, 163, 175)' />} text={queries.price} defaultText={'Chọn giá'} />
-                </span>
-                <span onClick={() => handleShowModal(areas, 'area', 'Chọn diện tích')} className='cursor-pointer flex-1'>
-                    <SearchItem IconBefore={<RiCrop2Line />} IconAfter={<BsChevronRight color='rgb(156, 163, 175)' />} text={queries.area} defaultText={'Chọn diện tích'} />
-                </span>
-                <button
-                    type='button'
-                    onClick={handleSearch}
-                    className='outline-none py-2 px-4 flex-1 bg-secondary1 text-[13.3px] flex items-center justify-center gap-2 text-white font-medium'
-                >
-                    <FiSearch />
-                    Tìm kiếm
-                </button>
-            </div> */}
+
             <div className='w-full p-4 my-5 bg-[#FFD27F] rounded-lg flex flex-col lg:flex-row items-center justify-around gap-4 shadow-lg'>
                 <span
                     onClick={() => handleShowModal(categories, 'category', 'Tìm tất cả')}

@@ -1,5 +1,6 @@
+
 import React, { useState, useRef } from 'react';
-import { Overview, Address, Loading, Button } from '../../../components';
+import { Overview, Address, Loading, Button, Breadcrumb } from '../../../components';
 import icons from '../../../ultils/icons';
 import axios from 'axios';
 import Swal from 'sweetalert2';
@@ -9,10 +10,10 @@ import { useLocation } from 'react-router-dom';
 const { BsCameraFill, ImBin } = icons;
 
 const CreatePost = () => {
+    const breadcrumbItems = [];
     const location = useLocation();
     const { selectedTypePostId } = location.state || {};
 
-    const { token } = useSelector(state => state.auth);
     const [payload, setPayload] = useState({
         category_id: '',
         postType_id: selectedTypePostId || '',
@@ -40,6 +41,7 @@ const CreatePost = () => {
     const [imagesPreview, setImagesPreview] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
 
+    const { token } = useSelector(state => state.auth);
 
     const [errorMessages, setErrorMessages] = useState({
         postType_id: '',
@@ -226,7 +228,13 @@ const CreatePost = () => {
                     });
                 }
             }
-
+            else {
+                Swal.fire('Thất bại', 'Lỗi khi tạo bài đăng !', 'error');
+                console.log('error', response.data)
+                setPayload({
+                    images: []
+                });
+            }
         } catch (error) {
             console.error('Error creating post:', error);
 
@@ -242,6 +250,7 @@ const CreatePost = () => {
 
     return (
         <div className="container mx-auto p-4 md:p-6">
+            <Breadcrumb items={breadcrumbItems} />
             {role === 'tenants' ? (
                 <div className='bg-white shadow-md rounded-lg p-6'>
                     <h1 className='text-3xl md:text-4xl font-bold text-gray-800 text-center py-4 border-b border-gray-200'>Đăng tin mới</h1>
@@ -298,13 +307,13 @@ const CreatePost = () => {
                                         </div>
                                     </div>
                                 </div>
-                            </div>
+                            </div >
                             <Button onClick={handleSubmit} text='Tạo mới' bgColor='bg-green-600' textColor='text-white' />
-                        </div>
-                    </div>
-                </div>
+                        </div >
+                    </div >
+                </div >
             )}
-        </div>
+        </div >
     );
 };
 
