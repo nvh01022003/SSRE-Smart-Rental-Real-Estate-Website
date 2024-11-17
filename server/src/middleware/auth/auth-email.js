@@ -30,7 +30,28 @@ const createCodeVery = async (req, res, next) => {
             from: process.env.EMAIL_USER, // Email người gửi
             to: email, // Email người nhận
             subject: `Mã xác thực của bạn cho SSRE là:`,
-            text: `Mã xác thực của bạn là: ${verificationCode}`,
+            html: `
+    <div style="font-family: Arial, sans-serif; line-height: 1.6; max-width: 600px; margin: auto; border: 1px solid #ddd; border-radius: 8px; overflow: hidden;">
+        <div style="background-color: #4caf50; color: white; padding: 16px; text-align: center;">
+            <h1>SSRE Verification Code</h1>
+        </div>
+        <div style="padding: 20px; background-color: #f9f9f9;">
+            <p>Xin chào,</p>
+            <p>Chúng tôi nhận được yêu cầu xác thực email của bạn. Vui lòng sử dụng mã xác nhận dưới đây để tiếp tục:</p>
+            <div style="text-align: center; margin: 20px 0;">
+                <span style="display: inline-block; background-color: #f3f3f3; color: #333; font-size: 24px; font-weight: bold; padding: 10px 20px; border-radius: 8px; border: 1px dashed #ccc;">
+                    ${verificationCode}
+                </span>
+            </div>
+            <p style="color: #555;">Lưu ý: Mã xác nhận này sẽ hết hạn sau 60 giây.</p>
+            <p>Trân trọng,<br/>Đội ngũ SSRE</p>
+        </div>
+        <div style="background-color: #f3f3f3; text-align: center; padding: 10px; font-size: 12px; color: #777;">
+            <p>Đây là email tự động, vui lòng không trả lời.</p>
+            <p>&copy; 2024 SSRE, All rights reserved.</p>
+        </div>
+    </div>
+    `,
         }
         try {
             // Gửi email

@@ -215,12 +215,8 @@ module.exports = {
     showDetailPost,
     deletePost,
     sendMailReasonDeletePost,
+    showAllTypePost,
     createTypePost,
     updateTypePost,
     deleteTypePost,
-    showAllTypePost,
-    softDeletePosts,
-    softDeletePost,
-    showAllSoftDeletePosts,
-    restorePost
 }

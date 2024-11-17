@@ -3,7 +3,7 @@ const gravatar = require("gravatar");
 const { where } = require("sequelize");
 const helper = require("../../helper/check-coordinates");
 const paginationHelper = require("../../helper/pagination");
-const { Post, Address, Category, Image, Overview, Coordinates, PostType, sequelize } = require("../../models/index");
+const { Post, Address, Category, Image, Overview, Coordinates, User, Wallet, Transaction, PostType, sequelize } = require("../../models/index");
 const middleware = require("../../middleware/upload/uploadImg")
 const { response } = require("express");
 const multer = require('multer');
@@ -26,11 +26,14 @@ const generateRandomCode = () => {
 
 // CREATE POST
 const createNewPost = async (userId, contentPost, files) => {
-    contentPost = JSON.parse(contentPost)  //ép kiểu qua kiểu json vì bên client gửi lên dạng string
+    contentPost = JSON.parse(contentPost); // Ép kiểu qua JSON vì bên client gửi lên dạng string
     const imageUrls = files;
-    const { title, address, price, description, overview, category_id, postType_id, acreage, target, expire } = contentPost
-    console.log('contentPost', contentPost)
-    const addressData = address
+    const { title, address, price, description, overview, category_id, postType_id, acreage, target, expire, totalPayment } = contentPost;
+
+    console.log('contentPost', contentPost);
+
+    // Chuẩn bị dữ liệu cho các bảng liên quan
+    const addressData = address;
     const overviewData = {
         ...overview,
         code: generateRandomCode(),
@@ -38,23 +41,49 @@ const createNewPost = async (userId, contentPost, files) => {
         type: category_id,
         target: target,
         expire: expire,
-    }
-    let addressStr = addressData.detail_address + ", " + addressData.district + ", " + addressData.city
-    console.log('addressStr', addressStr)
-    const resCoordinates = await helper.getGeocodingData(addressStr)
+    };
+    let addressStr = `${addressData.detail_address}, ${addressData.district}, ${addressData.city}`;
+    console.log('addressStr', addressStr);
+    const resGeoCoordinates = await helper.getGeocodingData(addressStr);
     const coordinatesData = {
-        lat: resCoordinates.lat,
-        lon: resCoordinates.lng
-    }
-    console.log('coordinatesData', coordinatesData)
+        lat: resGeoCoordinates.lat,
+        lon: resGeoCoordinates.lng
+    };
+    console.log('coordinatesData', coordinatesData);
+
+    // Bắt đầu transaction
+    const t = await sequelize.transaction();
 
     try {
+        // Lấy thông tin ví của người dùng trong transaction
+        const wallet = await Wallet.findOne({ where: { user_id: userId }, transaction: t });
+        if (!wallet) {
+            await t.rollback();
+            return { err: 1, msg: 'Wallet not found' };
+        }
+
+        // Kiểm tra số dư
+        if (wallet.balance < totalPayment) {
+            await t.rollback();
+            return { err: 1, msg: 'Insufficient balance' };
+        }
+
+        // Lưu lại số dư trước khi trừ tiền
+        const initialBalance = parseFloat(wallet.balance);
+
+        // Trừ tiền từ ví
+        wallet.balance = initialBalance - parseFloat(totalPayment);
+        await wallet.save({ transaction: t }); // Lưu lại số dư mới trong transaction
+
+        // Tạo các bản ghi liên quan trong transaction
         const [resAddress, resOverview, resCoordinates, resImage] = await Promise.all([
-            Address.create(addressData),
-            Overview.create(overviewData),
-            Coordinates.create(coordinatesData),
-            Image.create({ img_url_list: JSON.stringify(imageUrls) })
+            Address.create(addressData, { transaction: t }),
+            Overview.create(overviewData, { transaction: t }),
+            Coordinates.create(coordinatesData, { transaction: t }),
+            Image.create({ img_url_list: JSON.stringify(imageUrls) }, { transaction: t })
         ]);
+
+        // Tạo bài viết trong transaction
         const resPost = await Post.create({
             title,
             price,
@@ -67,20 +96,55 @@ const createNewPost = async (userId, contentPost, files) => {
             acreage: acreage,
             img_id: resImage.id,
             postType_id: postType_id
-        });
+        }, { transaction: t });
+
+        // Tạo bản ghi giao dịch với thông tin cần thiết trong transaction
+        await Transaction.create({
+            wallet_id: wallet.id,
+            paycode: "PayPost" + new Date().getTime(),
+            amount: totalPayment,
+            status: 'Thành công',
+            transactionType: 'thanh toán',
+            content: `Phí đăng bài viết ID:${resPost.id}`,
+            balanceAfterTransaction: wallet.balance
+        }, { transaction: t });
+
+        // Commit transaction sau khi tất cả thao tác thành công
+        await t.commit();
+
         return {
             err: 0,
             msg: 'Create post success',
             post: resPost
-        }
+        };
     } catch (error) {
-        console.log(error)
+        console.log('Error in createNewPost:', error);
+
+        // Rollback transaction nếu có lỗi
+        await t.rollback();
+
+        // Lấy lại thông tin ví sau khi rollback để có số dư ban đầu
+        const wallet = await Wallet.findOne({ where: { user_id: userId } });
+
+        // Tạo bản ghi giao dịch thất bại
+        if (wallet) {
+            await Transaction.create({
+                wallet_id: wallet.id,
+                paycode: "PayPost" + new Date().getTime(),
+                amount: totalPayment,
+                status: 'Thất bại',
+                transactionType: 'thanh toán',
+                content: `Phi đăng bài viết`,
+                balanceAfterTransaction: wallet.balance // Số dư ban đầu vì chưa trừ tiền
+            });
+        }
         return {
             err: 1,
-            msg: error
-        }
+            msg: error.message
+        };
     }
-}
+};
+
 // UPDATE STATUS POST
 const updateStatusPost = async (postId, status) => {
     try {
@@ -204,24 +268,6 @@ const updatePost = async (postId, dataUpdate, files) => {
 
 // DELETE POST
 const deletePost = async (postId) => {
-    // try {
-    //     const resPost = await Post.destroy({
-    //         where: {
-    //             id: postId
-    //         }
-    //     })
-    //     return {
-    //         err: 0,
-    //         msg: 'Delete post success',
-    //         post: resPost
-    //     }
-    // } catch (error) {
-    //     console.log(error)
-    //     return {
-    //         err: 1,
-    //         msg: error
-    //     }
-    // }
     try {
         // Tìm bài viết theo ID
         const post = await Post.findOne({
@@ -288,6 +334,10 @@ const listPost = async (userId) => {
                 {
                     model: Address,
                     attributes: ['city', 'district', 'detail_address']
+                },
+                {
+                    model: User,
+                    attributes: ['firstName', 'lastName', 'email', 'phone', 'img_avt']
                 },
                 {
                     model: Overview,
@@ -397,14 +447,15 @@ const softDeletePost = async (postId) => {
             { status: 1 },
             {
                 where: {
-                    id: postId                }
+                    id: postId
+                }
             }
         );
         return { err: 0, msg: 'Post soft-deleted successfully.' };
     } catch (error) {
-        return { err: 1, msg: error.message }; 
-    } 
-}; 
+        return { err: 1, msg: error.message };
+    }
+};
 
 
 // LIST POST BY PAGE PAGINATION
