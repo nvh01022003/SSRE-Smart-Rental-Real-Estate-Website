@@ -6,9 +6,13 @@ import { apiGetPubliccitys } from '../../services';
 import Swal from 'sweetalert2';
 import { fetchCategories } from '../../store/actions';
 import { Loading } from '../../components';
+import { useNavigate } from 'react-router-dom';
 import { FaSearch } from 'react-icons/fa';
+import { Breadcrumb } from '../../components';
 
 const DeletedPosts = () => {
+    const breadcrumbItems = []
+    const navigate = useNavigate();
     const dispatch = useDispatch();
     const [posts, setPosts] = useState([]);
     const [search, setSearch] = useState("");
@@ -192,22 +196,27 @@ const DeletedPosts = () => {
         const date = new Date(dateString);
         return date.toLocaleDateString('vi-VN');
     };
-
+    const formatCurrency = (amount) => {
+        return Math.floor(amount).toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+    };
     return (
         <div className='container mx-auto px-4 py-8'>
+            <Breadcrumb items={breadcrumbItems} />
             <div className='bg-white shadow-md rounded-lg p-6'>
                 <h1 className='text-3xl md:text-4xl font-bold text-gray-800 text-center py-4 border-b border-gray-200'>Danh sách tin đã xóa</h1>
-                <div className="flex mt-5 gap-10">
-                    <div className='relative mb-4 md:mr-4 w-full md:w-[85%] '> {/* Thay đổi chiều rộng cho di động */}
+                <div className="flex flex-col md:flex-row mt-5 gap-4">
+                    {/* <div className="flex mt-5 gap-10"> */}
+                    <div className='relative mb-4 w-full md:w-[85%]'>
                         <input
                             type="text"
                             placeholder="Tìm kiếm theo tiêu đề..."
-                            className='pl-10 pr-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 w-full' // Thêm w-full để ô tìm kiếm chiếm toàn bộ chiều rộng
+                            className='pl-10 pr-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 w-full'
                             value={search}
                             onChange={handleSearch}
                         />
                         <FaSearch className='absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400' />
                     </div>
+
                     {/* Dropdown cho danh mục */}
                     <div className='mb-4 w-full md:w-[15%] justify-end'> {/* Thay đổi chiều rộng cho di động */}
                         <select
@@ -222,8 +231,8 @@ const DeletedPosts = () => {
                         </select>
                     </div>
                 </div>
-                <div className="overflow-x-auto bg-white shadow-md rounded-lg mt-5 ">
 
+                <div className="overflow-x-auto bg-white shadow-md rounded-lg mt-5 ">
                     <table className="min-w-full border-collapse border border-gray-200">
                         <thead className="sticky top-0 bg-gray-100">
                             <tr className="font-semibold text-gray-700 uppercase tracking-wider">

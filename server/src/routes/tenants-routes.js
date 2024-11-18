@@ -9,6 +9,7 @@ const multer = require('multer');
 const storage = multer.memoryStorage();
 const upload = multer({ storage });
 const router = express.Router()
+const spam = require("../middleware/utils/antiSpam")
 
 
 // show info user
@@ -16,7 +17,7 @@ router.get("/showInfo", authentication.authenticateToken, tenantsController.show
 // change info user
 router.post("/changeInfo", authentication.authenticateToken, validate.validateUpdate, tenantsController.changeInfo)
 // save post
-router.post("/savePost/:id", authentication.authenticateToken, tenantsController.savaPost)
+router.post("/savePost/:id", spam.antiSpam, authentication.authenticateToken, tenantsController.savaPost)
 // show list post saved ( favorite )
 router.get("/listPostSaved", authentication.authenticateToken, tenantsController.listPostSaved)
 // delete list post saved

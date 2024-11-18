@@ -135,7 +135,7 @@ const createPaymentRequest = async (amount, orderId, id) => {
     const requestId = orderId;
     const orderInfo = "Thanh toán với MoMo";
     const redirectUrl = "http://localhost:3000/he-thong/nap-tien/momo";
-    const ipnUrl = "https://f074-2405-4802-95cf-c330-98f5-7040-f691-1806.ngrok-free.app/api/v1/user/callbackMOMO";
+    const ipnUrl = "https://0617-2405-4802-9603-2eb0-3168-139d-a33f-3707.ngrok-free.app/api/v1/user/callbackMOMO";
     const expireTime = Math.floor(Date.now() / 1000) + 5 * 60;
 
 
@@ -173,6 +173,7 @@ const createPaymentRequest = async (amount, orderId, id) => {
                 paycode: orderId,  // hoặc sử dụng một mã code trả về từ MoMo,
                 amount: amount,
                 status: 'Đang thanh toán bằng MoMo',
+                transactionType: 'nạp tiền',
                 created_at: new Date(),
                 updated_at: new Date()
             });

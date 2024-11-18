@@ -12,11 +12,11 @@ router.post('/payment', authentication.authenticateToken, authorization.checkRol
 router.get('/showBalance', authentication.authenticateToken, authorization.checkRoleUser, paymentController.showBalance);
 router.post(('/check-payment-status'), paymentController.checkPaymentStatus);  // Route để kiểm tra trạng thái thanh toán
 router.post(('/callbackMOMO'), paymentController.handleMoMoCallback);  // Route để kiểm tra trạng thái thanh toán của MoMo
-router.post(('/callbackPayOS'), paymentController.handlePayOSCallback); // Route để kiểm tra trạng thái thanh toán của PayOS
+// router.post(('/callbackPayOS'), paymentController.handlePayOSCallback); // Route để kiểm tra trạng thái thanh toán của PayOS
 
 // MANAGE TRANSACTIONS
 // show deposit history
 router.get("/depositHistory", authentication.authenticateToken, authorization.checkRoleUser, paymentController.showDepositHistory);
-
+router.get("/historyPayment", authentication.authenticateToken, authorization.checkRoleUser, paymentController.showHistoryPayment);
 
 module.exports = router;

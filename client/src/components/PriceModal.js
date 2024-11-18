@@ -59,10 +59,10 @@ const PriceModal = ({ setIsPriceModalOpen }) => {
                                 <span className="ml-1 text-sm text-gray-500">VNĐ/ngày</span>
                             </div>
                             <ul className="mt-2 list-disc list-inside text-sm text-gray-600">
-                                {item.features && item.features.map((feature, idx) => (
-                                    <li key={idx} className="flex items-center">
+                                {item.desc.split('.').filter(sentence => sentence.trim() !== '').map((sentence, index) => (
+                                    <li key={index} className="flex items-center">
                                         <FiCheckCircle className="h-4 w-4 text-green-500 mr-1" />
-                                        {feature}
+                                        <span>{sentence.trim()}</span>
                                     </li>
                                 ))}
                             </ul>

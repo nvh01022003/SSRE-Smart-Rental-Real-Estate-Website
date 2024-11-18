@@ -13,7 +13,11 @@ module.exports = (sequelize, DataTypes) => {
       // define association here
       this.belongsTo(Category, { foreignKey: 'category_id' })
 
-      //this.hasMany(Image, { foreignKey: 'id' })
+      // this.belongsTo(Image, { foreignKey: 'img_id' });
+      // this.belongsTo(User, { foreignKey: 'user_id' })
+      // this.hasOne(Coordinates, { foreignKey: 'id' })
+      // this.belongsTo(Address, { foreignKey: 'address_id' });
+      // this.belongsTo(Overview, { foreignKey: 'overview_id' });
 
       this.belongsTo(Category, { foreignKey: 'category_id', onDelete: 'CASCADE' });
       this.belongsTo(Image, { foreignKey: 'img_id', onDelete: 'CASCADE' });
@@ -22,6 +26,7 @@ module.exports = (sequelize, DataTypes) => {
       this.belongsTo(Address, { foreignKey: 'address_id', onDelete: 'CASCADE' });
       this.belongsTo(Overview, { foreignKey: 'overview_id', onDelete: 'CASCADE' });
       this.belongsTo(PostType, { foreignKey: 'postType_id', onDelete: 'CASCADE' });
+
     }
   }
   Post.init({

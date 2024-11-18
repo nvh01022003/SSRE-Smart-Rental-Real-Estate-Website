@@ -27,9 +27,15 @@ module.exports = {
       status: {
         type: Sequelize.STRING
       },
-      // cột lưu thông tin giao dịch là nạp hay đăng bài
+      // cột lưu thông tin giao dịch là nạp hay đăng bài(thanh toán)
       transactionType: {
         type: Sequelize.STRING
+      },
+      content: {
+        type: Sequelize.STRING
+      },
+      balanceAfterTransaction: {
+        type: Sequelize.DECIMAL
       },
       createdAt: {
         allowNull: false,

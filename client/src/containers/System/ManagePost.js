@@ -9,8 +9,10 @@ import { fetchCategories } from '../../store/actions';
 import { Loading } from '../../components';
 import { FaTrash } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
+import { Breadcrumb } from '../../components';
 
 const ManagePost = () => {
+    const breadcrumbItems = [];
     const navigate = useNavigate();
     const dispatch = useDispatch();
     const [posts, setPosts] = useState([]);
@@ -324,17 +326,7 @@ const ManagePost = () => {
         const value = e.target.value.replace(/\D/g, '');
         setSelectedPost({ ...selectedPost, acreage: value.replace(/\B(?=(\d{3})+(?!\d))/g, '.') });
     };
-    // const handleFiles = (e) => {
-    //     const files = Array.from(e.target.files);
-    //     const previewUrls = files.map(file => URL.createObjectURL(file));
-    //     setSelectedImages(files);
-    //     setImagesPreview(previewUrls);
-    //     setImageUrls(previewUrls); // Store the URLs
-    //     setSelectedPost(prev => ({
-    //         ...prev,
-    //         Image: { img_url_list: [] } // Clear old images from the form
-    //     }));
-    // };
+
     const handleFiles = (e) => {
         const files = Array.from(e.target.files);
         const validFiles = files.filter(file => /(\.jpeg|\.jpg|\.png|\.gif)$/i.test(file.name));
@@ -364,8 +356,13 @@ const ManagePost = () => {
         return date.toLocaleDateString('vi-VN');
     };
 
+    const formatCurrency = (amount) => {
+        return Math.floor(amount).toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+    };
+
     return (
         <div className='container mx-auto px-4 pt-8 pb-6'>
+            <Breadcrumb items={breadcrumbItems} />
             <div className='bg-white shadow-md rounded-lg p-6'>
                 <h1 className='text-3xl md:text-4xl font-bold text-gray-800 text-center pb-4 border-b border-gray-200 mb-5'>Quản lý tin đăng</h1>
                 <div className='flex items-center justify-center'>
@@ -403,7 +400,7 @@ const ManagePost = () => {
                         Tin đã xóa
                     </button>
                     <button
-                        onClick={() => window.location.href = '/he-thong/tao-moi-bai-dang'}
+                        onClick={() => navigate('/he-thong/tao-moi-bai-dang')}
                         className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded transition duration-300 flex items-center"
                     >
                         <FaPlus className="mr-2" /> Thêm mới
@@ -446,7 +443,7 @@ const ManagePost = () => {
                                         <tr key={post.id} className="hover:bg-gray-50 transition duration-300">
                                             <td className='border border-gray-200 py-2 text-center align-middle'>{post.id}</td>
                                             <td className='border border-gray-200 px-4 py-2 truncate max-w-xs'>{post.title}</td> {/* Title truncation */}
-                                            <td className='border border-gray-200 py-2 text-center align-middle'>{post.price}</td>
+                                            <td className='border border-gray-200 py-2 text-center align-middle'>{formatCurrency(post.price)}</td>
                                             <td className='border border-gray-200  py-2 text-center align-middle'>{post.acreage}</td>
                                             <td className='border border-gray-200 px-4 py-2 text-center align-middle'>{formatDate(post.createdAt)}</td>
                                             <td className='border border-gray-200 px-4 py-2 text-center align-middle'>

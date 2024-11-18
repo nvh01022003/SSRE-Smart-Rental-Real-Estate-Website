@@ -18,7 +18,7 @@ const Homepage = () => {
             </div>
             <div className='w-full flex flex-col  text-center'>
                 <p className='text-[18px] font-semibold ' >Khu vực nổi bật</p>
-                <Province />
+                <Province searchClicked={searchClicked} />
             </div>
 
 
