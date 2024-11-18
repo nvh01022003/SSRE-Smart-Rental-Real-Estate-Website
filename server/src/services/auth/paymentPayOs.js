@@ -42,6 +42,7 @@ const createPaymentPayos = async (amount, id) => {
                 wallet_id: id,
                 paycode: orderCode,
                 amount,
+                transactionType: 'nạp tiền',
                 status: 'Đang thanh toán bằng PayOS',
                 created_at: new Date(),
                 updated_at: new Date()
