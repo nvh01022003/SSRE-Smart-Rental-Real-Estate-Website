@@ -69,7 +69,7 @@ router.delete("/deletePost/:postId", authentication.authenticateToken, authoriza
 
 // MANAGE TRANSACTION
 router.get("/showAllDepositHistory", authentication.authenticateToken, authorization.checkRoleAdmin, transactionController.showAllDepositHistory);
-
+router.get("/showAllHistoryPayment", authentication.authenticateToken, authorization.checkRoleAdmin, transactionController.showAllHistoryPayment);
 
 // MANAGE TYPE POST
 // create type post

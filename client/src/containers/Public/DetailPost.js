@@ -342,11 +342,11 @@ const DetailPost = () => {
                     <div className="mb-5 border  rounded-md bg-gray-50 ">
                         <table className="w-full text-normal">
                             <tbody>
-                                <tr className='h-8'>
+                                <tr className='bg-gray-200 h-8'>
                                     <td className="font-normal pl-2">Mã tin : </td>
                                     <td>#{data.id}</td>
                                 </tr>
-                                <tr className="bg-gray-200 h-8">
+                                <tr className="h-8">
                                     <td className="font-normal pl-2">Chuyên mục : </td>
                                     <td className='underline text-blue-700 font-medium hover:cursor-pointer hover:text-orange-700'
                                         onClick={() => navigate(`/${formatVietnameseToString(data.category.category_name)}`)}
@@ -354,24 +354,24 @@ const DetailPost = () => {
                                         {data.category.category_name}
                                     </td>
                                 </tr>
-                                <tr className='h-8'>
+                                <tr className='bg-gray-200 h-8'>
                                     <td className="font-normal pl-2">Loại tin : </td>
                                     <td className='text-red-500'>{typePosts.find(postType => postType.id === parseInt(data.postType_id))?.name || data.postType_id}</td>
                                 </tr>
-                                <tr className='bg-gray-200 h-8'>
+                                <tr className='h-8'>
                                     <td className="font-normal pl-2">Khu vực : </td>
                                     <td>{data.overviews.area}</td>
                                 </tr>
-                                <tr className='h-8'>
+                                <tr className='bg-gray-200 h-8'>
                                     <td className="font-normal pl-2">Đối tượng cho thuê : </td>
                                     <td>{getTargetLabel(data.overviews.target)}</td>
                                 </tr>
 
-                                <tr className='bg-gray-200 h-8'>
+                                <tr className='h-8'>
                                     <td className="font-normal pl-2">Ngày đăng : </td>
                                     <td>{formatDate(data.createdAt)}</td>
                                 </tr>
-                                <tr className="h-8">
+                                <tr className="bg-gray-200 h-8">
                                     <td className="font-normal pl-2">Ngày hết hạn : </td>
                                     <td>{formatDate(data.overviews.expire)}</td>
                                 </tr>
@@ -388,7 +388,7 @@ const DetailPost = () => {
                             <img
                                 src={data.user.img_avt}
                                 alt="Avatar"
-                                className="w-20 h-20 rounded-full mb-3"
+                                className="w-[113px] h-[113px] rounded-full mb-3"
                             />
                         )}
                     </div>
