@@ -189,7 +189,9 @@ const deletePostSaved = async (userId, postId) => {
 const findPostByAll = async (minPrice, maxPrice, location, minAcreage, maxAcreage, categoryCode, page) => {
     console.log("giá", minPrice, maxPrice);
     try {
-        let whereCondition = {};
+        let whereCondition = {
+            status: 0,
+        };
         if (minPrice && maxPrice) {
             whereCondition.price = {
                 [Op.between]: [minPrice, maxPrice]
@@ -238,7 +240,7 @@ const findPostByAll = async (minPrice, maxPrice, location, minAcreage, maxAcreag
             where: whereCondition,
             limit: objectPagination.limitPage,
             offset: objectPagination.skip,
-            order: [['createdAt', 'DESC']],
+            order: [['postType_id', 'ASC'], ['createdAt', 'DESC']],
             // trả về đủ thông tin address, img
             include: [
                 {
