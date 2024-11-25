@@ -45,30 +45,30 @@ const IconContainer = styled.div`
     }
 `;
 
-const Item = ({ images, user, title, star, description, attributes, address, id, starred, updatedAt }) => {
-    const [isStarred, setIsStarred] = useState(starred);
+const Item = ({ images, user, title, isSaved, description, attributes, address, id, updatedAt }) => {
+    const [isStarred, setIsStarred] = useState(isSaved); // Sử dụng statusSave từ props
     const [isHovered, setIsHovered] = useState(false);
     const { token } = useSelector(state => state.auth);
     const navigate = useNavigate();
     const dispatch = useDispatch();
 
     useEffect(() => {
-        // Khôi phục trạng thái từ localStorage
-        const savedStarredState = localStorage.getItem(`starred-${id}`);
-        setIsStarred(savedStarredState === 'true'); // Chuyển đổi chuỗi thành boolean
-    }, [id]);
+        dispatch(fetchSavedPosts(token, 1));
+    }, [dispatch, token]);
 
     const handleClick = async () => {
-        const newStarredState = !isStarred;
+        const newStarredState = isStarred === 1 ? 0 : 1;
 
-        if (newStarredState) {
+        if (newStarredState === 1) {
             try {
-                await axios.post(`http://localhost:5000/api/v1/user/tenants/savePost/${id}`, {}, {
+                const res = await axios.post(`http://localhost:5000/api/v1/user/tenants/savePost/${id}`, {}, {
                     headers: { 'token': `${token}` }
                 });
-                setIsStarred(newStarredState); // Update state only after successful API call
-                localStorage.setItem(`starred-${id}`, newStarredState); // Save state to localStorage
-                dispatch(getTotalPostSaved(token)); // Update total posts saved
+                if (res.data.err === 0) {
+                    setIsStarred(1); // Update state only after successful API call
+                    dispatch(getTotalPostSaved(token)); // Update total posts saved
+                    dispatch(fetchSavedPosts(token, 1)); // Fetch the updated list of saved posts with page 1
+                }
             } catch (error) {
                 console.error('Error saving post:', error);
                 if (error.response?.data?.err === 1) {
@@ -81,6 +81,12 @@ const Item = ({ images, user, title, star, description, attributes, address, id,
                             window.location.href = '/login';
                         }
                     });
+                } else if (error.response?.data?.err === -1) {
+                    Swal.fire({
+                        icon: 'error',
+                        text: 'Bạn chỉ được lưu tối đa 3 tin đăng trong vòng 30 giây. Vui lòng thử lại sau 30 giây nữa !',
+                        confirmButtonText: 'OK',
+                    });
                 }
             }
         } else {
@@ -88,8 +94,7 @@ const Item = ({ images, user, title, star, description, attributes, address, id,
                 await axios.delete(`http://localhost:5000/api/v1/user/tenants/deletePostSaved/${id}`, {
                     headers: { 'token': `${token}` }
                 });
-                setIsStarred(newStarredState); // Update state only after successful API call
-                localStorage.setItem(`starred-${id}`, newStarredState); // Save state to localStorage
+                setIsStarred(0); // Update state only after successful API call
                 dispatch(getTotalPostSaved(token)); // Update total posts saved
                 dispatch(fetchSavedPosts(token, 1)); // Fetch the updated list of saved posts with page 1
             } catch (error) {
@@ -152,13 +157,18 @@ const Item = ({ images, user, title, star, description, attributes, address, id,
             <div className='w-full md:w-3/5'>
                 <div className='flex justify-between w-full mb-2'>
                     <div className='flex-wrap '>
-                        <span className='text-red-600 font-medium cursor-pointer hover:underline text-xs md:text-2xl uppercase overflow-hidden  text-ellipsis' onClick={() => navigate(`/chi-tiet/${formatVietnameseToString(title)}/${id}`)}>
+                        <span style={{
+                            display: '-webkit-box',
+                            WebkitLineClamp: 2, // Số dòng tối đa trước khi cắt bớt
+                            WebkitBoxOrient: 'vertical',
+                            textOverflow: 'ellipsis'
+                        }} className='text-red-600 font-medium cursor-pointer hover:underline text-xs md:text-2xl uppercase overflow-hidden  text-ellipsis' onClick={() => navigate(`/chi-tiet/${formatVietnameseToString(title)}/${id}`)}>
                             {title}
                         </span>
                     </div>
                     <div className='justify-end '>
                         <button className='hover:bg-red-50 p-1 rounded-full' onMouseEnter={() => setIsHovered(true)} onMouseLeave={() => setIsHovered(false)} onClick={handleClick}>
-                            <BsBookmarkStarFill size={30} color={isStarred || isHovered ? 'red' : 'orange'} />
+                            <BsBookmarkStarFill size={30} color={isStarred === 1 || isHovered ? 'red' : 'orange'} />
                         </button>
                     </div>
                 </div>
@@ -169,7 +179,7 @@ const Item = ({ images, user, title, star, description, attributes, address, id,
                             <p className="ml-1">{formatPrice(attributes?.price)}/tháng</p>
                         </span>
                         <span className='flex items-center gap-1'>
-                            <RiCrop2Line className="inline-block" /> {attributes?.acreage} m²
+                            <RiCrop2Line className="inline-block" /> {parseInt(attributes?.acreage)} m²
                         </span>
                         <span className='flex text-gray-500 items-center gap-1'>
                             <FaClock className="inline-block" /> {timeDiff}

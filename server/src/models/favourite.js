@@ -26,7 +26,15 @@ module.exports = (sequelize, DataTypes) => {
   }
   Favourite.init({
     user_id: DataTypes.INTEGER,
-    post_id: DataTypes.INTEGER
+    post_id: DataTypes.INTEGER,
+    statusSave: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      defaultValue: 1, // 1: Đã lưu, 0: Chưa lưu
+      validate: {
+        isIn: [[0, 1]],
+      },
+    }
   }, {
     sequelize,
     modelName: 'Favourite',

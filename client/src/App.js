@@ -8,7 +8,7 @@ import * as actions from './store/actions';
 import { useDispatch, useSelector } from 'react-redux';
 import Register from './containers/Public/Register';
 import Verify from './containers/Public/Verify';
-import PersonalInfo from './containers/System/PersonalInfo/PersonalInfo';
+import PersonalInfo from './containers/Public/PersonalInfo/PersonalInfo';
 import ChangePass from './containers/System/ChangePass';
 import ForgotPassword from './containers/Public/ForgotPass/ForgotPass';
 import ChatGPT from './components/Chat/ChatGPT';

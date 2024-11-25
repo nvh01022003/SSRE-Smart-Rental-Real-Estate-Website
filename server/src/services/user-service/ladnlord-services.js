@@ -26,6 +26,7 @@ const generateRandomCode = () => {
 
 // CREATE POST
 const createNewPost = async (userId, contentPost, files) => {
+    console.log("okee tạo bài viết")
     contentPost = JSON.parse(contentPost); // Ép kiểu qua JSON vì bên client gửi lên dạng string
     const imageUrls = files;
     const { title, address, price, description, overview, category_id, postType_id, acreage, target, expire, totalPayment } = contentPost;
@@ -82,7 +83,6 @@ const createNewPost = async (userId, contentPost, files) => {
             Coordinates.create(coordinatesData, { transaction: t }),
             Image.create({ img_url_list: JSON.stringify(imageUrls) }, { transaction: t })
         ]);
-
         // Tạo bài viết trong transaction
         const resPost = await Post.create({
             title,
@@ -108,7 +108,6 @@ const createNewPost = async (userId, contentPost, files) => {
             content: `Phí đăng bài viết ID:${resPost.id}`,
             balanceAfterTransaction: wallet.balance
         }, { transaction: t });
-
         // Commit transaction sau khi tất cả thao tác thành công
         await t.commit();
 

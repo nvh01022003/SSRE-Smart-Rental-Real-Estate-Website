@@ -135,7 +135,7 @@ const createPaymentRequest = async (amount, orderId, id) => {
     const requestId = orderId;
     const orderInfo = "Thanh toán với MoMo";
     const redirectUrl = "http://localhost:3000/he-thong/nap-tien/momo";
-    const ipnUrl = "https://d72d-183-81-125-191.ngrok-free.app/api/v1/user/callbackMOMO";
+    const ipnUrl = "https://0617-2405-4802-9603-2eb0-3168-139d-a33f-3707.ngrok-free.app/api/v1/user/callbackMOMO";
     const expireTime = Math.floor(Date.now() / 1000) + 5 * 60;
 
 

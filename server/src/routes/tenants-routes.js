@@ -9,6 +9,7 @@ const multer = require('multer');
 const storage = multer.memoryStorage();
 const upload = multer({ storage });
 const router = express.Router()
+const spam = require("../middleware/utils/antiSpam")
 
 
 // show info user
@@ -16,7 +17,7 @@ router.get("/showInfo", authentication.authenticateToken, tenantsController.show
 // change info user
 router.post("/changeInfo", authentication.authenticateToken, validate.validateUpdate, tenantsController.changeInfo)
 // save post
-router.post("/savePost/:id", authentication.authenticateToken, tenantsController.savaPost)
+router.post("/savePost/:id", spam.antiSpam, authentication.authenticateToken, tenantsController.savaPost)
 // show list post saved ( favorite )
 router.get("/listPostSaved", authentication.authenticateToken, tenantsController.listPostSaved)
 // delete list post saved
@@ -27,9 +28,9 @@ router.post("/reportPost/:id", authentication.authenticateToken, tenantsControll
 // total number of posts saved
 router.get("/totalPostSaved", authentication.authenticateToken, tenantsController.totalPostSaved)
 // find post by price and acreage and location and category 
-router.get("/findPostByAll", tenantsController.findPostByAll)
+router.get("/findPostByAll", authentication.authenticateTokenOptional, tenantsController.findPostByAll)
 // show detail post
-router.get("/showDetailPost/:id", tenantsController.showDetailPost)
+router.get("/showDetailPost/:id", authentication.authenticateTokenOptional, tenantsController.showDetailPost)
 // gửi yêu cầu nâng cấp tài khoản thành landlord và có up ảnh chứng minh nhân dân và đợi phê duyệt
 router.post("/reqUpdateToLandlord", authentication.authenticateToken, authorization.checkRoleUserTenants, upload.array('imgKYC', 2), img.checkFileTypeImg, img.updateImgs, tenantsController.reqUpdateToLandlord)
 

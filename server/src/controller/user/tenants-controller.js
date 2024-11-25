@@ -98,9 +98,10 @@ const findPostByAll = async (req, res) => {
     const maxAcreage = req.query.maxAcreage ? new Decimal(req.query.maxAcreage) : null;
     const categoryCode = req.query.category
     const page = parseInt(req.query.page)
+    const userId = req.user ? req.user.id : null;
     console.log(minPrice, maxPrice, location, minAcreage, maxAcreage, categoryCode, page)
     try {
-        const response = await tenanstService.findPostByAll(minPrice, maxPrice, location, minAcreage, maxAcreage, categoryCode, page)
+        const response = await tenanstService.findPostByAll(minPrice, maxPrice, location, minAcreage, maxAcreage, categoryCode, page, userId)
         if (response.msg.listPost.length === 0) {
             try {
                 console.log('Save user searches')
@@ -153,8 +154,9 @@ const totalPage = async (req, res) => {
 const showDetailPost = async (req, res) => {
     const postId = req.params.id
     console.log("id post", postId)
+    const userId = req.user ? req.user.id : null; // Lấy ID người dùng nếu đã đăng nhập
     try {
-        const response = await tenanstService.showDetailPost(postId)
+        const response = await tenanstService.showDetailPost(userId, postId)
         return res.status(200).json(response)
     } catch (error) {
         return res.status(500).json({

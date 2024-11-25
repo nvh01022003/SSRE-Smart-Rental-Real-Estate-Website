@@ -17,6 +17,7 @@ const Navigation = ({ isAdmin, searchClicked }) => {
     const { categories } = useSelector(state => state.app);
     const [category, setCategory] = useState('');
     const [page, setPage] = useState(1);
+    const { token } = useSelector(state => state.auth);
 
     useEffect(() => {
         dispatch(actions.getCategories());
@@ -71,7 +72,7 @@ const Navigation = ({ isAdmin, searchClicked }) => {
         // Ensure all required parameters are included
         if (!searchParamsObject.page) searchParamsObject.page = 1; // Default to page 1 if not provided
 
-        dispatch(getPostsLimit(searchParamsObject));
+        dispatch(getPostsLimit(searchParamsObject, token));
         //console.log(searchParamsObject);
     }, [searchParams, category, page, dispatch, categories, searchClicked]);
 

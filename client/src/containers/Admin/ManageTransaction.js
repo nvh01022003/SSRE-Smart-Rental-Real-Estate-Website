@@ -253,7 +253,7 @@ const ManageTransaction = () => {
                                     </div>
                                     {/* Close Button */}
                                     <div className="flex-1 min-w-[%] flex justify-end">
-                                        <button className="bg-gray-500 hover:bg-gray-600 text-white px-6 py-2 rounded-md mt-6 ml-auto" onClick={closeModalView}>
+                                        <button className="bg-gray-500 hover:bg-gray-600 transition duration-300 text-white px-6 py-2 rounded-md mt-6 ml-auto" onClick={closeModalView}>
                                             Đóng
                                         </button>
                                     </div>
@@ -527,7 +527,7 @@ const ManageTransaction = () => {
 
                                     {/* Close Button */}
                                     <div className="flex-1 min-w-[%] flex justify-end">
-                                        <button className="bg-gray-500 hover:bg-gray-600 text-white px-6 py-2 rounded-md mt-6 ml-auto" onClick={closeModalView}>
+                                        <button className="bg-gray-500 hover:bg-gray-600 transition duration-300 text-white px-6 py-2 rounded-md mt-6 ml-auto" onClick={closeModalView}>
                                             Đóng
                                         </button>
                                     </div>

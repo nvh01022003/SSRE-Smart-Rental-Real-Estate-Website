@@ -4,7 +4,10 @@ import { Swiper, SwiperSlide } from 'swiper/react';
 import { Navigation, Pagination } from 'swiper/modules';
 import 'react-image-lightbox/style.css'; // Import CSS cho lightbox
 import icons from '../../ultils/icons';
-import { useSelector } from 'react-redux';
+import { BsBookmarkStarFill } from 'react-icons/bs';
+import { useSelector, useDispatch } from 'react-redux';
+import Swal from 'sweetalert2';
+import { getTotalPostSaved, fetchSavedPosts } from '../../store/actions/post';
 import axios from 'axios';
 import { formatVietnameseToString } from '../../ultils/Common/formatVietnameseToString';
 import { useNavigate } from 'react-router-dom';
@@ -54,19 +57,28 @@ const { RiCrop2Line } = icons;
 const DetailPost = () => {
     const navigate = useNavigate();
     const { id } = useParams();
-    const token = useSelector(state => state.auth);
+    const { token } = useSelector(state => state.auth);
     const [typePosts, setTypePosts] = useState([]);
     const [data, setData] = useState(null);
     const [isOpen, setIsOpen] = useState(false);
     const [currentImage, setCurrentImage] = useState(0);
 
+    // Thêm state để quản lý trạng thái lưu:
+    const [isStarred, setIsStarred] = useState(0);
+    const dispatch = useDispatch();
+
     //call api đến BE
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const response = await axios.get(`http://localhost:5000/api/v1/user/tenants/showDetailPost/${id}`);
+                const response = await axios.get(`http://localhost:5000/api/v1/user/tenants/showDetailPost/${id}`, {
+                    headers: {
+                        'token': `${token}`,
+                    }
+                });
                 console.log(response)
                 setData(response.data.msg);
+                setIsStarred(parseInt(response.data.msg.statusSave));
             } catch (error) {
                 console.error('Error fetching user role:', error);
             }
@@ -88,6 +100,54 @@ const DetailPost = () => {
         fetchTypePost();
         fetchData();
     }, [id, token]);
+
+    // Thêm hàm xử lý khi nhấn nút Lưu:
+    const handleSaveClick = async () => {
+        const newStarredState = isStarred === 1 ? 0 : 1;
+
+        if (newStarredState === 1) {
+            try {
+                const res = await axios.post(`http://localhost:5000/api/v1/user/tenants/savePost/${id}`, {}, {
+                    headers: { 'token': `${token}` }
+                });
+                if (res.data.err === 0) {
+                    setIsStarred(1); // Update state only after successful API call
+                    dispatch(getTotalPostSaved(token)); // Update total posts saved
+                    dispatch(fetchSavedPosts(token, 1)); // Fetch the updated list of saved posts with page 1
+                }
+            } catch (error) {
+                console.error('Error saving post:', error);
+                if (error.response?.data?.err === 1) {
+                    Swal.fire({
+                        icon: 'error',
+                        text: 'Đăng nhập để lưu bài viết!',
+                        confirmButtonText: 'Đăng nhập ngay',
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            window.location.href = '/login';
+                        }
+                    });
+                } else if (error.response?.data?.err === -1) {
+                    Swal.fire({
+                        icon: 'error',
+                        text: 'Bạn chỉ được lưu tối đa 3 tin đăng trong vòng 30 giây. Vui lòng thử lại sau 30 giây nữa!',
+                        confirmButtonText: 'OK',
+                    });
+                }
+            }
+        } else {
+            try {
+                await axios.delete(`http://localhost:5000/api/v1/user/tenants/deletePostSaved/${id}`, {
+                    headers: { 'token': `${token}` }
+                });
+                setIsStarred(0); // Update state only after successful API call
+                dispatch(getTotalPostSaved(token)); // Update total posts saved
+                dispatch(fetchSavedPosts(token, 1)); // Fetch the updated list of saved posts with page 1
+            } catch (error) {
+                console.error('Error deleting post:', error);
+            }
+        }
+    };
 
     const openLightbox = (index) => {
         setCurrentImage(index);
@@ -198,7 +258,6 @@ const DetailPost = () => {
     if (!data) {
         return <div><Loading /></div>;
     }
-    console.log(data)
 
     const settings = {
         dots: true,
@@ -285,10 +344,21 @@ const DetailPost = () => {
 
             {/* Thông tin bài đăng */}
             <div className="mb-5">
-                {/* Title with stars */}
-                <h1 className="text-3xl font-medium text-red-600 mb-5 flex-wrap uppercase">
-                    {data.title}
-                </h1>
+                <div className='flex items-center'>
+                    {/* Title with stars */}
+                    <h1 className="text-3xl font-medium text-red-600 mb-5 flex-wrap uppercase w-[92%]">
+                        {data.title}
+                    </h1>
+
+                    {/* Nút Lưu */}
+                    <button
+                        className=' flex gap-1 text-red-500 hover:text-red-600 transition duration-300'
+                        onClick={handleSaveClick}
+                    >
+                        <BsBookmarkStarFill size={24} color={isStarred === 1 ? 'red' : 'orange'} />
+                        <span className='text-lg font-semibold'>{isStarred === 1 ? 'Đã lưu' : 'Lưu'}</span>
+                    </button>
+                </div>
 
                 {/* Address with icon */}
                 <div className="text-xl flex items-center text-gray-600 mb-5">
@@ -308,7 +378,7 @@ const DetailPost = () => {
                     {/* Acreage with icon */}
                     <div className="flex items-center pl-10 w-[25%]">
                         <RiCrop2Line className="mr-2 text-gray-500" /> {/* Acreage icon */}
-                        <span>{data.acreage} m²</span>
+                        <span>{parseInt(data.acreage)} m²</span>
                     </div>
 
                     {/* Update time with icon */}

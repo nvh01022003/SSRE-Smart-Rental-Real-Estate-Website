@@ -24,9 +24,15 @@ export const getPosts = () => async (dispatch) => {
         })
     }
 }
-export const getPostsLimit = (params) => async (dispatch) => {
+
+export const getPostsLimit = (params, token) => async (dispatch) => {
     try {
-        const response = await axios.get('http://localhost:5000/api/v1/user/tenants/findPostByAll', { params });
+        const response = await axios.get('http://localhost:5000/api/v1/user/tenants/findPostByAll',
+            {
+                params,
+                headers: { token }
+            }
+        );
         if (response?.data.err === 0) {
             dispatch({
                 type: actionTypes.GET_POSTS_LIMIT,

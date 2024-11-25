@@ -10,11 +10,17 @@ import Pagination from './Pagination';
 const List = ({ categoryCode, searchClicked }) => {
     const dispatch = useDispatch();
     const [searchParams] = useSearchParams();
+    const { token } = useSelector(state => state.auth);
     const { posts } = useSelector(state => state.post);
+    console.log(posts);
     const [provinces, setProvinces] = useState([]);  // State cho danh sách tỉnh
     const { categories } = useSelector(state => state.app);
     const [loading, setLoading] = useState(false);
     const [page, setPage] = useState(1);
+
+    // useEffect(() => {
+    //     dispatch(getPostsLimit(page, token))
+    // })
 
     // Fetch danh sách tỉnh từ API
     useEffect(() => {
@@ -84,7 +90,7 @@ const List = ({ categoryCode, searchClicked }) => {
 
         if (searchClicked || searchParamsObject.type === 'all') {
             setLoading(true); // Set loading to true when search starts
-            dispatch(getPostsLimit(searchParamsObject)).finally(() => {
+            dispatch(getPostsLimit(searchParamsObject, token)).finally(() => {
                 setLoading(false); // Set loading to false when API call completes
             });
         }
@@ -124,6 +130,7 @@ const List = ({ categoryCode, searchClicked }) => {
                                     img_avt: item?.User?.img_avt
                                 }}
                                 id={item?.id}
+                                isSaved={item?.statusSave}
                                 updatedAt={item?.updatedAt}
                             />
                         ))

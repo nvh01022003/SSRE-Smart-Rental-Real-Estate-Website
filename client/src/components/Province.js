@@ -7,6 +7,7 @@ import { getPostsLimit } from '../store/actions/post';
 import { apiGetPubliccitys } from '../services/app';
 import Loading from '../components/Loading';
 import { path } from '../ultils/constant';
+import { useSelector } from 'react-redux';
 
 const Province = ({ searchClicked }) => {
     const navigate = useNavigate();
@@ -15,6 +16,7 @@ const Province = ({ searchClicked }) => {
     const [filteredLocations, setFilteredLocations] = useState([]);
     const [provinces, setProvinces] = useState([]); // State cho danh sách tỉnh
     const [loading, setLoading] = useState(false); // State for loading
+    const { token } = useSelector(state => state.auth);
 
     useEffect(() => {
         // Filter the locations for the three provinces
@@ -65,7 +67,7 @@ const Province = ({ searchClicked }) => {
         // Ensure all required parameters are included
         if (!searchParamsObject.page) searchParamsObject.page = 1; // Default to page 1 if not provided
 
-        dispatch(getPostsLimit(searchParamsObject));
+        dispatch(getPostsLimit(searchParamsObject, token));
         //console.log('searchParamsObject', searchParamsObject);
     }, [dispatch, searchParams, searchClicked, provinces]);
 

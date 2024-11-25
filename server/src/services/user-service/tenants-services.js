@@ -185,20 +185,126 @@ const deletePostSaved = async (userId, postId) => {
         }
     }
 }
+// // FIND POST BY ALL
+// const findPostByAll = async (minPrice, maxPrice, location, minAcreage, maxAcreage, categoryCode, page) => {
+//     console.log("giá", minPrice, maxPrice);
+//     try {
+//         let whereCondition = {};
+//         if (minPrice && maxPrice) {
+//             whereCondition.price = {
+//                 [Op.between]: [minPrice, maxPrice]
+//             }
+//         }
+//         if (minAcreage && maxAcreage) {
+//             whereCondition.acreage = {
+//                 [Op.between]: [minAcreage, maxAcreage]
+//             }
+//         }
+
+//         if (location) {
+//             const addressResult = await Address.findAll({
+//                 where: {
+//                     city: location
+//                 }
+//             })
+//             const addressIDs = addressResult.map((address) => address.id);
+//             whereCondition.address_id = addressIDs;
+//         }
+
+//         if (location) {
+//             const addressResult = await Address.findAll({
+//                 where: {
+//                     city: location
+//                 }
+//             })
+//             const addressIDs = addressResult.map((address) => address.id);
+//             whereCondition.address_id = addressIDs;
+//         }
+
+//         if (categoryCode) {
+//             whereCondition.category_id = categoryCode;
+//         }
+//         const totalData = await Post.count({ where: whereCondition });
+//         let objectPagination = await paginationHelper.pagination(
+//             {
+//                 currentPage: 1,
+//                 limitPage: 4
+//             },
+//             page,
+//             totalData
+//         )
+//         console.log("điều kiện", whereCondition);
+//         const posts = await Post.findAll({
+//             where: whereCondition,
+//             limit: objectPagination.limitPage,
+//             offset: objectPagination.skip,
+//             order: [['createdAt', 'DESC']],
+//             // trả về đủ thông tin address, img
+//             include: [
+//                 {
+//                     model: Address,
+//                     attributes: ['city', 'district', 'detail_address']
+//                 },
+//                 // tìm ảnh theo id của bài viết theo img_id
+//                 {
+//                     model: Image,
+//                     where: {
+//                         id: sequelize.col('post.img_id')
+//                     },
+//                     attributes: ['img_url_list']
+//                 },
+//                 {
+//                     model: Category,
+//                     attributes: ['category_name']
+//                 },
+//                 {
+//                     model: User,
+//                     attributes: ['firstName', 'lastName', 'email', 'phone', 'img_avt']
+//                 },
+
+//             ]
+
+//         });
+//         // console.log(posts);
+//         posts.forEach((post) => {
+//             try {
+//                 post.dataValues.Image.img_url_list = JSON.parse(post.dataValues.Image.img_url_list);
+//                 console.log(post.dataValues.Image.img_url_list);
+//             } catch (error) {
+//                 console.log("Fail to parse img_url_list" + error);
+//                 post.dataValues.img_url_list = [];
+//             }
+//         });
+
+//         return {
+//             err: 0,
+//             msg: {
+//                 listPost: posts,
+//                 objectPagination
+//             }
+//         }
+
+//     } catch (err) {
+//         return {
+//             err: 1,
+//             msg: err
+//         }
+//     }
+// }
 // FIND POST BY ALL
-const findPostByAll = async (minPrice, maxPrice, location, minAcreage, maxAcreage, categoryCode, page) => {
+const findPostByAll = async (minPrice, maxPrice, location, minAcreage, maxAcreage, categoryCode, page, userId) => {
     console.log("giá", minPrice, maxPrice);
     try {
         let whereCondition = {};
         if (minPrice && maxPrice) {
             whereCondition.price = {
                 [Op.between]: [minPrice, maxPrice]
-            }
+            };
         }
         if (minAcreage && maxAcreage) {
             whereCondition.acreage = {
                 [Op.between]: [minAcreage, maxAcreage]
-            }
+            };
         }
 
         if (location) {
@@ -206,17 +312,7 @@ const findPostByAll = async (minPrice, maxPrice, location, minAcreage, maxAcreag
                 where: {
                     city: location
                 }
-            })
-            const addressIDs = addressResult.map((address) => address.id);
-            whereCondition.address_id = addressIDs;
-        }
-
-        if (location) {
-            const addressResult = await Address.findAll({
-                where: {
-                    city: location
-                }
-            })
+            });
             const addressIDs = addressResult.map((address) => address.id);
             whereCondition.address_id = addressIDs;
         }
@@ -224,6 +320,7 @@ const findPostByAll = async (minPrice, maxPrice, location, minAcreage, maxAcreag
         if (categoryCode) {
             whereCondition.category_id = categoryCode;
         }
+
         const totalData = await Post.count({ where: whereCondition });
         let objectPagination = await paginationHelper.pagination(
             {
@@ -232,20 +329,26 @@ const findPostByAll = async (minPrice, maxPrice, location, minAcreage, maxAcreag
             },
             page,
             totalData
-        )
+        );
         console.log("điều kiện", whereCondition);
+
         const posts = await Post.findAll({
             where: whereCondition,
             limit: objectPagination.limitPage,
             offset: objectPagination.skip,
             order: [['createdAt', 'DESC']],
-            // trả về đủ thông tin address, img
+            attributes: {
+                include: userId ? [
+                    [sequelize.literal(`CASE WHEN EXISTS (SELECT 1 FROM Favourites WHERE Favourites.post_id = Post.id AND Favourites.user_id = ${userId} AND Favourites.statusSave = 1) THEN 1 ELSE 0 END`), 'statusSave']
+                ] : [
+                    [sequelize.literal(`0`), 'statusSave']
+                ]
+            },
             include: [
                 {
                     model: Address,
                     attributes: ['city', 'district', 'detail_address']
                 },
-                // tìm ảnh theo id của bài viết theo img_id
                 {
                     model: Image,
                     where: {
@@ -261,11 +364,10 @@ const findPostByAll = async (minPrice, maxPrice, location, minAcreage, maxAcreag
                     model: User,
                     attributes: ['firstName', 'lastName', 'email', 'phone', 'img_avt']
                 },
-
-            ]
-
+            ],
+            group: ['Post.id', 'Address.id', 'Image.id', 'Category.id', 'User.id']
         });
-        // console.log(posts);
+
         posts.forEach((post) => {
             try {
                 post.dataValues.Image.img_url_list = JSON.parse(post.dataValues.Image.img_url_list);
@@ -276,21 +378,26 @@ const findPostByAll = async (minPrice, maxPrice, location, minAcreage, maxAcreag
             }
         });
 
+        const postsWithStatus = posts.map(post => ({
+            ...post.toJSON(),
+            statusSave: post.get('statusSave')
+        }));
+
         return {
             err: 0,
             msg: {
-                listPost: posts,
+                listPost: postsWithStatus,
                 objectPagination
             }
-        }
+        };
 
     } catch (err) {
         return {
             err: 1,
             msg: err
-        }
+        };
     }
-}
+};
 // show list post by page pagination
 const listPostByPage = async (page) => {
     try {
@@ -311,12 +418,112 @@ const listPostByPage = async (page) => {
         }
     }
 }
+// // show detail post
+// const showDetailPost = async (userId, postId) => {
+//     try {
+//         const post = await Post.findOne({
+//             where: {
+//                 id: postId
+//             },
+//             attributes: {
+//                 include: userId ? [
+//                     [sequelize.literal(`CASE WHEN EXISTS (SELECT 1 FROM Favourites WHERE Favourites.post_id = Post.id AND Favourites.user_id = ${userId} AND Favourites.statusSave = 1) THEN 1 ELSE 0 END`), 'statusSave']
+//                 ] : [
+//                     [sequelize.literal(`0`), 'statusSave']
+//                 ]
+//             }
+//         });
+
+//         if (!post) {
+//             return {
+//                 err: 1,
+//                 msg: 'Post not found'
+//             };
+//         }
+
+//         // Fetch related data sequentially
+//         const category = await Category.findOne({
+//             where: {
+//                 id: post.category_id
+//             },
+//             attributes: ['category_name']
+//         });
+
+//         const address = await Address.findOne({
+//             where: {
+//                 id: post.address_id
+//             },
+//             attributes: ['city', 'district', 'detail_address']
+//         });
+
+//         const user = await User.findOne({
+//             where: {
+//                 id: post.user_id
+//             },
+//             attributes: ['firstName', 'lastName', 'email', 'phone', 'img_avt']
+//         });
+
+//         const overviews = await Overview.findOne({
+//             where: {
+//                 id: post.overview_id
+//             },
+//             attributes: ['code', 'area', 'type', 'target', 'expire']
+//         });
+
+//         const map = await Coordinates.findOne({
+//             where: {
+//                 id: post.coordinates_id
+//             },
+//             attributes: ['lat', 'lon']
+//         });
+
+//         const image = await Image.findOne({
+//             where: {
+//                 id: post.img_id
+//             },
+//             attributes: ['img_url_list']
+//         });
+
+//         // Add related data to post
+//         post.dataValues.map = `<iframe 
+//     src="https://www.google.com/maps?q=${map.dataValues.lat},${map.dataValues.lon}&hl=vi&z=15&output=embed" 
+//     width="600" 
+//     height="450" 
+//     style="border:0;" 
+//     allowfullscreen="" 
+//     loading="lazy" 
+//     referrerpolicy="no-referrer-when-downgrade"></iframe>`;
+
+//         post.dataValues.category = category;
+//         post.dataValues.address = address;
+//         post.dataValues.user = user;
+//         post.dataValues.overviews = overviews;
+//         post.dataValues.images = JSON.parse(image.dataValues.img_url_list);
+
+//         return {
+//             err: 0,
+//             msg: post
+//         };
+//     } catch (err) {
+//         return {
+//             err: 1,
+//             msg: err
+//         };
+//     }
+// };
 // show detail post
-const showDetailPost = async (postId) => {
+const showDetailPost = async (userId, postId) => {
     try {
         const post = await Post.findOne({
             where: {
                 id: postId
+            },
+            attributes: {
+                include: userId ? [
+                    [sequelize.literal(`CASE WHEN EXISTS (SELECT 1 FROM Favourites WHERE Favourites.post_id = Post.id AND Favourites.user_id = ${userId} AND Favourites.statusSave = 1) THEN 1 ELSE 0 END`), 'statusSave']
+                ] : [
+                    [sequelize.literal(`0`), 'statusSave']
+                ]
             }
         });
 
@@ -372,13 +579,13 @@ const showDetailPost = async (postId) => {
 
         // Add related data to post
         post.dataValues.map = `<iframe 
-    src="https://www.google.com/maps?q=${map.dataValues.lat},${map.dataValues.lon}&hl=vi&z=15&output=embed" 
-    width="600" 
-    height="450" 
-    style="border:0;" 
-    allowfullscreen="" 
-    loading="lazy" 
-    referrerpolicy="no-referrer-when-downgrade"></iframe>`;
+            src="https://www.google.com/maps?q=${map.dataValues.lat},${map.dataValues.lon}&hl=vi&z=15&output=embed" 
+            width="600" 
+            height="450" 
+            style="border:0;" 
+            allowfullscreen="" 
+            loading="lazy" 
+            referrerpolicy="no-referrer-when-downgrade"></iframe>`;
 
         post.dataValues.category = category;
         post.dataValues.address = address;

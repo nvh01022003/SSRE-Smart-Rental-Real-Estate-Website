@@ -85,4 +85,22 @@ const authenticateToken = (req, res, next) => {
         next();
     });
 };
-module.exports = { resgister, login, authenticateToken, changePass, resetPass }
+
+// Middleware tùy chọn xác thực token
+const authenticateTokenOptional = (req, res, next) => {
+    const token = req.headers['token'];
+    if (!token) {
+        req.user = null; // Người dùng chưa đăng nhập
+        return next();
+    }
+
+    jwt.verify(token, process.env.JWT_SECRET, (err, userData) => {
+        if (err) {
+            req.user = null; // Token không hợp lệ, vẫn tiếp tục
+        } else {
+            req.user = userData;
+        }
+        next();
+    });
+};
+module.exports = { authenticateTokenOptional, resgister, login, authenticateToken, changePass, resetPass }

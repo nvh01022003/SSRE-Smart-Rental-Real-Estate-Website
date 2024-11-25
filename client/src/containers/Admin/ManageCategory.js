@@ -483,13 +483,13 @@ const ManageCategory = () => {
                         </div>
                         <div className="flex justify-end">
                             <button
-                                className="bg-gray-500 text-white px-4 py-2 rounded-md mr-2 transition duration-300"
+                                className="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-md mr-2 transition duration-300"
                                 onClick={closeModalCreate}
                             >
                                 Hủy
                             </button>
                             <button
-                                className="bg-green-500 text-white px-4 py-2 rounded-md transition duration-300"
+                                className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-md transition duration-300"
                                 onClick={handleCreateCategory}
                             >
                                 Tạo mới

@@ -71,11 +71,17 @@ const PersonalInfo = () => {
 
     const validate = () => {
         const newErrors = {};
+        const vietnameseRegex = /^[a-zA-ZÀÁÂÃÈÉÊÌÍÒÓÔÕÙÚĂĐĨŨƠàáâãèéêìíòóôõùúăđĩũơưƯĂăÊêÔôƠơƯưẠ-ỹ\s]+$/;
+
         if (!formData.firstName.trim()) {
             newErrors.firstName = 'Tên không được để trống';
+        } else if (!vietnameseRegex.test(formData.firstName)) {
+            newErrors.firstName = 'Tên không được chứa ký tự số';
         }
         if (!formData.lastName.trim()) {
             newErrors.lastName = 'Họ không được để trống';
+        } else if (!vietnameseRegex.test(formData.lastName)) {
+            newErrors.lastName = 'Họ không được chứa ký tự số';
         }
         if (!formData.email.trim()) {
             newErrors.email = 'Email không được để trống';

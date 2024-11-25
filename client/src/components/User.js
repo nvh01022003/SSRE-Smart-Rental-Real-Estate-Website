@@ -21,7 +21,8 @@ const User = () => {
             <img src={user.img_avt || anonAvatar} alt="avatar" className='w-12 object-cover rounded-full h-12 border-2 shadow-md border-white' />
             <div>
                 Xin chào,
-                <div className='font-semibold'>{`${user.firstName} ${user.lastName}`}</div>
+                {/* <div className='font-semibold'>{`${user.firstName} ${user.lastName}`}</div> */}
+                <div className='font-semibold'>{`${user.lastName}`}</div>
             </div>
         </div>
     );

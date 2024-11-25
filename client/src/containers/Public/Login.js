@@ -7,6 +7,9 @@ import { Loading } from '../../components';
 import * as actions from '../../store/actions';
 import logo from '../../assets/logo.png';
 import { motion } from 'framer-motion';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faEye, faEyeSlash } from '@fortawesome/free-regular-svg-icons';
+
 
 // Common wrapper component for both Login and Register forms
 const AuthWrapper = ({ children }) => {
@@ -110,7 +113,6 @@ const Login = () => {
                 //     navigate('/');
                 // });
                 navigate('/');
-
                 localStorage.setItem('token', response.access_token);
                 localStorage.setItem('isLoggedIn', true);
             } else {
@@ -121,6 +123,12 @@ const Login = () => {
         } finally {
             setIsLoading(false);
         }
+    };
+
+    const [isPasswordVisible, setIsPasswordVisible] = useState(false);
+
+    const togglePasswordVisibility = () => {
+        setIsPasswordVisible(!isPasswordVisible);
     };
 
     if (isLoading) {
@@ -165,13 +173,20 @@ const Login = () => {
                         <div className="relative">
                             <FiLock className="absolute left-3 top-3 text-gray-400" />
                             <input
-                                type="password"
+                                type={isPasswordVisible ? "text" : "password"}
                                 name="password"
                                 value={payload.password}
                                 onChange={handleChange}
                                 className="pl-10 w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-300"
                                 placeholder="********"
                             />
+                            <button
+                                type="button"
+                                onClick={togglePasswordVisibility}
+                                className="absolute right-3 top-2 text-gray-500 bg-transparent"
+                            >
+                                <FontAwesomeIcon icon={isPasswordVisible ? faEyeSlash : faEye} />
+                            </button>
                         </div>
                         {invalidFields.find(field => field.name === 'password') && (
                             <p className="text-red-500 text-xs mt-1">

@@ -46,7 +46,6 @@ module.exports = (sequelize, DataTypes) => {
     acreage: DataTypes.DOUBLE,
     // loại bài đăng
     postType_id: DataTypes.INTEGER,
-
   }, {
     sequelize,
     modelName: 'Post',
