@@ -56,7 +56,7 @@ const ListPostsSaved = () => {
     if (loading) {
         return <Loading />; // Hiện loading indicator
     }
-    console.log(savedPosts);
+    //console.log(savedPosts);
     return (
         <div className="w-full flex flex-col items-center h-full mx-auto">
             <Header />
@@ -80,13 +80,14 @@ const ListPostsSaved = () => {
                                 images={post.Post.Image?.img_url_list}
                                 title={post.Post.title}
                                 user={{
-                                    name: `${post.Post.User?.firstName} ${post.Post.User?.lastName}`,
+                                    //name: `${post.Post.User?.firstName} ${post.Post.User?.lastName}`,
+                                    name: `${post.Post.User?.lastName}`,
                                     phone: post.Post.User?.phone,
                                     img_avt: post.Post.User?.img_avt
                                 }}
                                 id={post.Post.id}
-                                isSaved={post.statusSave}
-                                updatedAt={post.updatedAt}
+                                isSaved={post.Post.statusSave}
+                                updatedAt={post.Post.updatedAt}
                             />
                         ))
                     ) : (
