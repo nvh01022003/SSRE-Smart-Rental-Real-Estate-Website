@@ -10,7 +10,7 @@ const saveUserSearches = async (user_id, minPrice, maxPrice, location, minAcreag
             minAcreage: minAcreage,
             maxAcreage: maxAcreage,
             category_id: categoryCode,
-            user_id: 1
+            user_id: user_id
         })
         console.log('Save user searches 3')
         return {
