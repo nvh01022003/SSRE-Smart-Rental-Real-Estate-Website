@@ -76,7 +76,7 @@ const DetailPost = () => {
                         'token': `${token}`,
                     }
                 });
-                console.log(response)
+                //console.log(response)
                 setData(response.data.msg);
                 setIsStarred(parseInt(response.data.msg.statusSave));
             } catch (error) {

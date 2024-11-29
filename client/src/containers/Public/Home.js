@@ -12,7 +12,7 @@ import { Role } from '../../store/actions/auth';
 
 const Home = () => {
     const { isLoggedIn, token, role } = useSelector(state => state.auth)
-    console.log('role', role)
+    //console.log('role', role)
     const dispatch = useDispatch();
     const navigate = useNavigate();
     const [searchClicked, setSearchClicked] = useState(false);

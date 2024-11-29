@@ -85,8 +85,8 @@ const Search = ({ setSearchClicked }) => {
         // Map priceNumber to minPrice and maxPrice
         if (queries.priceNumber) {
             const [minPrice, maxPrice] = queries.priceNumber;
-            queryCodesObj.minPrice = parseFloat(minPrice !== undefined ? minPrice : 0);// Default minPrice to 0 if not provided
-            queryCodesObj.maxPrice = parseFloat(maxPrice);
+            queryCodesObj.minPrice = parseInt(minPrice !== undefined ? minPrice : 0);// Default minPrice to 0 if not provided
+            queryCodesObj.maxPrice = parseInt(maxPrice);
 
         }
         delete queryCodesObj.priceNumber;
@@ -98,24 +98,29 @@ const Search = ({ setSearchClicked }) => {
 
         }
         delete queryCodesObj.areaNumber;
+
         // Map provinceCode to location
-        if (queries.provinceCode) {
-            const selectedProvince = provinces.find(province => province.province_id === queries.provinceCode[0]);
+        if (queries.province) {
+            const selectedProvince = provinces.find(province => province.province_name === queries.province);
             if (selectedProvince) {
                 queryCodesObj.location = selectedProvince.province_name;
             }
-
         }
+
+        //queryCodesObj.location = queries.province;
+
         delete queryCodesObj.provinceCode;
+
         // Map categoryCode to category ID
         if (queries.categoryCode && categories.length > 0) {
-            const selectedCategory = categories.find(category => category.id === parseInt(queries.categoryCode[0]));
+            const selectedCategory = categories.find(category => category.id === parseInt(queries.categoryCode));
             if (selectedCategory) {
                 queryCodesObj.category = selectedCategory.id
             }
 
         }
-        delete queryCodesObj.category
+
+        delete queryCodesObj.categoryCode;
 
         if (queries.page) queryCodesObj.page = queries.page;
 
@@ -133,9 +138,11 @@ const Search = ({ setSearchClicked }) => {
             search: createSearchParams(queryCodesObj).toString(),
         }, { state: { titleSearch } });
 
-
+        console.log(queryCodesObj)
         setLoading(false); // Set loading to false when search completes
     };
+    console.log(queries)
+
 
     //if (loading) return <Loading />
 
