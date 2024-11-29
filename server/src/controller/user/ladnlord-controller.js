@@ -135,7 +135,17 @@ const softDeletePost = async (req, res) => {
         return res.status(400).json({ error: error.message });
     }
 };
-
+// GIA Hạn Bài Đăng 
+const extendPost = async (req, res) => {
+    try {
+        const { postId, newExpireDate, totalPayment, newPostTypeId } = req.body; // Lấy dữ liệu từ body request
+        // Gọi service gia hạn bài đăng
+        const response = await postServices.extendPost(req.user.id, postId, newExpireDate, totalPayment, newPostTypeId); 
+        return res.status(200).json(response); // Trả về phản hồi cho client
+    } catch (error) {
+        return res.status(400).json({ error: error.message }); // Trả về lỗi nếu có
+    }
+};
 
 
 module.exports = {
@@ -149,7 +159,8 @@ module.exports = {
     listPostByPage,
     showAllSoftDeletePosts,
     restorePost,
-    softDeletePost
+    softDeletePost,
+    extendPost
 
 
 }

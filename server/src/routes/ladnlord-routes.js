@@ -33,5 +33,7 @@ router.get("/listPostSoftDelete", authentication.authenticateToken, authorizatio
 router.put("/restorePost/:id", authentication.authenticateToken, authorization.checkRoleUser, ladnlordController.restorePost)
 // soft delete post
 router.put("/softDeletePost/:id", authentication.authenticateToken, authorization.checkRoleUser, ladnlordController.softDeletePost)
+// extend post gia hạn bài đăng 
+router.post("/extendPost", authentication.authenticateToken, authorization.checkRoleUser, ladnlordController.extendPost)
 
 module.exports = router
