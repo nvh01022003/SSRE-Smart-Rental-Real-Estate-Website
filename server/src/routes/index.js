@@ -8,7 +8,7 @@ const aichatRouter = require("./ai-chat-routes")
 const initRoutes = (app) => {
     app.use("/api/v1/auth", authRouter)
     app.use("/api/v1/user/tenants", tenantsRouter)
-    app.use("/api/v1/user/tenants/chatbot", aichatRouter)
+    app.use("/api/v1/user/chatbot", aichatRouter)
     app.use("/api/v1/user/ladnlord", ladnlordRouter)
     app.use("/api/v1/admin", adminRouter)
     app.use("/api/v1/user", paymentRouter)

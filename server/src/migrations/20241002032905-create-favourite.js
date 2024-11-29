@@ -22,7 +22,7 @@ module.exports = {
         type: Sequelize.INTEGER
       },
       statusSave: {
-        type: DataTypes.INTEGER,
+        type: Sequelize.INTEGER,
         allowNull: false,
         defaultValue: 1, // 1: Đã lưu, 0: Chưa lưu
         validate: {
