@@ -91,15 +91,15 @@ const deletePostSaved = async (req, res) => {
 }
 // find post by all condition
 const findPostByAll = async (req, res) => {
-    const minPrice = req.query.minPrice ? new Decimal(req.query.minPrice) : null;
-    const maxPrice = req.query.maxPrice ? new Decimal(req.query.maxPrice) : null;
+    const minPrice = req.query.minPrice ? parseInt(req.query.minPrice) : null;
+    const maxPrice = req.query.maxPrice ? parseInt(req.query.maxPrice) : null;
     const location = req.query.location || null;
-    const minAcreage = req.query.minAcreage ? new Decimal(req.query.minAcreage) : null;
-    const maxAcreage = req.query.maxAcreage ? new Decimal(req.query.maxAcreage) : null;
-    const categoryCode = req.query.category
+    const minAcreage = req.query.minAcreage ? parseInt(req.query.minAcreage) : null;
+    const maxAcreage = req.query.maxAcreage ? parseInt(req.query.maxAcreage) : null;
+    const categoryCode = req.query.category ? parseInt(req.query.category) : null;
     const page = parseInt(req.query.page)
     const userId = req.user ? req.user.id : null;
-    console.log(minPrice, maxPrice, location, minAcreage, maxAcreage, categoryCode, page)
+    console.log(userId, minPrice, maxPrice, location, minAcreage, maxAcreage, categoryCode, page)
     try {
         const response = await tenanstService.findPostByAll(minPrice, maxPrice, location, minAcreage, maxAcreage, categoryCode, page, userId)
         if (response.msg.listPost.length === 0) {
@@ -109,7 +109,7 @@ const findPostByAll = async (req, res) => {
                 console.log('Token', token)
                 // authentication.authenticateToken(req, res, next)
                 // console.log('Save user searches 11')
-                await helperService.saveUserSearches(minPrice, maxPrice, location, minAcreage, maxAcreage, categoryCode)
+                await helperService.saveUserSearches(userId, minPrice, maxPrice, location, minAcreage, maxAcreage, categoryCode)
             } catch (error) {
                 return res.status(500).json({
                     err: -1,

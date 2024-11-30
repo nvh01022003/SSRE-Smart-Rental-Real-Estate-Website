@@ -143,6 +143,120 @@ const createNewPost = async (userId, contentPost, files) => {
         };
     }
 };
+// GIA HẠN BÀI ĐĂNG 
+const extendPost = async (userId, postId, newExpireDate, totalPayment, newPostTypeId) => {
+    // Bắt đầu transaction
+    const t = await sequelize.transaction();
+
+    try {
+        // Lấy thông tin ví của người dùng trong transaction
+        const wallet = await Wallet.findOne({ where: { user_id: userId }, transaction: t });
+        if (!wallet) {
+            await t.rollback();
+            return { err: 1, msg: 'Wallet not found' };
+        }
+
+        // Kiểm tra số dư
+        if (wallet.balance < totalPayment) {
+            await t.rollback();
+            return { err: 1, msg: 'Insufficient balance' };
+        }
+
+        // Lưu lại số dư trước khi trừ tiền
+        const initialBalance = parseFloat(wallet.balance);
+
+        // Trừ tiền từ ví
+        wallet.balance = initialBalance - parseFloat(totalPayment);
+        await wallet.save({ transaction: t }); // Lưu lại số dư mới trong transaction
+
+        // Cập nhật ngày hết hạn trong bảng Overview
+        const post = await Post.findOne({ where: { id: postId }, transaction: t });
+        if (!post) {
+            await t.rollback();
+            return { err: 1, msg: 'Post not found' };
+        }
+
+        // Cập nhật expire trong bảng Overview
+        const updatedOverview = await Overview.update(
+            {
+                expire: newExpireDate, // Cập nhật ngày hết hạn mới
+            },
+            {
+                where: { id: post.overview_id }, // Dùng overview_id từ bài viết
+                transaction: t,
+            }
+        );
+
+        if (updatedOverview[0] !== 1) {
+            await t.rollback();
+            return { err: 1, msg: 'Failed to update expire date in Overview' };
+        }
+
+        // Cập nhật postType_id trong bảng Post
+        const updatedPost = await Post.update(
+            {
+                postType_id: newPostTypeId, // Cập nhật postType_id mới
+                status: 0, // Cập nhật status thành 0
+            },
+            {
+                where: { id: postId },
+                transaction: t,
+            }
+        );
+
+        if (updatedPost[0] !== 1) {
+            await t.rollback();
+            return { err: 1, msg: 'Failed to update postType_id and status in Post' };
+        }
+
+        // Tạo bản ghi giao dịch với thông tin cần thiết trong transaction
+        await Transaction.create({
+            wallet_id: wallet.id,
+            paycode: "ExtendPost" + new Date().getTime(),
+            amount: totalPayment,
+            status: 'Thành công',
+            transactionType: 'thanh toán',
+            content: `Gia hạn bài viết ID:${postId}`,
+            balanceAfterTransaction: wallet.balance,
+        }, { transaction: t });
+
+        // Commit transaction sau khi tất cả thao tác thành công
+        await t.commit();
+
+        return {
+            err: 0,
+            msg: 'Post has been extended successfully',
+            postId,
+        };
+    } catch (error) {
+        console.log('Error in extendPost:', error);
+
+        // Rollback transaction nếu có lỗi
+        await t.rollback();
+
+        // Lấy lại thông tin ví sau khi rollback để có số dư ban đầu
+        const wallet = await Wallet.findOne({ where: { user_id: userId } });
+
+        // Tạo bản ghi giao dịch thất bại
+        if (wallet) {
+            await Transaction.create({
+                wallet_id: wallet.id,
+                paycode: "ExtendPost" + new Date().getTime(),
+                amount: totalPayment,
+                status: 'Thất bại',
+                transactionType: 'thanh toán',
+                content: `Phi gia hạn bài viết`,
+                balanceAfterTransaction: wallet.balance, // Số dư ban đầu vì chưa trừ tiền
+            });
+        }
+
+        return {
+            err: 1,
+            msg: error.message || 'Failed to extend post.',
+        };
+    }
+};
+
 
 // UPDATE STATUS POST
 const updateStatusPost = async (postId, status) => {
@@ -408,14 +522,44 @@ const showAllSoftDeletePosts = async (userId) => {
 //  Khôi phục bài đăng đã xóa mềm (status = 1) của người dùng cụ thể
 const restoreSoftDeletedPost = async (postId) => {
     try {
-        // Cập nhật lại status của bài đăng từ 1 (đã xóa mềm) thành 0 (đang hoạt động) của userId xác định
+        const now = new Date(); // Ngày hiện tại
+
+        
+        const post = await Post.findOne({
+            where: {
+                id: postId,
+                status: 1 // Chỉ tìm bài đăng có status = 1 (đã xóa mềm)
+            }
+        });
+
+        // Nếu không tìm thấy bài đăng hoặc bài đăng không bị xóa mềm
+        if (!post) {
+            return {
+                err: 1,
+                msg: 'Post not found or is already active.'
+            };
+        }
+
+        // Truy vấn `Overview` để lấy thông tin ngày hết hạn
+        const overview = await Overview.findOne({
+            where: {
+                id: post.overview_id // Liên kết với overview_id của bài đăng
+            }
+        });
+
+        // Nếu không tìm thấy `Overview` hoặc hết hạn
+        if (!overview || overview.expire < now) {
+            return {
+                err: 1,
+                msg: 'Post cannot be restored because it is associated with an expired overview.'
+            };
+        }
+
+        // Khôi phục bài đăng bằng cách cập nhật status
         const restoredPost = await Post.update(
-            { status: 0 }, // Khôi phục lại status = 0
+            { status: 0 }, // Khôi phục lại status = 0 (đang hoạt động)
             {
-                where: {
-                    id: postId,
-                    status: 1 // Chỉ khôi phục bài đăng có status = 1
-                }
+                where: { id: postId }
             }
         );
 
@@ -524,5 +668,6 @@ module.exports = {
     listPostByPage,
     showAllSoftDeletePosts,
     restoreSoftDeletedPost,
-    softDeletePost
+    softDeletePost,
+    extendPost
 };

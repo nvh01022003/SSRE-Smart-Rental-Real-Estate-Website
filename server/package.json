@@ -13,6 +13,7 @@
     "@babel/core": "^7.25.2",
     "@babel/node": "^7.25.0",
     "@babel/preset-env": "^7.25.4",
+    "@google/generative-ai": "^0.21.0",
     "@payos/node": "^1.0.10",
     "axios": "^1.7.7",
     "bcryptjs": "^2.4.3",
