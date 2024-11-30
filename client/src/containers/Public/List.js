@@ -93,7 +93,10 @@ const List = () => {
         dispatch(getPostsLimit(searchParamsObject, token)).finally(() => {
             setLoading(false);
         });
-    }, [searchParams, provinces, categories, token]);
+
+
+        // }, [searchParams, provinces, categories, token]);
+    }, []); // Empty dependency array ensures this runs only once
 
     if (loading) return <Loading />;
 
