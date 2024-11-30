@@ -211,7 +211,9 @@ const findPostByAll = async (
     userId
 ) => {
     try {
-        let whereCondition = {};
+        let whereCondition = {
+            status: 0, // Thêm điều kiện status bằng 0
+        };
         if (minPrice && maxPrice) {
             whereCondition.price = {
                 [Op.between]: [minPrice, maxPrice],

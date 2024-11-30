@@ -102,6 +102,7 @@ const findPostByAll = async (req, res) => {
     console.log(userId, minPrice, maxPrice, location, minAcreage, maxAcreage, categoryCode, page)
     try {
         const response = await tenanstService.findPostByAll(minPrice, maxPrice, location, minAcreage, maxAcreage, categoryCode, page, userId)
+        console.log(response)
         if (response.msg.listPost.length === 0) {
             try {
                 console.log('Save user searches')

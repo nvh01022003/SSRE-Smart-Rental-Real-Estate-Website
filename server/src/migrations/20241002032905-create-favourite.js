@@ -21,14 +21,6 @@ module.exports = {
       post_id: {
         type: Sequelize.INTEGER
       },
-      statusSave: {
-        type: Sequelize.INTEGER,
-        allowNull: false,
-        defaultValue: 1, // 1: Đã lưu, 0: Chưa lưu
-        validate: {
-          isIn: [[0, 1]],
-        },
-      },
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE

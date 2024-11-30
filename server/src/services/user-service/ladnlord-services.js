@@ -524,7 +524,7 @@ const restoreSoftDeletedPost = async (postId) => {
     try {
         const now = new Date(); // Ngày hiện tại
 
-        
+
         const post = await Post.findOne({
             where: {
                 id: postId,
@@ -535,7 +535,7 @@ const restoreSoftDeletedPost = async (postId) => {
         // Nếu không tìm thấy bài đăng hoặc bài đăng không bị xóa mềm
         if (!post) {
             return {
-                err: 1,
+                err: -1,
                 msg: 'Post not found or is already active.'
             };
         }
@@ -571,7 +571,7 @@ const restoreSoftDeletedPost = async (postId) => {
             };
         } else {
             return {
-                err: 1,
+                err: 2,
                 msg: 'Post not found, does not belong to this user, or is already active.'
             };
         }
