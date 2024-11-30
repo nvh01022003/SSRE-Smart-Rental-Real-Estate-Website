@@ -26,7 +26,7 @@ const Homepage = () => {
                 <Search setSearchClicked={setSearchClicked} />
                 <div className='w-full flex gap-4'>
                     <div className='w-[70%]'>
-                        <List searchClicked={searchClicked} />
+                        <List />
                         {/* <Pagination /> */}
                     </div>
                     <div className='w-[30%] flex flex-col gap-4 mt-3'>

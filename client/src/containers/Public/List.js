@@ -1,26 +1,20 @@
 import React, { useEffect, useState } from 'react';
-import { Item } from '../../components';
+import { Item, Loading } from '../../components';
 import { getPostsLimit } from '../../store/actions/post';
 import { useDispatch, useSelector } from 'react-redux';
 import { useSearchParams } from 'react-router-dom';
 import { apiGetPubliccitys } from '../../services/app';
-import { Loading } from '../../components'
 import Pagination from './Pagination';
 
-const List = ({ categoryCode, searchClicked }) => {
+const List = () => {
     const dispatch = useDispatch();
     const [searchParams] = useSearchParams();
-    const { token } = useSelector(state => state.auth);
     const { posts } = useSelector(state => state.post);
-    console.log(posts);
-    const [provinces, setProvinces] = useState([]);  // State cho danh sách tỉnh
+    const { token } = useSelector(state => state.auth);
+    const [provinces, setProvinces] = useState([]);
     const { categories } = useSelector(state => state.app);
     const [loading, setLoading] = useState(false);
     const [page, setPage] = useState(1);
-
-    // useEffect(() => {
-    //     dispatch(getPostsLimit(page, token))
-    // })
 
     // Fetch danh sách tỉnh từ API
     useEffect(() => {
@@ -28,14 +22,14 @@ const List = ({ categoryCode, searchClicked }) => {
             try {
                 const response = await apiGetPubliccitys();
                 if (response.status === 200) {
-                    setProvinces(response.data.results);  // Lưu danh sách tỉnh vào state
+                    setProvinces(response.data.results);
                 }
             } catch (error) {
                 console.error('Lỗi khi lấy danh sách tỉnh:', error);
             }
         };
         fetchProvinces();
-    }, []);
+    }, []); // Only runs once on mount
 
     useEffect(() => {
         let params = [];
@@ -54,7 +48,7 @@ const List = ({ categoryCode, searchClicked }) => {
         // Map priceNumber to minPrice and maxPrice
         if (searchParamsObject.priceNumber) {
             const [minPrice, maxPrice] = searchParamsObject.priceNumber;
-            searchParamsObject.minPrice = parseFloat(minPrice !== undefined ? minPrice : 0); // Default minPrice to 0 if not provided
+            searchParamsObject.minPrice = parseFloat(minPrice !== undefined ? minPrice : 0);
             searchParamsObject.maxPrice = parseFloat(maxPrice);
             delete searchParamsObject.priceNumber;
         }
@@ -62,7 +56,7 @@ const List = ({ categoryCode, searchClicked }) => {
         // Map areaNumber to minAcreage and maxAcreage
         if (searchParamsObject.areaNumber) {
             const [minAcreage, maxAcreage] = searchParamsObject.areaNumber;
-            searchParamsObject.minAcreage = parseInt(minAcreage !== undefined ? minAcreage : 0); // Default minAcreage to 0 if not provided
+            searchParamsObject.minAcreage = parseInt(minAcreage !== undefined ? minAcreage : 0);
             searchParamsObject.maxAcreage = parseInt(maxAcreage);
             delete searchParamsObject.areaNumber;
         }
@@ -80,24 +74,28 @@ const List = ({ categoryCode, searchClicked }) => {
         if (searchParamsObject.categoryCode) {
             const selectedCategory = categories.find(category => category.id === parseInt(searchParamsObject.categoryCode[0]));
             if (selectedCategory) {
-                searchParamsObject.category = selectedCategory.id
+                searchParamsObject.category = selectedCategory.id;
             }
             delete searchParamsObject.categoryCode;
         }
 
         // Ensure all required parameters are included
-        if (!searchParamsObject.page) searchParamsObject.page = 1; // Default to page 1 if not provided
+        if (!searchParamsObject.page) searchParamsObject.page = 1;
 
-        if (searchClicked || searchParamsObject.type === 'all') {
-            setLoading(true); // Set loading to true when search starts
-            dispatch(getPostsLimit(searchParamsObject, token)).finally(() => {
-                setLoading(false); // Set loading to false when API call completes
-            });
-        }
-        //console.log(searchParamsObject);
-    }, [searchParams, categoryCode, dispatch, provinces, categories, searchClicked]);
+        // if (searchClicked || searchParamsObject.type === 'all') {
+        //     setLoading(true); // Set loading to true when search starts
+        //     dispatch(getPostsLimit(searchParamsObject, token)).finally(() => {
+        //         setLoading(false); // Set loading to false when API call completes
+        //     });
+        // }
 
-    if (loading) return <Loading />; // Display loading indicatore9f0a12dcbbf7ac88c
+        setLoading(true);
+        dispatch(getPostsLimit(searchParamsObject, token)).finally(() => {
+            setLoading(false);
+        });
+    }, [searchParams, provinces, categories, token]);
+
+    if (loading) return <Loading />;
 
     return (
         <div>
@@ -125,13 +123,14 @@ const List = ({ categoryCode, searchClicked }) => {
                                 images={item?.Image.img_url_list}
                                 title={item?.title}
                                 user={{
-                                    name: `${item?.User?.firstName} ${item?.User?.lastName}`,
+                                    // name: `${item?.User?.firstName} ${item?.User?.lastName}`,
+                                    name: `${item?.User?.lastName}`,
                                     phone: item?.User?.phone,
                                     img_avt: item?.User?.img_avt
                                 }}
                                 id={item?.id}
                                 isSaved={item?.statusSave}
-                                updatedAt={item?.updatedAt}
+                                createdAt={item?.createdAt}
                             />
                         ))
                     ) : (
@@ -139,9 +138,7 @@ const List = ({ categoryCode, searchClicked }) => {
                             <h4 className='text-xl font-semibold'>Không có bài đăng theo yêu cầu của bạn</h4>
                         </div>
                     )}
-
                 </div>
-
             </div>
             <Pagination page={page} setPage={setPage} type="all" />
         </div>

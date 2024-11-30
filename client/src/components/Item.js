@@ -1,4 +1,4 @@
-import React, { memo, useState, useEffect } from 'react';
+import React, { memo, useState } from 'react';
 import icons from '../ultils/icons';
 import { useNavigate } from 'react-router-dom';
 import { formatVietnameseToString } from '../ultils/Common/formatVietnameseToString';
@@ -8,7 +8,6 @@ import { useSelector, useDispatch } from 'react-redux';
 import Swal from 'sweetalert2';
 import styled from 'styled-components';
 import { getTotalPostSaved, fetchSavedPosts } from '../store/actions/post';
-
 const { RiCrop2Line } = icons;
 const { BsBookmarkStarFill } = icons;
 
@@ -45,16 +44,12 @@ const IconContainer = styled.div`
     }
 `;
 
-const Item = ({ images, user, title, isSaved, description, attributes, address, id, updatedAt }) => {
+const Item = ({ images, user, title, isSaved, description, attributes, address, id, createdAt }) => {
     const [isStarred, setIsStarred] = useState(isSaved); // Sử dụng statusSave từ props
     const [isHovered, setIsHovered] = useState(false);
     const { token } = useSelector(state => state.auth);
     const navigate = useNavigate();
     const dispatch = useDispatch();
-
-    useEffect(() => {
-        dispatch(fetchSavedPosts(token, 1));
-    }, [dispatch, token]);
 
     const handleClick = async () => {
         const newStarredState = isStarred === 1 ? 0 : 1;
@@ -67,7 +62,6 @@ const Item = ({ images, user, title, isSaved, description, attributes, address, 
                 if (res.data.err === 0) {
                     setIsStarred(1); // Update state only after successful API call
                     dispatch(getTotalPostSaved(token)); // Update total posts saved
-                    dispatch(fetchSavedPosts(token, 1)); // Fetch the updated list of saved posts with page 1
                 }
             } catch (error) {
                 console.error('Error saving post:', error);
@@ -115,8 +109,8 @@ const Item = ({ images, user, title, isSaved, description, attributes, address, 
     };
 
     // Hàm tính khoảng thời gian cập nhật
-    const calculateTimeDifference = (updatedAt) => {
-        const updatedDate = new Date(updatedAt);
+    const calculateTimeDifference = (createdAt) => {
+        const updatedDate = new Date(createdAt);
         const now = new Date();
         const diffInMs = now - updatedDate;
 
@@ -136,7 +130,7 @@ const Item = ({ images, user, title, isSaved, description, attributes, address, 
     };
 
     // Kiểm tra nếu có dữ liệu updatedAt thì tính toán khoảng thời gian
-    const timeDiff = updatedAt ? calculateTimeDifference(updatedAt) : '';
+    const timeDiff = createdAt ? calculateTimeDifference(createdAt) : '';
 
     return (
         <ItemContainer>

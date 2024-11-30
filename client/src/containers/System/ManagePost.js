@@ -75,7 +75,7 @@ const ManagePost = () => {
                     'token': `${token}`
                 },
             });
-            console.log('API Response:', response); // Add this line to check the response
+            //console.log('API Response:', response); // Add this line to check the response
             if (response.data.err === 0) {
                 setPosts(response.data.msg);
                 //setFilteredPosts(response.data.msg);
@@ -379,7 +379,7 @@ const ManagePost = () => {
                     </div>
 
                     {/* Dropdown cho danh mục */}
-                    <div className='mr-4 ml-6'>
+                    <div className='mr-4 ml-1'>
                         <select
                             value={selectedCategory}
                             onChange={handleCategoryChange}

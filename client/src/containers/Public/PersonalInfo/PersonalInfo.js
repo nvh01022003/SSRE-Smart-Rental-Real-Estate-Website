@@ -10,7 +10,7 @@ import { Breadcrumb } from '../../../components';
 const PersonalInfo = () => {
     const dispatch = useDispatch();
     const { user } = useSelector((state) => state.user);
-    console.log(user);
+    //console.log(user);
     const { token } = useSelector(state => state.auth);
     const breadcrumbItems = [];
 

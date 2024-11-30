@@ -35,7 +35,7 @@ const HistoryPayment = () => {
                         'token': `${token}`,
                     }
                 });
-                console.log(res)
+                //console.log(res)
                 if (res.data.err === 0) {
                     setTransactions(res.data.transactions);
                 }
@@ -52,8 +52,8 @@ const HistoryPayment = () => {
     const indexOfLastItem = currentPage * itemsPerPage;
     const indexOfFirstItem = indexOfLastItem - itemsPerPage;
     const currentItems = transactions.slice(indexOfFirstItem, indexOfLastItem);
-    console.log(currentItems);
-    console.log(transactions);
+    //console.log(currentItems);
+    //console.log(transactions);
     // Function to format date
     const formatDate = (dateString) => {
         const date = new Date(dateString);

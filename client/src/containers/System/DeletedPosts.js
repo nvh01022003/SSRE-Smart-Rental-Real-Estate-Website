@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+import Modal from 'react-modal';
 import { useSelector, useDispatch } from 'react-redux';
 import { toast } from 'react-toastify';
 import { apiGetPubliccitys } from '../../services';
@@ -9,6 +10,11 @@ import { Loading } from '../../components';
 import { useNavigate } from 'react-router-dom';
 import { FaSearch } from 'react-icons/fa';
 import { Breadcrumb } from '../../components';
+import PriceModal from '../../components/PriceModal';
+import { AiOutlineInfoCircle } from 'react-icons/ai';
+
+// Set the root element for accessibility
+Modal.setAppElement('#root');
 
 const DeletedPosts = () => {
     const breadcrumbItems = []
@@ -21,12 +27,48 @@ const DeletedPosts = () => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isEditing, setIsEditing] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
-    const { token } = useSelector(state => state.auth);
     const [selectedCategory, setSelectedCategory] = useState("all");
     const [cities, setCities] = useState([]); // Danh sách Tỉnh/Thành phố
     const { categories } = useSelector(state => state.app);
     const [currentPage, setCurrentPage] = useState(1);
     const [itemsPerPage, setItemsPerPage] = useState(4);
+
+    const [isExtendModalOpen, setIsExtendModalOpen] = useState(false);
+    const [extendPostId, setExtendPostId] = useState(null);
+    const [selectedPostTypeId, setSelectedPostTypeId] = useState('');
+    const [selectedExpireDate, setSelectedExpireDate] = useState('');
+    const [totalPayment, setTotalPayment] = useState(0);
+    const [isPriceModalOpen, setIsPriceModalOpen] = useState(false);
+
+    const { token } = useSelector(state => state.auth);
+    const [typePosts, setTypePosts] = useState([]);
+    const [balance, setBalance] = useState(null);
+
+    // Fetch post types and user balance when component mounts
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                // Fetch post types
+                const typePostRes = await axios.get('http://localhost:5000/api/v1/admin/showAllTypePost', {
+                    headers: { 'token': token }
+                });
+                if (typePostRes.data.err === 0) {
+                    setTypePosts(typePostRes.data.postType);
+                }
+
+                // Fetch user balance
+                const balanceRes = await axios.get('http://localhost:5000/api/v1/user/showBalance', {
+                    headers: { 'token': token }
+                });
+                if (balanceRes.data.err === 0) {
+                    setBalance(balanceRes.data.balance);
+                }
+            } catch (error) {
+                console.error('Error fetching data:', error);
+            }
+        };
+        fetchData();
+    }, [token]);
 
     const filteredPosts = posts.filter(post =>
         (selectedCategory === "all" || post.Category.category_name === selectedCategory) &&
@@ -64,6 +106,79 @@ const DeletedPosts = () => {
         }
     };
 
+    const handleRestorePostError = (postId) => {
+        setExtendPostId(postId);
+        setIsExtendModalOpen(true);
+    };
+
+    const calculateTotalPayment = () => {
+        if (selectedPostTypeId && selectedExpireDate) {
+            const selectedType = typePosts.find(type => type.id === parseInt(selectedPostTypeId));
+            if (selectedType) {
+                const pricePerDay = selectedType.price;
+                const today = new Date();
+                const expireDate = new Date(selectedExpireDate);
+                const timeDiff = expireDate - today;
+                const days = Math.ceil(timeDiff / (1000 * 3600 * 24)) + 1;
+                if (days > 0) {
+                    const total = pricePerDay * days;
+                    setTotalPayment(total);
+                }
+            }
+        }
+    };
+
+    useEffect(() => {
+        calculateTotalPayment();
+    }, [selectedPostTypeId, selectedExpireDate]);
+
+    const handleExtendPost = async () => {
+        let validationErrors = {};
+        if (!selectedPostTypeId) {
+            validationErrors.selectedPostTypeId = 'Vui lòng chọn loại tin đăng';
+        }
+        if (!selectedExpireDate) {
+            validationErrors.selectedExpireDate = 'Vui lòng chọn ngày hết hạn';
+        }
+        setErrors(validationErrors);
+
+        // If there are validation errors, do not proceed
+        if (Object.keys(validationErrors).length > 0) {
+            return;
+        }
+
+        try {
+            const extendRes = await axios.post('http://localhost:5000/api/v1/user/ladnlord/extendPost', {
+                postId: parseInt(extendPostId),
+                newExpireDate: selectedExpireDate,
+                totalPayment,
+                newPostTypeId: selectedPostTypeId,
+            }, {
+                headers: { 'token': token }
+            });
+
+            if (extendRes.data.err === 0) {
+                Swal.fire('Thành công !', `Gia hạn bài đăng có mã tin ${extendPostId} thành công.`, 'success');
+                setIsExtendModalOpen(false);
+                fetchPosts();
+                // Reset form fields and errors
+                setSelectedPostTypeId('');
+                setSelectedExpireDate('');
+                setTotalPayment(0);
+                setErrors({});
+            }
+            else if (extendRes.data.err === 1) {
+                Swal.fire('Thất bại !', 'Số dư tài khoản không đủ để thực hiện gia hạn.', 'error');
+            }
+            else {
+                Swal.fire('Thất bại !', 'Gia hạn bài đăng thất bại.', 'error');
+            }
+        } catch (error) {
+            console.error('Error extending post:', error);
+            Swal.fire('Lỗi!', 'Đã xảy ra lỗi khi khôi phục bài đăng. Vui lòng thử lại sau.', 'error');
+        }
+    };
+
     const handleRestore = async (id) => {
         const result = await Swal.fire({
             title: 'Bạn có chắc chắn muốn khôi phục tin đăng này?',
@@ -83,10 +198,28 @@ const DeletedPosts = () => {
                         'token': `${token}`
                     }
                 });
+                //console.log(response);
                 if (response.data.err === 0) {
-                    Swal.fire('Đã khôi phục!', 'Bài đăng đã được khôi phục.', 'success');
+                    Swal.fire('Thành công !', 'Bài đăng đã được khôi phục.', 'success');
                     fetchPosts(); // Refresh the list of posts
-                } else {
+                }
+                else if (response.data.err === 1) {
+                    // Show error message with 'Gia hạn ngay' and 'Đóng' buttons
+                    const extendResult = await Swal.fire({
+                        title: 'Khôi phục Thất bại !',
+                        text: 'Ngày hết hạn bài đăng đã quá hạn.',
+                        icon: 'error',
+                        showCancelButton: true,
+                        confirmButtonText: 'Gia hạn ngay',
+                        cancelButtonText: 'Đóng',
+
+                    });
+                    if (extendResult.isConfirmed) {
+                        // Open the extend modal
+                        handleRestorePostError(id);
+                    }
+                }
+                else {
                     Swal.fire('Lỗi!', 'Khôi phục bài đăng thất bại. Vui lòng thử lại.', 'error');
                 }
             } catch (error) {
@@ -103,7 +236,7 @@ const DeletedPosts = () => {
                     'token': `${token}`
                 },
             });
-            console.log(response)
+            //console.log(response)
             if (response.data.err === 0) {
                 setPosts(response.data.posts); // Giả sử 'posts' chứa dữ liệu trong phản hồi
             } else {
@@ -196,9 +329,7 @@ const DeletedPosts = () => {
         const date = new Date(dateString);
         return date.toLocaleDateString('vi-VN');
     };
-    const formatCurrency = (amount) => {
-        return Math.floor(amount).toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.');
-    };
+
     return (
         <div className='container mx-auto px-4 py-8'>
             <Breadcrumb items={breadcrumbItems} />
@@ -474,6 +605,89 @@ const DeletedPosts = () => {
                     </div>
                 )}
             </div>
+            <Modal
+                isOpen={isExtendModalOpen}
+                onRequestClose={() => setIsExtendModalOpen(false)}
+                contentLabel="Gia hạn bài đăng"
+                className="mx-auto my-10 bg-white rounded-lg shadow-lg w-11/12 md:w-1/2 p-6 outline-none"
+                overlayClassName="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center"
+            >
+                <h2 className="text-xl font-semibold mb-4">Gia hạn bài đăng</h2>
+                <div className="space-y-4">
+                    <div className="flex flex-col">
+                        <div className="flex items-center">
+                            <label className="w-1/3">Loại tin đăng:</label>
+                            <select
+                                value={selectedPostTypeId}
+                                onChange={(e) => setSelectedPostTypeId(e.target.value)}
+                                className={`w-2/3 p-2 border ${errors.selectedPostTypeId ? 'border-red-500' : 'border-gray-300'} rounded`}
+                            >
+                                <option value="">--Chọn loại tin đăng--</option>
+                                {typePosts.map((type) => (
+                                    <option key={type.id} value={type.id}>{type.name}</option>
+                                ))}
+                            </select>
+                            <button
+                                type='button'
+                                onClick={() => setIsPriceModalOpen(true)}
+                                className='ml-2 text-gray-400 hover:text-gray-700'
+                                title='Bảng giá loại tin đăng'
+                            >
+                                <AiOutlineInfoCircle size={24} />
+                            </button>
+                        </div>
+                        {errors.selectedPostTypeId && (
+                            <p className="w-2/3 ml-auto mt-1 text-red-500 italic text-sm">{errors.selectedPostTypeId}</p>
+                        )}
+                    </div>
+                    <div className="flex flex-col">
+                        <div className="flex items-center">
+                            <label className="w-1/3">Ngày hết hạn:</label>
+                            <input
+                                type="date"
+                                value={selectedExpireDate}
+                                onChange={(e) => setSelectedExpireDate(e.target.value)}
+                                className={`w-2/3 p-2 border ${errors.selectedExpireDate ? 'border-red-500' : 'border-gray-300'} rounded`}
+                                min={new Date().toISOString().split('T')[0]}
+                            />
+                        </div>
+                        {errors.selectedExpireDate && (
+                            <p className="w-2/3 ml-auto mt-1 text-red-500 italic text-sm">{errors.selectedExpireDate}</p>
+                        )}
+                    </div>
+                    {totalPayment > 0 && (
+                        <div>
+                            <div className='flex justify-between'>
+                                <p>Tổng số tiền cần thanh toán: <span className="font-semibold text-red-600">{new Intl.NumberFormat('vi-VN').format(totalPayment)} VNĐ</span></p>
+                                <p>Số dư tài khoản: <span className="font-semibold text-green-600">{balance ? new Intl.NumberFormat('vi-VN').format(balance) : '0'} VNĐ</span></p>
+                            </div>
+                            {totalPayment > balance && (
+                                <p className="text-red-500">Số dư không đủ, <a href="/he-thong/nap-tien" className="underline text-blue-500 hover:text-red-500">nạp tiền ngay!</a></p>
+                            )}
+                        </div>
+                    )}
+                    <div className="flex justify-end space-x-4 mt-6">
+                        <button
+                            onClick={handleExtendPost}
+                            className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transaction duration-300"
+                        >
+                            Gia hạn
+                        </button>
+                        <button
+                            onClick={() => {
+                                setIsExtendModalOpen(false);
+                                setErrors({});
+                            }}
+                            className="px-4 py-2 bg-gray-300 text-gray-700 rounded hover:bg-gray-400 transaction duration-300"
+                        >
+                            Hủy
+                        </button>
+                    </div>
+                </div>
+            </Modal>
+
+            {/* Price Modal */}
+            {isPriceModalOpen && <PriceModal setIsPriceModalOpen={setIsPriceModalOpen} />}
         </div>
     );
 };
