@@ -1,10 +1,11 @@
-const aichatService = require('../../services/ai-chatbot/aichat');
+const aichatService = require('../../services/chatbotAI/analysis.question');
 const { response } = require('express');
 
 // Hàm xử lý yêu cầu từ AI Chatbot
 const sendQuestion = async (req, res) => {
+    const { message } = req.body;
     try {
-        const response = await aichatService.processQuery(req.body);
+        const response = await aichatService.processQuery(message);
         res.json(response);
     } catch (error) {
         console.error('Lỗi khi xử lý yêu cầu từ AI Chatbot:', error);

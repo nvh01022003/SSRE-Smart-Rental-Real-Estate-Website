@@ -1,0 +1,52 @@
+const { where } = require("sequelize");
+const { Op } = require('sequelize');
+const { User, Post, Address, Image, Favourite, Report, Category, Overview, Coordinates, UpgradeRequest, sequelize } = require("../../models/index");
+const findByQueston = async (city, district, objectFind, distance, category) => {
+    // tìm category id
+    const categoryFind = await Category.findOne({
+        where: {
+            category_name: {
+                [Op.like]: `%${category}%`
+            }
+        }
+    });
+    // tìm address id theo city, district
+    const addressFind = await Address.findAll({
+        where: {
+            city: {
+                [Op.like]: `%${city}%`
+            },
+            district: {
+                [Op.like]: `%${district}%`
+            }
+        }
+    });
+    let addressId = [];
+    addressFind.forEach(element => {
+        addressId.push(element.id);
+    });
+    // tìm kiếm post theo categoryFind, addressId
+    console.log(addressId);
+    const postFind = await Post.findAll({
+        where: {
+            category_id: categoryFind.id,
+            address_id: {
+                [Op.in]: addressId
+            }
+        }
+        // thêm include để lấy thông tin của tọa độ
+        , include: [
+            {
+                model: Coordinates,
+                attributes: ['lat', 'lon']
+            }
+        ]
+    });
+    // lặp qua từng post để lấy thông tin cần thiết lưu vào mảng postInfo mỗi phần tử có các đối tượng { id: id, title: title, lat: lat, lon: lon }
+    let postInfo = [];
+    postFind.forEach(element => {
+        postInfo.push({ id: element.id, title: element.title, lat: element.Coordinate.lat, lon: element.Coordinate.lon, resultFind: null, amountFind: 0 });
+    });
+    return postInfo;
+};
+module.exports = { findByQueston };

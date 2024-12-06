@@ -7,5 +7,5 @@ const upload = multer({ storage });
 const router = express.Router()
 
 // gửi câu hỏi cho chatbot
-router.post("/question", aiChatController.sendQuestion)
+router.post("/anlysisquestion", aiChatController.sendQuestion)
 module.exports = router;
