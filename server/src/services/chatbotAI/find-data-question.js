@@ -1,7 +1,7 @@
 const { where } = require("sequelize");
 const { Op } = require('sequelize');
 const { User, Post, Address, Image, Favourite, Report, Category, Overview, Coordinates, UpgradeRequest, sequelize } = require("../../models/index");
-const findByQueston = async (city, district, category) => {
+const findByQueston = async (city, district, objectFind, distance, category) => {
     const categoryFind = await Category.findOne({
         where: {
             category_name: {
