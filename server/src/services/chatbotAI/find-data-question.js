@@ -1,8 +1,7 @@
 const { where } = require("sequelize");
 const { Op } = require('sequelize');
 const { User, Post, Address, Image, Favourite, Report, Category, Overview, Coordinates, UpgradeRequest, sequelize } = require("../../models/index");
-const findByQueston = async (city, district, objectFind, distance, category) => {
-    // tìm category id
+const findByQueston = async (city, district, category) => {
     const categoryFind = await Category.findOne({
         where: {
             category_name: {
@@ -10,7 +9,6 @@ const findByQueston = async (city, district, objectFind, distance, category) => 
             }
         }
     });
-    // tìm address id theo city, district
     const addressFind = await Address.findAll({
         where: {
             city: {
@@ -34,7 +32,6 @@ const findByQueston = async (city, district, objectFind, distance, category) => 
                 [Op.in]: addressId
             }
         }
-        // thêm include để lấy thông tin của tọa độ
         , include: [
             {
                 model: Coordinates,

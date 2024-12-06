@@ -29,7 +29,6 @@ const getGoogleResponse = async (message) => {
 
 const processQuery = async (message) => {
     // console.log(message);
-    // Trước tiên, kiểm tra từ khóa cố định
     if (
         message.includes("bạn là ai") ||
         message.includes("bạn tên gì") ||
@@ -119,7 +118,6 @@ const processQuery = async (message) => {
         if (jsonContent.case === 1) {
             const { city, district, objectFind, distance, category } = jsonContent;
             const data = await findData.findByQueston(city, district, objectFind, distance, category);
-            // // dùng promise.all để lấy dữ liệu từ scanMap.findMap cho từng post
             await Promise.all(data.map(async (element) => {
                 try {
                     const result = await scanMap.findNearbyLocations(element.lat, element.lon, distance, objectFind);
@@ -129,12 +127,13 @@ const processQuery = async (message) => {
                     console.error('Lỗi khi tìm kiếm dữ liệu từ Overpass API:', error);
                 }
             }));
-            // sort theo giảm dần amountFind và lấy phần tử đầu tiên
+            // sort theo giảm dần amountFind 
             data.sort((a, b) => b.amountFind - a.amountFind);
             console.log(data[0]);
             return data[0];
 
         } else if (jsonContent.case === 2) {
+            // xử lý sau nếu có idea
             return jsonContent;
         } else if (jsonContent.case === 3) {
             return jsonContent;

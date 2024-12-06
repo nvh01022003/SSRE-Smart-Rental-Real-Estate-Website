@@ -2,17 +2,17 @@ const axios = require('axios');
 require('dotenv').config();
 
 const findNearbyLocations = async (lat, lon, radius, type) => {
-    const apiKey = process.env.MAPKEY; // Lấy API Key từ file .env
+    const apiKey = process.env.MAPKEY;
     const url = `https://maps.gomaps.pro/maps/api/place/nearbysearch/json`;
 
     try {
         const response = await axios.get(url, {
             params: {
-                location: `${lat},${lon}`, // Tọa độ vĩ độ, kinh độ
-                radius: radius, // Bán kính tìm kiếm
-                type: type, // Loại địa điểm
-                language: "en", // Ngôn ngữ (nếu cần)
-                key: apiKey, // API Key
+                location: `${lat},${lon}`,
+                radius: radius,
+                type: type,
+                language: "en",
+                key: apiKey,
             },
         });
 
