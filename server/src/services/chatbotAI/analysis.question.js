@@ -132,6 +132,7 @@ const processQuery = async (message) => {
             // sort theo giảm dần amountFind và lấy phần tử đầu tiên
             data.sort((a, b) => b.amountFind - a.amountFind);
             console.log(data[0]);
+            return data[0];
 
         } else if (jsonContent.case === 2) {
             return jsonContent;
