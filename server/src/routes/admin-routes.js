@@ -79,7 +79,7 @@ router.put("/updateTypePost/:typePostId", authentication.authenticateToken, auth
 // delete type post by id
 router.delete("/deleteTypePost/:typePostId", authentication.authenticateToken, authorization.checkRoleAdmin, managerPostController.deleteTypePost)
 // show all type post có pagination
-router.get("/showAllTypePost", authentication.authenticateToken, managerPostController.showAllTypePost)
+router.get("/showAllTypePost", managerPostController.showAllTypePost)
 
 
 module.exports = router
