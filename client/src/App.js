@@ -11,7 +11,7 @@ import Verify from './containers/Public/Verify';
 import PersonalInfo from './containers/Public/PersonalInfo/PersonalInfo';
 import ChangePass from './containers/System/ChangePass';
 import ForgotPassword from './containers/Public/ForgotPass/ForgotPass';
-import ChatGPT from './components/Chat/ChatGPT';
+import ChatbotInterface from './components/ChatbotInterface';
 import ValidateCode from './containers/Public/ForgotPass/ValidateCode';
 import ResetPass from './containers/Public/ForgotPass/ResetPass';
 import ListPostsSaved from './containers/Public/ListPostsSaved';
@@ -24,7 +24,6 @@ import BankTransfer from './containers/System/Payment/BankTransfer';
 import ManagePost from '../src/containers/System/ManagePost';
 import DeletedPosts from './containers/System/DeletedPosts';
 import ServicePrice from './containers/System/Payment/ServicePrice';
-import Breadcrumb from './components/Breadcrumb';
 
 function App() {
   const dispatch = useDispatch();
@@ -93,7 +92,7 @@ function App() {
       </Routes>
 
       {/* ChatGPT Component */}
-      <ChatGPT />
+      <ChatbotInterface />
     </div>
   );
 }
