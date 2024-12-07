@@ -9,6 +9,7 @@ const findByQueston = async (city, district, objectFind, distance, category) => 
             }
         }
     });
+
     const addressFind = await Address.findAll({
         where: {
             city: {
@@ -23,8 +24,8 @@ const findByQueston = async (city, district, objectFind, distance, category) => 
     addressFind.forEach(element => {
         addressId.push(element.id);
     });
+
     // tìm kiếm post theo categoryFind, addressId
-    console.log(addressId);
     const postFind = await Post.findAll({
         where: {
             category_id: categoryFind.id,
@@ -44,6 +45,7 @@ const findByQueston = async (city, district, objectFind, distance, category) => 
     postFind.forEach(element => {
         postInfo.push({ id: element.id, title: element.title, lat: element.Coordinate.lat, lon: element.Coordinate.lon, resultFind: null, amountFind: 0 });
     });
+    console.log(postInfo);
     return postInfo;
 };
 module.exports = { findByQueston };

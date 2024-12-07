@@ -22,8 +22,13 @@ const findNearbyLocations = async (lat, lon, radius, type) => {
             lat: place.geometry.location.lat,
             lon: place.geometry.location.lng,
         }));
-
-        return locations;
+        // loại bỏ các kết quả trùng lặp
+        const uniqueLocations = locations.filter((location, index, self) =>
+            index === self.findIndex((t) => (
+                t.name === location.name && t.lat === location.lat && t.lon === location.lon
+            ))
+        );
+        return uniqueLocations;
     } catch (error) {
         console.error('Lỗi khi gọi API:', error.response?.data || error.message);
         return [];
