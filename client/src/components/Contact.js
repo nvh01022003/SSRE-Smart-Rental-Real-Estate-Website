@@ -83,12 +83,12 @@ const Contact = () => {
                     </ContactItem>
                 ))}
             </ContactInfo>
-            <Button
+            {/* <Button
                 text='Gửi liên hệ'
                 bgColor='bg-blue-600'
                 textColor='text-white'
                 px='px-6'
-            />
+            /> */}
         </ContactContainer>
     );
 }

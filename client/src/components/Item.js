@@ -33,7 +33,7 @@ const ItemContainer = styled.div`
 const IconContainer = styled.div`
     display: flex;
     align-items: center;
-    gap: 30px;
+    gap: 20px;
     color: #FF8C00;
 
     @media (max-width: 768px) {
@@ -169,22 +169,22 @@ const Item = ({ images, user, title, isSaved, description, attributes, address, 
                 <div className='my-2 flex items-center gap-6 text-xl'>
                     <IconContainer>
                         <span className='font-bold text-green-600 flex items-center'>
-                            <FaDollarSign className="inline-block" />
-                            <p className="ml-1">{formatPrice(attributes?.price)}/tháng</p>
+                            <FaDollarSign className="inline-block text-lg" />
+                            <p className="ml-1 text-lg">{formatPrice(attributes?.price)}/tháng</p>
                         </span>
-                        <span className='flex items-center gap-1'>
-                            <RiCrop2Line className="inline-block" /> {parseInt(attributes?.acreage)} m²
+                        <span className='flex items-center gap-1 text-lg'>
+                            <RiCrop2Line className="inline-block " /> {parseInt(attributes?.acreage)} m²
                         </span>
-                        <span className='flex text-gray-500 items-center gap-1'>
-                            <FaClock className="inline-block" /> {timeDiff}
+                        <span className='flex text-gray-500 items-center gap-1 text-lg'>
+                            <FaClock className="inline-block " /> {timeDiff}
                         </span>
                     </IconContainer>
                 </div>
-                <div className='text-gray-500 mb-3 mt-1 md:text-xl'>
+                <div className='text-gray-500 mb-3 mt-1 md:text-lg'>
                     <FaMapMarkerAlt className="inline-block mb-1" />
                     {address}
                 </div>
-                <p className='text-gray-500 h-[82px] w-full overflow-hidden text-lg'
+                <p className='text-gray-500 h-[82px] w-full overflow-hidden text-sm'
                     style={{
                         display: '-webkit-box',
                         WebkitLineClamp: 3, // Số dòng tối đa trước khi cắt bớt
