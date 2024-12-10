@@ -9,6 +9,8 @@ const managerUserController = require("../controller/admin/manager-user-controll
 const managerCategoryController = require("../controller/admin/manager-category-controller.js")
 const managerPostController = require("../controller/admin/manager-post-controller.js")
 const transactionController = require('../controller/admin/manager-transaction-controller.js');
+const managerReportController = require("../controller/admin/manager-report-controller")
+
 const img = require("../middleware/upload/uploadImg")
 const multer = require('multer');
 const storage = multer.memoryStorage();
@@ -81,5 +83,27 @@ router.delete("/deleteTypePost/:typePostId", authentication.authenticateToken, a
 // show all type post có pagination
 router.get("/showAllTypePost", managerPostController.showAllTypePost)
 
+
+// MANAGE REPORT
+// get total users
+router.get("/getTotalUsers",authentication.authenticateToken, authorization.checkRoleAdmin,managerReportController.getTotalUsers)
+// get new users today
+router.get("/getNewUsersToday",authentication.authenticateToken, authorization.checkRoleAdmin,managerReportController.getNewUsersToday)
+// get total posts
+router.get("/getTotalPosts",authentication.authenticateToken, authorization.checkRoleAdmin,managerReportController.getTotalPosts)
+// get total delete posts
+router.get("/getTotalDeletePosts",authentication.authenticateToken, authorization.checkRoleAdmin,managerReportController.getTotalDeletePosts);
+//get new posts today
+router.get("/getNewPostsToday",authentication.authenticateToken, authorization.checkRoleAdmin,managerReportController.getNewPostsToday);
+// get total category
+router.get("/getTotalCategory",authentication.authenticateToken, authorization.checkRoleAdmin,managerReportController.getTotalCategories);
+// get total transactions
+router.get("/getTotalTransactions",authentication.authenticateToken, authorization.checkRoleAdmin,managerReportController.getTotalTransactions);
+// get total success transactions today
+router.get("/getTotalSuccessTransactionsToday",authentication.authenticateToken, authorization.checkRoleAdmin,managerReportController.getTotalSuccessTransactionsToday);
+//get total payment transactions
+router.get("/getTotalPaymentTransactions",authentication.authenticateToken, authorization.checkRoleAdmin,managerReportController.getTotalPaymentTransactions);
+// get payment transactions today
+router.get("/getPaymentTransactionsToday",authentication.authenticateToken, authorization.checkRoleAdmin,managerReportController.getPaymentTransactionsToday);
 
 module.exports = router
