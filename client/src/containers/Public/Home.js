@@ -9,6 +9,7 @@ import Footer from './Footer'
 import HomeAdmin from '../../containers/Admin/HomeAdmin'
 import Loading from '../../components/Loading'
 import { Role } from '../../store/actions/auth';
+import ChatbotInterface from '../../components/ChatbotInterface';
 
 const Home = () => {
     const { isLoggedIn, token, role } = useSelector(state => state.auth)
@@ -62,8 +63,10 @@ const Home = () => {
                     <div className='w-3/5 container '>
                         <Footer />
                     </div>
+                    <ChatbotInterface />
                 </div>
             )}
+
         </div>
     )
 }

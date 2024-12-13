@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { Routes, Route } from 'react-router-dom';
-import { Home, Login, Rental, Homepage, DetailPost, SearchDetail } from './containers/Public';
+import { Home, Login, Homepage, DetailPost, SearchDetail } from './containers/Public';
 import { path } from './ultils/constant';
 import { CreatePost } from '../src/containers/System';
 import { System } from '../src/containers/System';
@@ -11,7 +11,6 @@ import Verify from './containers/Public/Verify';
 import PersonalInfo from './containers/Public/PersonalInfo/PersonalInfo';
 import ChangePass from './containers/System/ChangePass';
 import ForgotPassword from './containers/Public/ForgotPass/ForgotPass';
-import ChatbotInterface from './components/ChatbotInterface';
 import ValidateCode from './containers/Public/ForgotPass/ValidateCode';
 import ResetPass from './containers/Public/ForgotPass/ResetPass';
 import ListPostsSaved from './containers/Public/ListPostsSaved';
@@ -30,10 +29,6 @@ function App() {
   const { isLoggedIn, token } = useSelector(state => state.auth);
 
   useEffect(() => {
-    // Clear localStorage items related to authenticatio
-    //localStorage.removeItem('persist:auth');
-    //localStorage.removeItem('persist:root');
-
     // Set a timeout to dispatch setUserInfo after 1 second
     const timer = setTimeout(() => {
       if (isLoggedIn && token) {
@@ -47,19 +42,12 @@ function App() {
 
   return (
     <div className="bg-primary">
-      {/* <Breadcrumb /> */}
-      {/* <AnimatePresence mode="wait" initial={false}> */}
       <Routes>
         {/* Trang chủ và các route con */}
         <Route path={path.HOME} element={<Home />}>
           <Route path="*" element={<Homepage />} />
-          <Route path={path.CHO_THUE_CAN_HO} element={<Rental />} />
-          <Route path={path.CHO_THUE_MAT_BANG} element={<Rental />} />
-          <Route path={path.CHO_THUE_PHONG_TRO} element={<Rental />} />
-          <Route path={path.NHA_CHO_THUE} element={<Rental />} />
           <Route path={path.SEARCH} element={<SearchDetail />} />
           <Route path={path.DETAL_POST__TITLE__POSTID} element={<DetailPost />} />
-          <Route path="chi-tiet/*" element={<DetailPost />} />
         </Route>
 
         {/* Các route đăng nhập và đăng ký */}
@@ -90,9 +78,6 @@ function App() {
           </Route>
         </Route>
       </Routes>
-
-      {/* ChatGPT Component */}
-      <ChatbotInterface />
     </div>
   );
 }

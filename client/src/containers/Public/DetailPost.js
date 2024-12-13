@@ -344,21 +344,24 @@ const DetailPost = () => {
 
             {/* Thông tin bài đăng */}
             <div className="mb-5">
-                <div className='flex items-center'>
-                    {/* Title with stars */}
-                    <h1 className="text-3xl font-medium text-red-600 mb-5 flex-wrap uppercase w-[92%]">
-                        {data.title}
-                    </h1>
+                <div className="flex items-start gap-3">
+                    {/* Container cho tiêu đề */}
+                    <div className="flex-1">
+                        <h1 className="text-3xl font-medium text-red-600 mb-5 flex-wrap uppercase w-[92%]">
+                            {data.title}
+                        </h1>
+                    </div>
 
                     {/* Nút Lưu */}
                     <button
-                        className=' flex gap-1 text-red-500 hover:text-red-600 transition duration-300'
+                        className="flex gap-1 text-red-500 hover:text-red-600 transition duration-300"
                         onClick={handleSaveClick}
                     >
                         <BsBookmarkStarFill size={24} color={isStarred === 1 ? 'red' : 'orange'} />
-                        <span className='text-lg font-semibold'>{isStarred === 1 ? 'Đã lưu' : 'Lưu'}</span>
+                        <span className="text-lg font-semibold">{isStarred === 1 ? 'Đã lưu' : 'Lưu'}</span>
                     </button>
                 </div>
+
 
                 {/* Address with icon */}
                 <div className="text-xl flex items-center text-gray-600 mb-5">
