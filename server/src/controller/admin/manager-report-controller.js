@@ -125,6 +125,56 @@ const getPaymentTransactionsToday = async (req, res) => {
         });
     }
 };
+
+const getDepositRevenueByTime = async (req, res) => {
+    try {
+      const { year, month } = req.query;
+      console.log("Year:", year, "Month:", month);
+      // Kiểm tra input
+      if (!year) {
+        return res.status(400).json({ message: "Year is required" });
+
+      }
+  
+      // Gọi service để lấy tổng tiền nạp
+      const totalDeposit = await statisticsService.getDepositRevenue(year, month);
+  
+      return res.status(200).json({
+        year,
+        month: month || null,
+        totalDeposit,
+      });
+    } catch (error) {
+      console.error('Error in getDepositRevenueByTime controller:', error);
+      return res.status(500).json({ message: "Internal server error" });
+    }
+  };
+  // Controller để lấy số lượng tài khoản mới theo tháng trong năm
+const getNewUsersByMonth = async (req, res) => {
+    try {
+        const { year } = req.query; // Lấy năm từ URL param, ví dụ: /new-users/:year
+        console.log("Year:", year);
+
+        // Gọi service để lấy số lượng tài khoản mới theo từng tháng trong năm
+        const result = await statisticsService.getNewUsersByMonth(year);
+
+        if (result.success) {
+            return res.status(200).json(result); // Trả về kết quả thành công
+        } else {
+            return res.status(400).json({
+                success: false,
+                message: 'Không thể lấy số lượng tài khoản mới theo tháng.',
+            });
+        }
+    } catch (error) {
+        console.error('Error in getNewUsersByMonth controller:', error);
+        return res.status(500).json({
+            success: false,
+            message: 'Lỗi khi xử lý yêu cầu.',
+            error: error.message,
+        });
+    }
+};
 module.exports = {
     getTotalUsers,
     getNewUsersToday,
@@ -135,8 +185,9 @@ module.exports = {
     getTotalTransactions,
     getTotalSuccessTransactionsToday,
     getTotalPaymentTransactions,
-    getPaymentTransactionsToday
-    
+    getPaymentTransactionsToday,
+    getDepositRevenueByTime,
+    getNewUsersByMonth
    
 };
 

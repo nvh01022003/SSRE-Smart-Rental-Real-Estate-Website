@@ -1,6 +1,7 @@
 // services/roleService.js
-const { Role,Post,Category,Transaction } = require('../../models'); // Điều chỉnh đường dẫn models
+const { Sequelize,Role,Post,Category,Transaction } = require('../../models'); // Điều chỉnh đường dẫn models
 const { Op } = require('sequelize');
+const { get } = require('../../routes/admin-routes');
 
 //Tổng số user
 const getTotalUsers = async () => {
@@ -226,7 +227,101 @@ const getPaymentTransactionsToday = async () => {
         throw new Error('Lỗi khi đếm số giao dịch thanh toán thành công hôm nay: ' + error.message);
     }
 };
+const getDepositRevenue = async (year) => {
+    try {
+        const monthlyRevenues = [];
 
+        // Lặp qua từng tháng trong năm (1 đến 12)
+        for (let month = 1; month <= 12; month++) {
+            let startDate = new Date(`${year}-${String(month).padStart(2, '0')}-01`);
+            let endDate = new Date(`${year}-${String(month + 1).padStart(2, '0')}-01`);
+
+            // Kiểm tra nếu tháng là 12 thì tháng sau sẽ là năm sau
+            if (month === 12) {
+                endDate = new Date(`${Number(year) + 1}-01-01`);
+            }
+
+            // Query tính tổng tiền nạp cho tháng hiện tại
+            const result = await Transaction.findAll({
+                attributes: [
+                    [Sequelize.fn('SUM', Sequelize.col('amount')), 'total_deposit']
+                ],
+                where: {
+                    transactionType: 'nạp tiền',
+                    status: 'Thành công',
+                    createdAt: {
+                        [Op.gte]: startDate,
+                        [Op.lt]: endDate,
+                    },
+                },
+                raw: true,
+            });
+
+            // Lưu doanh thu của tháng vào mảng
+            monthlyRevenues.push({
+                month: month,
+                total_deposit: result[0]?.total_deposit || 0, // Nếu không có giao dịch, gán bằng 0
+            });
+        }
+
+        return {
+            success: true,
+            data: monthlyRevenues,
+            message: 'Doanh thu của 12 tháng trong năm ' + year,
+        };
+    } catch (error) {
+        console.error('Error in getDepositRevenue service:', error);
+        throw error;
+    }
+};
+
+// Hàm đếm số lượng tài khoản được tạo mới trong từng tháng của năm 
+const getNewUsersByMonth = async (year) => {
+    try {
+        const monthlyUserCounts = [];
+
+        // Lặp qua từng tháng trong năm (1 đến 12)
+        for (let month = 1; month <= 12; month++) {
+            let startDate = new Date(`${year}-${String(month).padStart(2, '0')}-01`);
+            let endDate = new Date(`${year}-${String(month + 1).padStart(2, '0')}-01`);
+
+            // Kiểm tra nếu tháng là 12 thì tháng sau sẽ là năm sau
+            if (month === 12) {
+                endDate = new Date(`${Number(year) + 1}-01-01`);
+            }
+
+            // Query tính số lượng tài khoản mới trong tháng hiện tại 
+            const result = await Role.count({
+                where: {
+                    createdAt: {
+                        [Op.gte]: startDate, // Ngày bắt đầu của tháng
+                        [Op.lt]: endDate, // Ngày bắt đầu của tháng tiếp theo
+                    },
+                    type: {
+                        [Op.ne]: 'admin', // Loại trừ tài khoản admin
+                    },
+                },
+            });
+
+            // Lưu số lượng tài khoản mới của tháng vào mảng
+            monthlyUserCounts.push({
+                month: month,
+                newUsersCount: result || 0, // Nếu không có tài khoản nào, gán là 0
+            });
+        }
+
+        return {
+            success: true,
+            data: monthlyUserCounts,
+            message: 'Số lượng tài khoản mới được tạo trong năm ' + year,
+        };
+    } catch (error) {
+        console.error('Error in getNewUsersByMonth service:', error);
+        throw error;
+    }
+};
+
+  
 module.exports = {
     getTotalUsers,
     getNewUsersToday,
@@ -238,4 +333,6 @@ module.exports = {
     getSuccessfulTransactionsToday,
     getTotalPaymentTransactions,
     getPaymentTransactionsToday,
+    getDepositRevenue,
+    getNewUsersByMonth
 };

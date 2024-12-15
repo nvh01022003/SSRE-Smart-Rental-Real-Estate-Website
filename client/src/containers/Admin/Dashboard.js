@@ -8,6 +8,44 @@ const Dashboard = () => {
     const [totalCategory, setTotalCategory] = useState(0);
     const [totalTransactions, setTotaTransactions] = useState(0);
     const [totalPaymentTransactions, setTotalPaymentTransactions] = useState(0);
+    const [depositRevenue, setDepositRevenue] = useState([]);
+    const [newUsers, setNewUsers] = useState([]);
+
+    const fetchDepositRevenue = async () => {
+        try {
+            const response = await fetch(`http://localhost:5000/api/v1/manager/getDepositRevenueByTime?year=2024`);
+            const data = await response.json();
+            if (response.ok) {
+                const formattedData = data.data.map(item => ({
+                    name: `Tháng ${item.month}`,
+                    totalDeposit: item.total_deposit,
+                }));
+                setDepositRevenue(formattedData);
+            } else {
+                console.error("Không thể lấy dữ liệu doanh thu nạp tiền:", data.message);
+            }
+        } catch (error) {
+            console.error("Lỗi khi lấy dữ liệu doanh thu nạp tiền:", error.message);
+        }
+    };
+
+    const fetchNewUsers = async () => {
+        try {
+            const response = await fetch(`http://localhost:5000/api/v1/manager/newusers?year=2024`);
+            const data = await response.json();
+            if (response.ok) {
+                const formattedData = data.data.map(item => ({
+                    name: `Tháng ${item.month}`,
+                    newUsersCount: item.newUsersCount,
+                }));
+                setNewUsers(formattedData);
+            } else {
+                console.error("Không thể lấy dữ liệu số lượng người dùng mới:", data.message);
+            }
+        } catch (error) {
+            console.error("Lỗi khi lấy dữ liệu số lượng người dùng mới:", error.message);
+        }
+    };
 
     const fetchTotalUsers = async () => {
         try {
@@ -122,7 +160,19 @@ const Dashboard = () => {
         fetchTotalCategory();
         fetchTotalTransactions();
         fetchTotalPaymentTransactions();
+        fetchDepositRevenue();
+        fetchNewUsers();
     }, []);
+
+    const generateMonthlyData = () => {
+        const data = depositRevenue.map((item, index) => ({
+            name: item.name,
+            deposit: item.totalDeposit,
+            users: newUsers[index]?.newUsersCount || 0,
+        }));
+        return data;
+    };
+
 
 
     const getDayName = (date) => {
@@ -259,15 +309,14 @@ const Dashboard = () => {
                 </div>
                 <div className="h-96">
                     <ResponsiveContainer width="100%" height="100%">
-                        <BarChart data={timeFrame === "daily" ? dailyData : monthlyData}>
+                        <BarChart data={timeFrame === "daily" ? dailyData : generateMonthlyData()}>
                             <CartesianGrid strokeDasharray="3 3" />
                             <XAxis dataKey="name" />
                             <YAxis />
                             <Tooltip />
                             <Legend />
-                            <Bar dataKey="postings" fill="#4F46E5" />
-                            <Bar dataKey="transactions" fill="#10B981" />
-                            <Bar dataKey="upgrades" fill="#F59E0B" />
+                            <Bar dataKey="deposit" fill="#4F46E5" name="Doanh thu nạp tiền" />
+                            <Bar dataKey="users" fill="#10B981" name="Người dùng mới" />
                         </BarChart>
                     </ResponsiveContainer>
                 </div>

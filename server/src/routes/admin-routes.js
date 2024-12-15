@@ -106,4 +106,8 @@ router.get("/getTotalPaymentTransactions",authentication.authenticateToken, auth
 // get payment transactions today
 router.get("/getPaymentTransactionsToday",authentication.authenticateToken, authorization.checkRoleAdmin,managerReportController.getPaymentTransactionsToday);
 
+// get deposit revenue by time
+router.get("/getDepositRevenueByTime",managerReportController.getDepositRevenueByTime);
+// get new users by month
+router.get("/newusers",managerReportController.getNewUsersByMonth);
 module.exports = router
