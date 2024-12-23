@@ -5,7 +5,7 @@ import { useDispatch } from 'react-redux'
 import { AiOutlineLogout, AiOutlineCreditCard, AiOutlineTags } from 'react-icons/ai'
 import { useState } from "react";
 import { FiHome, FiUsers, FiFolder, FiFileText, FiUserCheck, FiMenu, FiX } from "react-icons/fi";
-import logo from '../../assets/logo.png'
+import logo from '../../assets/logo_v1.png'
 import ManageUser from './ManageUser';
 import ManageCategory from './ManageCategory';
 import ManageRequest from './ManageRequest';
@@ -57,7 +57,7 @@ const HomeAdmin = () => {
                                 sizes='(max-width: 640px) 100vw, (max-width: 768px) 50vw, (max-width: 1024px) 33vw, 25vw'
                                 src={logo}
                                 alt="Logo"
-                                className="w-[70px] h-[70px] object-contain "
+                                className="w-[70px] h-[70px] object-contain mr-2"
                             />
                             {isSidebarOpen && (
                                 // <h1 className="text-xl font-bold ml-2">Smart Rental Real Estate</h1>

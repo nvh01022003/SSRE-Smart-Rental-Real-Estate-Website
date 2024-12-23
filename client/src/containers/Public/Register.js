@@ -5,7 +5,7 @@ import { FiMail, FiLock, FiUser, FiPhone } from 'react-icons/fi';
 import { useDispatch } from 'react-redux';
 import Swal from 'sweetalert2';
 import * as actions from '../../store/actions';
-import logo from '../../assets/logo.png';
+import logo from '../../assets/logo_v1.png';
 import { motion } from 'framer-motion';
 
 // Common wrapper component for both Login and Register forms

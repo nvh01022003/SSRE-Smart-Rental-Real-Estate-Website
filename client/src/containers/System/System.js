@@ -4,7 +4,7 @@ import { Navigate, Outlet } from 'react-router-dom';
 import { path } from '../../ultils/constant';
 import { Sidebar } from './';
 import { FiMenu, FiX } from 'react-icons/fi';
-import logo from '../../assets/logo.png';
+import logo from '../../assets/logo_v1.png';
 import { Link } from 'react-router-dom';
 import * as actions from '../../store/actions';
 import { useDispatch } from 'react-redux'
@@ -39,7 +39,7 @@ const System = () => {
                         <img
                             src={logo}
                             alt="logo"
-                            className="w-14 h-14 object-contain mt-4"
+                            className="w-14 h-14 object-contain"
                         />
                         {isSidebarOpen && (
                             <span className="text-normal font-semibold ml-2">

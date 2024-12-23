@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import logo from '../../assets/logo.png';
+import logo from '../../assets/logo_v1.png';
 import { User } from '../../components';
 import { useNavigate, Link, useSearchParams } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
@@ -9,8 +9,6 @@ import { AiOutlineAppstore, AiOutlinePlusCircle, AiOutlineLogout } from 'react-i
 import { BsBookmarkStarFill } from 'react-icons/bs';
 import { getTotalPostSaved } from '../../store/actions/post';
 import { HiOutlineExclamationCircle } from 'react-icons/hi';
-
-
 
 const Header = () => {
     const navigate = useNavigate();
@@ -79,7 +77,7 @@ const Header = () => {
                     />
                     <div className='ml-2'>
                         <span className='text-2xl font-semibold block'>
-                            Smart Rental Real Estate Website
+                            Smart Rental Real Estate
                         </span>
                         <span className='text-sm text-gray-600 block'>
                             Nền tảng kết nối chủ nhà và người thuê, tối ưu hóa tìm kiếm nhà thuê bằng AI

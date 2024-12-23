@@ -16,7 +16,7 @@ const Home = () => {
     //console.log('role', role)
     const dispatch = useDispatch();
     const navigate = useNavigate();
-    const [searchClicked, setSearchClicked] = useState(false);
+    const [searchClicked] = useState(false);
     const [loading, setLoading] = useState(false); // Bật trạng thái loading khi bắt đầu fetch
 
     useEffect(() => {

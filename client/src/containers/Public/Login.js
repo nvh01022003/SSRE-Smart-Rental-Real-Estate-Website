@@ -5,7 +5,7 @@ import { useDispatch } from 'react-redux';
 import Swal from 'sweetalert2';
 import { Loading } from '../../components';
 import * as actions from '../../store/actions';
-import logo from '../../assets/logo.png';
+import logo from '../../assets/logo_v1.png';
 import { motion } from 'framer-motion';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEye, faEyeSlash } from '@fortawesome/free-regular-svg-icons';

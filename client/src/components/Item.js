@@ -132,6 +132,25 @@ const Item = ({ images, user, title, isSaved, description, attributes, address, 
     // Kiểm tra nếu có dữ liệu updatedAt thì tính toán khoảng thời gian
     const timeDiff = createdAt ? calculateTimeDifference(createdAt) : '';
 
+    const handleNavigate = () => {
+        if (token) {
+            navigate(`/chi-tiet/${formatVietnameseToString(title)}/${id}`);
+        } else {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Bạn cần đăng nhập',
+                text: 'Vui lòng đăng nhập để xem chi tiết bài viết này.',
+                //showCancelButton: true,
+                confirmButtonText: 'Đăng nhập ngay',
+                //cancelButtonText: 'Hủy',
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    navigate('/login');
+                }
+            });
+        }
+    };
+
     return (
         <ItemContainer>
             <div className='mr-5 w-full md:w-2/5 flex flex-wrap items-center relative'
@@ -141,7 +160,7 @@ const Item = ({ images, user, title, isSaved, description, attributes, address, 
                     overflow: 'hidden',
                     cursor: 'pointer',
                 }}
-                onClick={() => navigate(`/chi-tiet/${formatVietnameseToString(title)}/${id}`)}>
+                onClick={handleNavigate}>
                 {images.length > 0 && (
                     <img src={images[0]} alt="preview" className='w-full h-[235px] object-cover cursor-pointer' style={{ transition: 'transform 0.2s ease' }} />
                 )}
@@ -156,7 +175,7 @@ const Item = ({ images, user, title, isSaved, description, attributes, address, 
                             WebkitLineClamp: 2, // Số dòng tối đa trước khi cắt bớt
                             WebkitBoxOrient: 'vertical',
                             textOverflow: 'ellipsis'
-                        }} className='text-red-600 font-medium cursor-pointer hover:underline text-xs md:text-2xl uppercase overflow-hidden  text-ellipsis' onClick={() => navigate(`/chi-tiet/${formatVietnameseToString(title)}/${id}`)}>
+                        }} className='text-red-600 font-medium cursor-pointer hover:underline text-xs md:text-2xl uppercase overflow-hidden  text-ellipsis' onClick={handleNavigate}>
                             {title}
                         </span>
                     </div>
