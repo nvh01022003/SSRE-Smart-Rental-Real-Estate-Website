@@ -45,6 +45,7 @@ const findByQueston = async (city, district, objectFind, distance, category) => 
     postFind.forEach(element => {
         postInfo.push({ id: element.id, title: element.title, lat: element.Coordinate.lat, lon: element.Coordinate.lon, resultFind: null, amountFind: 0 });
     });
+    console.log("tìm kiếm trong db");
     console.log(postInfo);
     return postInfo;
 };

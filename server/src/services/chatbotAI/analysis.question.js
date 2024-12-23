@@ -1,6 +1,7 @@
 const findData = require("./find-data-question");
 const scanMap = require('./chatmap');
 const { GoogleGenerativeAI } = require("@google/generative-ai");
+const e = require("express");
 require('dotenv').config();
 const googleApiKey = process.env.GOOGLE_API_KEY;
 
@@ -75,7 +76,12 @@ const processQuery = async (message) => {
     try {
         const response = await getGoogleResponse(
             `
-            Phân tích câu hỏi sau: "${message}" 
+            Phân tích câu hỏi sau và chỉ trả lời bằng tiếng việt nếu là tiếng anh hãy chuyển sang tiếng việt để phản hồi: "${message}" 
+            0. Nếu là lời chào, cảm ơn, tạm biệt hãy trả lời ngắn gọn theo các ý sau:
+            {
+                "case": 0,
+                "response": "Câu trả lời ngắn gọn cho câu hỏi cảm ơn, hoặc tạm biệt một cách thân thiện"
+                }
 
             1. Nếu câu hỏi liên quan đến tiện ích xung quanh một địa chỉ cụ thể, ví dụ: quán cà phê, bệnh viện, trường học trong bán kính cụ thể, hãy trả dạng:
             {
@@ -83,7 +89,7 @@ const processQuery = async (message) => {
                 "category": "trọ hoặc nhà, chung cư.. trong question",
                 "city": "Tên thành phố trong câu hỏi",
                 "district": "Tên quận dưới cấp thành phố trong câu hỏi", không hiển thị thêm các cấp khác như phường, xã
-                "objectFind": "Đối tượng cần tìm theo khoảnh cách trong câu hỏi (ví dụ: quán cà phê, phòng gym, bệnh viện), ví dụ tôi muốn tìm trọ cách sân bay 2km thì sân bay là từ khóa, yêu cầu chuyển sang tiếng anh, nếu có nhiều dữ liệu hãy lấy keyword chính và sử dụng dấu phẩy để phân cách",
+                "objectFind": "Đối tượng cần tìm theo khoảnh cách trong câu hỏi (ví dụ: quán cà phê, phòng gym, bệnh viện), ví dụ tôi muốn tìm trọ cách sân bay 2km thì sân bay là từ khóa, yêu cầu chuyển sang tiếng anh từ khóa này không được để tiếng việt, ví dụ trường học hãy chuyển thành school, tương tự các từ khóa khác, nếu có nhiều dữ liệu hãy lấy keyword chính và sử dụng dấu phẩy để phân cách",
                 "distance": "Khoảng cách được đề cập trong câu hỏi (ví dụ: 5km), hãy chuyển tất cả các đơn vị về mét và không ghi đơn vị, ví dụ 1km sẽ cho input là 1000"
             }
              - ngược lại không đủ các điều kiện đầu vào như: city, district, objectFind, distance cho trường hợp 1 hoặc quá nhiều dữ liệu, thì trả về:{
@@ -123,15 +129,25 @@ const processQuery = async (message) => {
                     const result = await scanMap.findNearbyLocations(element.lat, element.lon, distance, objectFind);
                     element.resultFind = result;
                     element.amountFind = result.length;
+                    console.log("tìm kiếm từ gomap");
+                    console.log(element);
                 } catch (error) {
                     console.error('Lỗi khi tìm kiếm dữ liệu từ Overpass API:', error);
                 }
             }));
-            // sort theo giảm dần amountFind 
+            // sort theo giảm dần amountFind và lấy ra phần tử đầu tiên có amountFind > 0
             data.sort((a, b) => b.amountFind - a.amountFind);
-            console.log(data[0]);
+            for (let i = 0; i < data.length; i++) {
+                if (data[i].amountFind > 0) {
+                    return data[i];
+                }
+                else {
+                    return { res: 1, message: "Không tìm thấy dữ liệu phù hợp với câu hỏi" };
+                }
+            }
             return data[0];
-
+        } else if (jsonContent.case === 0) {
+            return jsonContent;
         } else if (jsonContent.case === 2) {
             // xử lý sau nếu có idea
             return jsonContent;
