@@ -30,7 +30,7 @@ router.get("/totalPostSaved", authentication.authenticateToken, tenantsControlle
 // find post by price and acreage and location and category 
 router.get("/findPostByAll", authentication.authenticateTokenOptional, tenantsController.findPostByAll)
 // show detail post
-router.get("/showDetailPost/:id", authentication.authenticateTokenOptional, tenantsController.showDetailPost)
+router.get("/showDetailPost/:id", authentication.authenticateToken, tenantsController.showDetailPost)
 // gửi yêu cầu nâng cấp tài khoản thành landlord và có up ảnh chứng minh nhân dân và đợi phê duyệt
 router.post("/reqUpdateToLandlord", authentication.authenticateToken, authorization.checkRoleUserTenants, upload.array('imgKYC', 2), img.checkFileTypeImg, img.updateImgs, tenantsController.reqUpdateToLandlord)
 
