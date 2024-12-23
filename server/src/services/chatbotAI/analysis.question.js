@@ -105,11 +105,18 @@ const processQuery = async (message) => {
                  - an ninh: "Khu vực B có mức độ an ninh tốt, không có vấn đề về an ninh"
                  - môi trường sống: "Môi trường sống tại C rất tốt, không khí trong lành, không ồn ào""}
 
-
-            3. Nếu câu hỏi không liên quan đến các trường hợp trên hãy trả câu trả lời ngắn gọn theo dạng:
+            3. Nếu nhận được câu hỏi hỏi về thông tin website, dự án, info web, hệ thống srre, hãy trả lời ngắn gọn theo dạng:
             {
                 "case": 3,
-                "response": "Nội dung này chưa được hỗ trợ, vui lòng thử lại với câu hỏi khác, hoặc đưa ra câu hỏi cụ thể hơn"
+                "response": "Dự án SRRE là dự án về bất động sản bền vững, giúp người dùng tìm kiếm thông tin về bất động sản.Quy trình làm việc của SRRE bao gồm: Thu thập dữ liệu, Xử lý dữ liệu, Hiển thị dữ liệu, và Phản hồi người dùng
+                .Có hỗ trợ bản đồ chính xác
+               .Có kết hợp AI để trả lời câu hỏi của người dùng trong việc tìm kiếm thông tin bất động sản"
+               .CHÚNG TÔI CAM KẾT BẢO MẬT THÔNG TIN NGƯỜI DÙNG 😍"
+            }
+            4. Nếu câu hỏi không liên quan đến các trường hợp trên hãy trả câu trả lời ngắn gọn theo dạng:
+            {
+                "case": 4,
+                "response": "Nội dung này chưa được hỗ trợ, vui lòng thử lại với câu hỏi khác, hoặc đưa ra câu hỏi cụ thể hơn 😍"
             }
             Chỉ trả về nội dung JSON như trong {}. Không thêm bất kỳ giải thích, ký tự thừa hoặc định dạng khác không nằm trong {} thì bỏ qua.
            
