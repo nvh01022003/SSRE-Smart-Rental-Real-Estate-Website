@@ -10,7 +10,7 @@ const findNearbyLocations = async (lat, lon, radius, type) => {
             params: {
                 location: `${lat},${lon}`,
                 radius: radius,
-                keyword: type,
+                type: type,
                 language: "en",
                 key: apiKey,
             },
