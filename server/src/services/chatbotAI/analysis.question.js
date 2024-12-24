@@ -131,24 +131,29 @@ const processQuery = async (message) => {
         if (jsonContent.case === 1) {
             const { city, district, objectFind, distance, category } = jsonContent;
             const data = await findData.findByQueston(city, district, objectFind, distance, category);
-            await Promise.all(data.map(async (element) => {
-                try {
-                    const result = await scanMap.findNearbyLocations(element.lat, element.lon, distance, objectFind);
-                    element.resultFind = result;
-                    element.amountFind = result.length;
-                    console.log("tìm kiếm từ gomap");
-                    console.log(element);
-                } catch (error) {
-                    console.error('Lỗi khi tìm kiếm dữ liệu từ Overpass API:', error);
-                }
-            }));
+            if (data.length === 0) {
+                return { res: 1, message: "Không tìm thấy thông tin bài viết phù hợp." };
+            }
+            else {
+                await Promise.all(data.map(async (element) => {
+                    try {
+                        const result = await scanMap.findNearbyLocations(element.lat, element.lon, distance, objectFind);
+                        element.resultFind = result;
+                        element.amountFind = result.length;
+                        console.log("tìm kiếm từ gomap");
+                        console.log(element);
+                    } catch (error) {
+                        console.error('Lỗi khi tìm kiếm dữ liệu từ Overpass API:', error);
+                    }
+                }));
+            }
             // sort theo giảm dần amountFind và lấy ra phần tử đầu tiên có amountFind > 0
             data.sort((a, b) => b.amountFind - a.amountFind);
             if (data[0].amountFind > 0) {
                 return data[0];
             }
             else {
-                return { res: 1, message: "Không tìm thấy thông tin cần tìm." };
+                return { res: 1, message: "Không tìm thấy bài viết có tiện ích theo yêu cầu của bạn" };
             }
             return data[0];
         } else if (jsonContent.case === 0) {
