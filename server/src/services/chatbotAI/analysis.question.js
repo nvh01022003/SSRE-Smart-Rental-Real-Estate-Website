@@ -144,13 +144,11 @@ const processQuery = async (message) => {
             }));
             // sort theo giảm dần amountFind và lấy ra phần tử đầu tiên có amountFind > 0
             data.sort((a, b) => b.amountFind - a.amountFind);
-            for (let i = 0; i < data.length; i++) {
-                if (data[i].amountFind > 0) {
-                    return data[i];
-                }
-                else {
-                    return { res: 1, message: "Không tìm thấy dữ liệu phù hợp với câu hỏi" };
-                }
+            if (data[0].amountFind > 0) {
+                return data[0];
+            }
+            else {
+                return { res: 1, message: "Không tìm thấy thông tin cần tìm." };
             }
             return data[0];
         } else if (jsonContent.case === 0) {
