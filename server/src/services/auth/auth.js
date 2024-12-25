@@ -4,13 +4,8 @@ const jwt = require("jsonwebtoken");
 const { where } = require("sequelize");
 const { User, Role, sequelize } = require("../../models/index");
 const { response } = require("express");
+const hashData = require("../tools/hashData");
 require('dotenv').config();
-// MÃ HÓA MẬT KHẨU
-const hashPassWord = (password) => {
-    const salt = bcryptjs.genSaltSync(10);
-    return bcryptjs.hashSync(password, salt);
-}
-
 // RESGISTER 
 const registerService = async ({ firstName, lastName, phone, email, password }) => {
     try {
@@ -21,7 +16,7 @@ const registerService = async ({ firstName, lastName, phone, email, password }) 
                 msg: 'Password must be at least 6 characters'
             };
         }
-        const hashPass = await hashPassWord(password);
+        const hashPass = await hashData.hashData(password);
         console.log('Hashed password:', hashPass);
         // Tạo avatar mặc định sử dụng email
         const avtDefaul = gravatar.url(email);
@@ -117,4 +112,4 @@ const resetPassWord = async (email, newPass) => {
         }
     }
 }
-module.exports = { registerService, loginService, hashPassWord, changePassWord, resetPassWord };
+module.exports = { registerService, loginService, changePassWord, resetPassWord };
