@@ -295,7 +295,6 @@ const findPostByAll = async (
                 'User.id',
             ],
         });
-
         posts.forEach((post) => {
             try {
                 post.dataValues.Image.img_url_list = JSON.parse(

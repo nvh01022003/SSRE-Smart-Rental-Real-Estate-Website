@@ -4,7 +4,7 @@ const jwt = require("jsonwebtoken");
 const { where } = require("sequelize");
 const { User, Role, sequelize } = require("../../models/index");
 const { response } = require("express");
-const hashData = require("../tools/hashData");
+const hash = require("../tools/hashData");
 require('dotenv').config();
 // RESGISTER 
 const registerService = async ({ firstName, lastName, phone, email, password }) => {
@@ -99,7 +99,7 @@ const changePassWord = async (userId, password) => {
 const resetPassWord = async (email, newPass) => {
 
     try {
-        const hashPass = await hashPassWord(newPass);
+        const hashPass = await hashData.hashData(newPass);
         await User.update({ pass: hashPass }, { where: { email } })
         return {
             err: 0,
