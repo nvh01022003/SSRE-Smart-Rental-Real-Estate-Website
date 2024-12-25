@@ -1,7 +1,6 @@
 const findData = require("./find-data-question");
 const scanMap = require('./chatmap');
 const { GoogleGenerativeAI } = require("@google/generative-ai");
-const e = require("express");
 require('dotenv').config();
 const googleApiKey = process.env.GOOGLE_API_KEY;
 
@@ -76,12 +75,7 @@ const processQuery = async (message) => {
     try {
         const response = await getGoogleResponse(
             `
-            Phân tích câu hỏi sau và chỉ trả lời bằng tiếng việt nếu là tiếng anh hãy chuyển sang tiếng việt để phản hồi: "${message}" 
-            0. Nếu là lời chào, cảm ơn, tạm biệt hãy trả lời ngắn gọn theo các ý sau:
-            {
-                "case": 0,
-                "response": "Câu trả lời ngắn gọn cho câu hỏi cảm ơn, hoặc tạm biệt một cách thân thiện"
-                }
+            Phân tích câu hỏi sau: "${message}" 
 
             1. Nếu câu hỏi liên quan đến tiện ích xung quanh một địa chỉ cụ thể, ví dụ: quán cà phê, bệnh viện, trường học trong bán kính cụ thể, hãy trả dạng:
             {
@@ -89,7 +83,7 @@ const processQuery = async (message) => {
                 "category": "trọ hoặc nhà, chung cư.. trong question",
                 "city": "Tên thành phố trong câu hỏi",
                 "district": "Tên quận dưới cấp thành phố trong câu hỏi", không hiển thị thêm các cấp khác như phường, xã
-                "objectFind": "Đối tượng cần tìm theo khoảnh cách trong câu hỏi (ví dụ: quán cà phê, phòng gym, bệnh viện), ví dụ tôi muốn tìm trọ cách sân bay 2km thì sân bay là từ khóa, yêu cầu chuyển sang tiếng anh từ khóa này không được để tiếng việt, ví dụ trường học hãy chuyển thành school, tương tự các từ khóa khác, nếu có nhiều dữ liệu hãy lấy keyword chính và sử dụng dấu phẩy để phân cách",
+                "objectFind": "Đối tượng cần tìm theo khoảnh cách trong câu hỏi (ví dụ: quán cà phê, phòng gym, bệnh viện), ví dụ tôi muốn tìm trọ cách sân bay 2km thì sân bay là từ khóa, yêu cầu chuyển sang tiếng anh, nếu có nhiều dữ liệu hãy lấy keyword chính và sử dụng dấu phẩy để phân cách",
                 "distance": "Khoảng cách được đề cập trong câu hỏi (ví dụ: 5km), hãy chuyển tất cả các đơn vị về mét và không ghi đơn vị, ví dụ 1km sẽ cho input là 1000"
             }
              - ngược lại không đủ các điều kiện đầu vào như: city, district, objectFind, distance cho trường hợp 1 hoặc quá nhiều dữ liệu, thì trả về:{
@@ -108,18 +102,11 @@ const processQuery = async (message) => {
                  Nếu mục tìm kiếm nào không có trong câu hỏi thì không hiển thị mục đó trong response
                  }
 
-            3. Nếu nhận được câu hỏi hỏi về thông tin website, dự án, info web, hệ thống srre, hãy trả lời ngắn gọn theo dạng:
+
+            3. Nếu câu hỏi không liên quan đến các trường hợp trên hãy trả câu trả lời ngắn gọn theo dạng:
             {
                 "case": 3,
-                "response": "Dự án SRRE là dự án về bất động sản bền vững, giúp người dùng tìm kiếm thông tin về bất động sản.Quy trình làm việc của SRRE bao gồm: Thu thập dữ liệu, Xử lý dữ liệu, Hiển thị dữ liệu, và Phản hồi người dùng
-                .Có hỗ trợ bản đồ chính xác
-               .Có kết hợp AI để trả lời câu hỏi của người dùng trong việc tìm kiếm thông tin bất động sản"
-               .CHÚNG TÔI CAM KẾT BẢO MẬT THÔNG TIN NGƯỜI DÙNG 😍"
-            }
-            4. Nếu câu hỏi không liên quan đến các trường hợp trên hãy trả câu trả lời ngắn gọn theo dạng:
-            {
-                "case": 4,
-                "response": "Nội dung này chưa được hỗ trợ, vui lòng thử lại với câu hỏi khác, hoặc đưa ra câu hỏi cụ thể hơn 😍"
+                "response": "Nội dung này chưa được hỗ trợ, vui lòng thử lại với câu hỏi khác, hoặc đưa ra câu hỏi cụ thể hơn"
             }
             Chỉ trả về nội dung JSON như trong {}. Không thêm bất kỳ giải thích, ký tự thừa hoặc định dạng khác không nằm trong {} thì bỏ qua.
            
@@ -134,33 +121,20 @@ const processQuery = async (message) => {
         if (jsonContent.case === 1) {
             const { city, district, objectFind, distance, category } = jsonContent;
             const data = await findData.findByQueston(city, district, objectFind, distance, category);
-            if (data.length === 0) {
-                return { res: 1, message: "Không tìm thấy thông tin bài viết phù hợp." };
-            }
-            else {
-                await Promise.all(data.map(async (element) => {
-                    try {
-                        const result = await scanMap.findNearbyLocations(element.lat, element.lon, distance, objectFind);
-                        element.resultFind = result;
-                        element.amountFind = result.length;
-                        console.log("tìm kiếm từ gomap");
-                        console.log(element);
-                    } catch (error) {
-                        console.error('Lỗi khi tìm kiếm dữ liệu từ Overpass API:', error);
-                    }
-                }));
-            }
-            // sort theo giảm dần amountFind và lấy ra phần tử đầu tiên có amountFind > 0
+            await Promise.all(data.map(async (element) => {
+                try {
+                    const result = await scanMap.findNearbyLocations(element.lat, element.lon, distance, objectFind);
+                    element.resultFind = result;
+                    element.amountFind = result.length;
+                } catch (error) {
+                    console.error('Lỗi khi tìm kiếm dữ liệu từ Overpass API:', error);
+                }
+            }));
+            // sort theo giảm dần amountFind 
             data.sort((a, b) => b.amountFind - a.amountFind);
-            if (data[0].amountFind > 0) {
-                return data[0];
-            }
-            else {
-                return { res: 1, message: "Không tìm thấy bài viết có tiện ích theo yêu cầu của bạn" };
-            }
+            console.log(data[0]);
             return data[0];
-        } else if (jsonContent.case === 0) {
-            return jsonContent;
+
         } else if (jsonContent.case === 2) {
             // xử lý sau nếu có idea
             return jsonContent;

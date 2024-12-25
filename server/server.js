@@ -23,23 +23,31 @@ const port = process.env.PORT || 3333
 app.listen(port, () => {
     console.log("Servers runs successfully!")
 })
-// 
+
 // Schedule a task to run every hour
-cron.schedule('0 * * * *', async () => {
+cron.schedule('* * * * *', async () => { // Chạy mỗi phút
+    const now = new Date(new Date().getTime() + 7 * 60 * 60 * 1000); // Bù 7 tiếng
+    console.log('Cron job started at:', now);
     try {
         // Find all overviews where expire date is less than now
         const expiredOverviews = await Overview.findAll({
             where: {
                 expire: {
-                    [Op.lt]: new Date()
+                    [Op.lt]: now
                 }
             }
         });
 
         const expiredOverviewIds = expiredOverviews.map(overview => overview.id);
+        console.log('Expired Overview IDs:', expiredOverviewIds);
+
+        if (expiredOverviewIds.length === 0) {
+            console.log('No expired overviews found.');
+            return;
+        }
 
         // Update status of posts with expired overviews
-        await Post.update(
+        const updateResult = await Post.update(
             { status: 1 },
             {
                 where: {
@@ -51,7 +59,7 @@ cron.schedule('0 * * * *', async () => {
             }
         );
 
-        console.log(`Updated status of ${expiredOverviewIds.length} expired posts.`);
+        console.log(`Updated status of ${updateResult[0]} expired posts.`);
     } catch (error) {
         console.error('Error updating expired posts:', error);
     }
