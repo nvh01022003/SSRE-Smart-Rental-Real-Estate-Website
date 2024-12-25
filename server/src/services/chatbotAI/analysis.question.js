@@ -97,13 +97,16 @@ const processQuery = async (message) => {
                 "response": "Câu hỏi không đủ điều kiện hoặc hãy đưa ra một câu hỏi xúc tích hơn"
                 }
 
-            2. Nếu câu hỏi liên quan đến an ninh hoặc giao thông, môi trường sống tại một địa chỉ cụ thể, hãy trả lời ngắn ngọn theo các ý ví dụ:
+            2. Nếu câu hỏi liên quan đến an ninh trật tự hoặc giao thông, môi trường sống tại một địa chỉ cụ thể, hãy trả lời ngắn ngọn theo  các ý ví dụ:
            {
                 "case": 2,
                 "response": "
-                 - giao thông: "Giao thông tại địa chỉ A đang kẹt, cần tránh xa khu vực này"
-                 - an ninh: "Khu vực B có mức độ an ninh tốt, không có vấn đề về an ninh"
-                 - môi trường sống: "Môi trường sống tại C rất tốt, không khí trong lành, không ồn ào""}
+                 Giao thông: "Giao thông tại địa chỉ A đang kẹt, cần tránh xa khu vực này."
+                 An ninh trật tự: "Khu vực B có mức độ an ninh tốt, không có vấn đề về an ninh"
+                 Môi trường sống: "Môi trường sống tại C rất tốt, không khí trong lành, không ồn ào."
+                 "
+                 Nếu mục tìm kiếm nào không có trong câu hỏi thì không hiển thị mục đó trong response
+                 }
 
             3. Nếu nhận được câu hỏi hỏi về thông tin website, dự án, info web, hệ thống srre, hãy trả lời ngắn gọn theo dạng:
             {
