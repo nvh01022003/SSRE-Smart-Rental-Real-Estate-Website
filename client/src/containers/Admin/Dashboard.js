@@ -1,59 +1,22 @@
 import React, { useState, useEffect } from "react";
 import { FaUser, FaChartBar, FaListAlt, FaExchangeAlt, FaCheckCircle, FaTimesCircle } from "react-icons/fa";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from "recharts";
+import { useSelector } from "react-redux";
+import axios from "axios";
 
 const Dashboard = () => {
-    const [timeFrame, setTimeFrame] = useState("daily");
     const [totalUsers, setTotalUsers] = useState(0);
+    const [totalupgrade, setTotalupgrade] = useState(0);
+    const [totalPosts, setTotalPosts] = useState(0);
+    const [totalDeletePosts, setTotalDeletePosts] = useState(0);
     const [totalCategory, setTotalCategory] = useState(0);
-    const [totalTransactions, setTotaTransactions] = useState(0);
+    const [totalPostTypes, setTotalPostTypes] = useState(0);
     const [totalPaymentTransactions, setTotalPaymentTransactions] = useState(0);
-    const [depositRevenue, setDepositRevenue] = useState([]);
-    const [newUsers, setNewUsers] = useState([]);
-
-    const fetchNewUsers = async () => {
-        try {
-            const response = await fetch(`http://localhost:5000/api/v1/admin/newusers?year=2024`);
-            const data = await response.json();
-            if (response.ok) {
-                const formattedData = data.data.map(item => ({
-                    name: `Tháng ${item.month}`,
-                    newUsersCount: item.newUsersCount,
-                }));
-                setNewUsers(formattedData);
-                console.log("Dữ liệu người dùng mới:", formattedData);
-            } else {
-                console.error("Không thể lấy dữ liệu số lượng người dùng mới:", data.message);
-            }
-        } catch (error) {
-            console.error("Lỗi khi lấy dữ liệu số lượng người dùng mới:", error.message);
-        }
-    };
-
-    const fetchDepositRevenue = async () => {
-        try {
-            const response = await fetch(`http://localhost:5000/api/v1/admin/getDepositRevenueByTime?year=2024`);
-            const data = await response.json();
-            if (response.ok) {
-                const formattedData = data.totalDeposit.data.map(item => ({
-                    name: `Tháng ${item.month}`,
-                    totalDeposit: parseFloat(item.total_deposit) || 0,
-                }));
-                setDepositRevenue(formattedData);
-                console.log("Dữ liệu doanh thu nạp tiền (formatted):", formattedData);
-            } else {
-                console.error("Không thể lấy dữ liệu doanh thu nạp tiền:", data.message);
-            }
-        } catch (error) {
-            console.error("Lỗi khi lấy dữ liệu doanh thu nạp tiền:", error.message);
-        }
-    };
-
-
+    const [totalDepositTransactions, setTotalDepositTransactions] = useState(0);
+    const { token } = useSelector((state) => state.auth);
 
     const fetchTotalUsers = async () => {
         try {
-            const token = localStorage.getItem("token");
             if (!token) {
                 throw new Error("No authentication token found");
             }
@@ -62,7 +25,6 @@ const Dashboard = () => {
                 method: "GET",
                 headers: {
                     "token": `${token}`,
-
                 },
             });
 
@@ -80,7 +42,6 @@ const Dashboard = () => {
 
     const fetchTotalCategory = async () => {
         try {
-            const token = localStorage.getItem("token");
             if (!token) {
                 throw new Error("No authentication token found");
             }
@@ -89,7 +50,6 @@ const Dashboard = () => {
                 method: "GET",
                 headers: {
                     "token": `${token}`,
-
                 },
             });
 
@@ -105,14 +65,13 @@ const Dashboard = () => {
         }
     };
 
-    const fetchTotalTransactions = async () => {
+    const fetchTotalPostTypes = async () => {
         try {
-            const token = localStorage.getItem("token");
             if (!token) {
                 throw new Error("No authentication token found");
             }
 
-            const response = await fetch("http://localhost:5000/api/v1/admin/getTotalTransactions", {
+            const response = await fetch("http://localhost:5000/api/v1/admin/getTotalPostType", {
                 method: "GET",
                 headers: {
                     "token": `${token}`,
@@ -122,19 +81,18 @@ const Dashboard = () => {
 
             if (!response.ok) {
                 const errorData = await response.json();
-                throw new Error(errorData.message || "Failed to fetch total users");
+                throw new Error(errorData.message || "Failed to fetch total post types");
             }
 
             const data = await response.json();
-            setTotaTransactions(data.total);
+            setTotalPostTypes(data.total);
         } catch (error) {
-            console.error("Error fetching total users:", error.message);
+            console.error("Error fetching total post types:", error.message);
         }
     };
 
     const fetchTotalPaymentTransactions = async () => {
         try {
-            const token = localStorage.getItem("token");
             if (!token) {
                 throw new Error("No authentication token found");
             }
@@ -143,52 +101,255 @@ const Dashboard = () => {
                 method: "GET",
                 headers: {
                     "token": `${token}`,
-
                 },
             });
 
             if (!response.ok) {
                 const errorData = await response.json();
-                throw new Error(errorData.message || "Failed to fetch total users");
+                throw new Error(errorData.message || "Failed to fetch total payment transactions");
             }
 
             const data = await response.json();
             setTotalPaymentTransactions(data.total);
         } catch (error) {
-            console.error("Error fetching total users:", error.message);
+            console.error("Error fetching total payment transactions:", error.message);
+        }
+    };
+
+    const fetchTotalDepositTransactions = async () => {
+        try {
+            if (!token) {
+                throw new Error("No authentication token found");
+            }
+
+            const response = await fetch("http://localhost:5000/api/v1/admin/getTotalDepositTransactions", {
+                method: "GET",
+                headers: {
+                    "token": `${token}`,
+                },
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.message || "Failed to fetch total deposit transactions");
+            }
+
+            const data = await response.json();
+            setTotalDepositTransactions(data.total);
+        } catch (error) {
+            console.error("Error fetching total deposit transactions:", error.message);
+        }
+    };
+
+    const fetchTotalupgrade = async () => {
+        try {
+            if (!token) {
+                throw new Error("No authentication token found");
+            }
+
+            const response = await fetch("http://localhost:5000/api/v1/admin/totalupgrade", {
+                method: "GET",
+                headers: {
+                    "token": `${token}`,
+                },
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.message || "Failed to fetch total upgrades");
+            }
+
+            const data = await response.json();
+            setTotalupgrade(data.total);
+        } catch (error) {
+            console.error("Error fetching total upgrades:", error.message);
+        }
+    };
+
+    const fetchTotalPosts = async () => {
+        try {
+            if (!token) {
+                throw new Error("No authentication token found");
+            }
+
+            const response = await fetch("http://localhost:5000/api/v1/admin/getTotalPosts", {
+                method: "GET",
+                headers: {
+                    "token": `${token}`,
+                },
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.message || "Failed to fetch total posts");
+            }
+
+            const data = await response.json();
+            setTotalPosts(data.total);
+        } catch (error) {
+            console.error("Error fetching total posts:", error.message);
+        }
+    };
+
+    const fetchTotalDeletePosts = async () => {
+        try {
+            if (!token) {
+                throw new Error("No authentication token found");
+            }
+
+            const response = await fetch("http://localhost:5000/api/v1/admin/getTotalDeletePosts", {
+                method: "GET",
+                headers: {
+                    "token": `${token}`,
+                },
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.message || "Failed to fetch total delete posts");
+            }
+
+            const data = await response.json();
+            setTotalDeletePosts(data.total);
+        } catch (error) {
+            console.error("Error fetching total delete posts:", error.message);
         }
     };
 
     useEffect(() => {
         fetchTotalUsers();
         fetchTotalCategory();
-        fetchTotalTransactions();
+        fetchTotalPostTypes();
         fetchTotalPaymentTransactions();
-        fetchDepositRevenue();
-        fetchNewUsers();
+        fetchTotalupgrade();
+        fetchTotalPosts();
+        fetchTotalDepositTransactions();
+        fetchTotalDeletePosts();
     }, []);
 
-    useEffect(() => {
-        console.log("Dữ liệu doanh thu nạp tiền:", depositRevenue);
-        console.log("Dữ liệu người dùng mới:", newUsers);
-    }, [depositRevenue, newUsers]);
+    const RevenueChart = () => {
+        const [chartData, setChartData] = useState([]);
 
+        useEffect(() => {
+            axios
+                .get('http://localhost:5000/api/v1/admin/getDepositRevenueByTime', {
+                    params: { year: 2024 },
+                    headers: {
+                        token: `${token}`,
+                    },
+                })
+                .then((res) => {
+                    // Transform data to match Recharts needs
+                    const data = res.data?.totalDeposit?.data?.map((item) => ({
+                        name: `Tháng ${item.month}`,
+                        deposit: item.total_deposit,
+                    }));
+                    setChartData(data);
+                })
+                .catch((err) => console.error(err));
+        }, []);
 
-    const generateMonthlyData = () => {
-        if (depositRevenue.length === 0 || newUsers.length === 0) {
-            console.warn("Dữ liệu chưa đủ để hiển thị biểu đồ.");
-            return [];
-        }
-
-        const data = depositRevenue.map((item, index) => ({
-            name: item.name,
-            deposit: item.totalDeposit || 0,
-            users: newUsers[index]?.newUsersCount || 0,
-        }));
-
-        console.log("Dữ liệu cho biểu đồ (theo tháng):", data);
-        return data;
+        return (
+            <div className="h-80">
+                <ResponsiveContainer width="100%" height="100%">
+                    <BarChart
+                        data={chartData}
+                        margin={{ left: 20 }}
+                    >
+                        <CartesianGrid strokeDasharray="3 3" />
+                        <XAxis dataKey="name" />
+                        <YAxis
+                            tickFormatter={(value) => new Intl.NumberFormat('en-US').format(value)}
+                        />
+                        <Tooltip />
+                        <Legend />
+                        <Bar dataKey="deposit" fill="#4F46E5" name="Doanh thu nạp tiền" barSize={20} />
+                    </BarChart>
+                </ResponsiveContainer>
+            </div>
+        );
     };
+
+    const NewUsersChart = () => {
+        const [chartData, setChartData] = useState([]);
+
+        useEffect(() => {
+            axios
+                .get('http://localhost:5000/api/v1/admin/newusers', {
+                    params: { year: 2024 },
+                    headers: {
+                        token: `${token}`,
+                    },
+                })
+                .then((res) => {
+                    const data = res.data?.data?.map((item) => ({
+                        name: `Tháng ${item.month}`,
+                        users: item.newUsersCount,
+                    }));
+                    setChartData(data);
+                })
+                .catch((err) => console.error(err));
+        }, []);
+
+        return (
+            <div className="h-80">
+                <ResponsiveContainer width="100%" height="100%">
+                    <BarChart
+                        data={chartData}
+                        margin={{ left: 20 }}
+                    >
+                        <CartesianGrid strokeDasharray="3 3" />
+                        <XAxis dataKey="name" />
+                        <YAxis />
+                        <Tooltip />
+                        <Legend />
+                        <Bar dataKey="users" fill="#10B981" name="Người dùng mới" barSize={20} />
+                    </BarChart>
+                </ResponsiveContainer>
+            </div>
+        );
+    };
+
+    const NewPostsChart = () => {
+        const [chartData, setChartData] = useState([]);
+
+        useEffect(() => {
+            axios
+                .get('http://localhost:5000/api/v1/admin/newposts', {
+                    params: { year: 2024 },
+                    headers: {
+                        token: `${token}`,
+                    },
+                })
+                .then((res) => {
+                    const data = res.data?.data?.map((item) => ({
+                        name: `Tháng ${item.month}`,
+                        posts: item.newPostsCount,
+                    }));
+                    setChartData(data);
+                })
+                .catch((err) => console.error(err));
+        }, []);
+
+        return (
+            <div className="h-80">
+                <ResponsiveContainer width="100%" height="100%">
+                    <BarChart
+                        data={chartData}
+                        margin={{ left: 20 }}
+                    >
+                        <CartesianGrid strokeDasharray="3 3" />
+                        <XAxis dataKey="name" />
+                        <YAxis />
+                        <Tooltip />
+                        <Legend />
+                        <Bar dataKey="posts" fill="#F97316" name="Bài viết mới" barSize={20} />
+                    </BarChart>
+                </ResponsiveContainer>
+            </div>
+        );
+    };
+
     return (
         <div className="min-h-screen bg-gray-100 p-4">
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6 mb-6 w-full">
@@ -204,7 +365,7 @@ const Dashboard = () => {
                 <div className="bg-white rounded-lg shadow-lg p-6">
                     <div className="flex items-center justify-between">
                         <div>
-                            <p className="text-gray-500">Tổng danh mục</p>
+                            <p className="text-gray-500">Tổng số chuyên mục</p>
                             <h2 className="text-3xl font-bold">{totalCategory}</h2>
                         </div>
                         <FaListAlt className="text-green-500 text-3xl" />
@@ -213,7 +374,34 @@ const Dashboard = () => {
                 <div className="bg-white rounded-lg shadow-lg p-6">
                     <div className="flex items-center justify-between">
                         <div>
-                            <p className="text-gray-500">Tổng số giao dịch</p>
+                            <p className="text-gray-500">Tổng số tin đăng</p>
+                            <h2 className="text-3xl font-bold">{totalPosts}</h2>
+                        </div>
+                        <FaListAlt className="text-green-500 text-3xl" />
+                    </div>
+                </div>
+                <div className="bg-white rounded-lg shadow-lg p-6">
+                    <div className="flex items-center justify-between">
+                        <div>
+                            <p className="text-gray-500">Tổng số tin đăng quá hạn/bị xóa</p>
+                            <h2 className="text-3xl font-bold">{totalDeletePosts}</h2>
+                        </div>
+                        <FaListAlt className="text-green-500 text-3xl" />
+                    </div>
+                </div>
+                <div className="bg-white rounded-lg shadow-lg p-6">
+                    <div className="flex items-center justify-between">
+                        <div>
+                            <p className="text-gray-500">Tổng số yêu cầu nâng cấp tài khoản</p>
+                            <h2 className="text-3xl font-bold">{totalupgrade}</h2>
+                        </div>
+                        <FaListAlt className="text-green-500 text-3xl" />
+                    </div>
+                </div>
+                <div className="bg-white rounded-lg shadow-lg p-6">
+                    <div className="flex items-center justify-between">
+                        <div>
+                            <p className="text-gray-500">Tổng số giao dịch thanh toán</p>
                             <h2 className="text-3xl font-bold">{totalPaymentTransactions}</h2>
                         </div>
                         <FaCheckCircle className="text-green-500 text-3xl" />
@@ -222,8 +410,17 @@ const Dashboard = () => {
                 <div className="bg-white rounded-lg shadow-lg p-6">
                     <div className="flex items-center justify-between">
                         <div>
-                            <p className="text-gray-500">Bảng giá dịch vụ</p>
-                            <h2 className="text-3xl font-bold">{totalTransactions}</h2>
+                            <p className="text-gray-500">Tổng số giao dịch nạp tiền</p>
+                            <h2 className="text-3xl font-bold">{totalDepositTransactions}</h2>
+                        </div>
+                        <FaCheckCircle className="text-green-500 text-3xl" />
+                    </div>
+                </div>
+                <div className="bg-white rounded-lg shadow-lg p-6">
+                    <div className="flex items-center justify-between">
+                        <div>
+                            <p className="text-gray-500">Tổng số loại tin</p>
+                            <h2 className="text-3xl font-bold">{totalPostTypes}</h2>
                         </div>
                         <FaChartBar className="text-purple-500 text-3xl" />
                     </div>
@@ -233,28 +430,17 @@ const Dashboard = () => {
                 <div className="flex justify-between items-center mb-6">
                     <h2 className="text-xl font-bold text-gray-800">Bảng hoạt động tổng quan</h2>
                 </div>
-                <div className="h-96">
-                    <ResponsiveContainer width="100%" height="100%">
-                        <BarChart data={generateMonthlyData()}>
-                            <CartesianGrid strokeDasharray="3 3" />
-                            <XAxis dataKey="name" />
-                            <YAxis
-                                yAxisId="left"
-                                width={80}
-                                domain={[0, 'dataMax']}
-                                tickFormatter={(value) => new Intl.NumberFormat('en-US').format(value)}
-                            />
-                            <YAxis
-                                yAxisId="right"
-                                orientation="right"
-                                domain={[0, 'dataMax']}
-                            />
-                            <Tooltip />
-                            <Legend />
-                            <Bar yAxisId="left" dataKey="deposit" fill="#4F46E5" name="Doanh thu nạp tiền" barSize={20} />
-                            <Bar yAxisId="right" dataKey="users" fill="#10B981" name="Người dùng mới" barSize={20} />
-                        </BarChart>
-                    </ResponsiveContainer>
+                <div >
+                    <div className="p-4">
+                        <h2 className="font-semibold text-xl mb-4">Thống kê Doanh thu</h2>
+                        <RevenueChart />
+
+                        <h2 className="font-semibold text-xl mt-8 mb-4">Thống kê Người dùng mới</h2>
+                        <NewUsersChart />
+
+                        <h2 className="font-semibold text-xl mt-8 mb-4">Thống kê Bài viết mới</h2>
+                        <NewPostsChart />
+                    </div>
                 </div>
             </div>
         </div>
