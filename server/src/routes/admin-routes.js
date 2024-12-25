@@ -86,28 +86,35 @@ router.get("/showAllTypePost", managerPostController.showAllTypePost)
 
 // MANAGE REPORT
 // get total users
-router.get("/getTotalUsers",authentication.authenticateToken, authorization.checkRoleAdmin,managerReportController.getTotalUsers)
+router.get("/getTotalUsers", authentication.authenticateToken, authorization.checkRoleAdmin, managerReportController.getTotalUsers)
 // get new users today
-router.get("/getNewUsersToday",authentication.authenticateToken, authorization.checkRoleAdmin,managerReportController.getNewUsersToday)
+router.get("/getNewUsersToday", authentication.authenticateToken, authorization.checkRoleAdmin, managerReportController.getNewUsersToday)
 // get total posts
-router.get("/getTotalPosts",authentication.authenticateToken, authorization.checkRoleAdmin,managerReportController.getTotalPosts)
+router.get("/getTotalPosts", authentication.authenticateToken, authorization.checkRoleAdmin, managerReportController.getTotalPosts)
 // get total delete posts
-router.get("/getTotalDeletePosts",authentication.authenticateToken, authorization.checkRoleAdmin,managerReportController.getTotalDeletePosts);
+router.get("/getTotalDeletePosts", authentication.authenticateToken, authorization.checkRoleAdmin, managerReportController.getTotalDeletePosts);
 //get new posts today
-router.get("/getNewPostsToday",authentication.authenticateToken, authorization.checkRoleAdmin,managerReportController.getNewPostsToday);
+router.get("/getNewPostsToday", authentication.authenticateToken, authorization.checkRoleAdmin, managerReportController.getNewPostsToday);
 // get total category
-router.get("/getTotalCategory",authentication.authenticateToken, authorization.checkRoleAdmin,managerReportController.getTotalCategories);
+router.get("/getTotalCategory", authentication.authenticateToken, authorization.checkRoleAdmin, managerReportController.getTotalCategories);
+// get total post types
+router.get("/getTotalPostType", authentication.authenticateToken, authorization.checkRoleAdmin, managerReportController.getTotalPostType);
 // get total transactions
-router.get("/getTotalTransactions",authentication.authenticateToken, authorization.checkRoleAdmin,managerReportController.getTotalTransactions);
+router.get("/getTotalTransactions", authentication.authenticateToken, authorization.checkRoleAdmin, managerReportController.getTotalTransactions);
 // get total success transactions today
-router.get("/getTotalSuccessTransactionsToday",authentication.authenticateToken, authorization.checkRoleAdmin,managerReportController.getTotalSuccessTransactionsToday);
+router.get("/getTotalSuccessTransactionsToday", authentication.authenticateToken, authorization.checkRoleAdmin, managerReportController.getTotalSuccessTransactionsToday);
 //get total payment transactions
-router.get("/getTotalPaymentTransactions",authentication.authenticateToken, authorization.checkRoleAdmin,managerReportController.getTotalPaymentTransactions);
+router.get("/getTotalPaymentTransactions", authentication.authenticateToken, authorization.checkRoleAdmin, managerReportController.getTotalPaymentTransactions);
+//get total deposit transactions
+router.get("/getTotalDepositTransactions", authentication.authenticateToken, authorization.checkRoleAdmin, managerReportController.getTotalDepositTransactions);
 // get payment transactions today
-router.get("/getPaymentTransactionsToday",authentication.authenticateToken, authorization.checkRoleAdmin,managerReportController.getPaymentTransactionsToday);
-
+router.get("/getPaymentTransactionsToday", authentication.authenticateToken, authorization.checkRoleAdmin, managerReportController.getPaymentTransactionsToday);
 // get deposit revenue by time
-router.get("/getDepositRevenueByTime",managerReportController.getDepositRevenueByTime);
+router.get("/getDepositRevenueByTime", authentication.authenticateToken, authorization.checkRoleAdmin, managerReportController.getDepositRevenueByTime);
 // get new users by month
-router.get("/newusers",managerReportController.getNewUsersByMonth);
+router.get("/newusers", authentication.authenticateToken, authorization.checkRoleAdmin, managerReportController.getNewUsersByMonth);
+// get new posts by month
+router.get("/newposts", authentication.authenticateToken, authorization.checkRoleAdmin, managerReportController.getNewPostsByMonth);
+// get total upgrade landlord
+router.get("/totalupgrade", authentication.authenticateToken, authorization.checkRoleAdmin, managerReportController.getTotalUpgradeLandlord);
 module.exports = router

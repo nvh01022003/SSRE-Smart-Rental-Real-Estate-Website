@@ -1,5 +1,5 @@
 // services/roleService.js
-const { Sequelize,Role,Post,Category,Transaction } = require('../../models'); // Điều chỉnh đường dẫn models
+const { Sequelize, Role, Post, Category, Transaction, UpgradeRequest, PostType } = require('../../models'); // Điều chỉnh đường dẫn models
 const { Op } = require('sequelize');
 const { get } = require('../../routes/admin-routes');
 
@@ -9,7 +9,7 @@ const getTotalUsers = async () => {
         const totalUsers = await Role.count({
             where: {
                 type: {
-                    [Op.notLike]: 'admin', 
+                    [Op.notLike]: 'admin',
                 },
             },
         });
@@ -122,7 +122,7 @@ const getNewPostsToday = async () => {
 const getTotalCategories = async () => {
     try {
         const totalCategories = await Category.count({
-           
+
         });
 
         return {
@@ -132,6 +132,23 @@ const getTotalCategories = async () => {
         };
     } catch (error) {
         throw new Error('Lỗi khi đếm số danh mục: ' + error.message);
+    }
+};
+
+// Hàm đếm tổng số loại tin
+const getTotalPostType = async () => {
+    try {
+        const totalPostTypes = await PostType.count({
+
+        });
+
+        return {
+            success: true,
+            total: totalPostTypes,
+            message: 'Tổng số loại tin',
+        };
+    } catch (error) {
+        throw new Error('Lỗi khi đếm số loại tin: ' + error.message);
     }
 };
 
@@ -186,7 +203,7 @@ const getTotalPaymentTransactions = async () => {
     try {
         const totalPaymentTransactions = await Transaction.count({
             where: {
-                status: 'thành công', // Loại giao dịch có status là "thành công"
+                //status: 'thành công', // Loại giao dịch có status là "thành công"
                 transactionType: 'thanh toán', // Điều kiện transactionType là "thanh toán"
             },
         });
@@ -194,10 +211,30 @@ const getTotalPaymentTransactions = async () => {
         return {
             success: true,
             total: totalPaymentTransactions,
-            message: 'Tổng số giao dịch thanh toán thành công',
+            message: 'Tổng số giao dịch thanh toán',
         };
     } catch (error) {
-        throw new Error('Lỗi khi đếm số giao dịch thanh toán thành công: ' + error.message);
+        throw new Error('Lỗi khi đếm số giao dịch thanh toán: ' + error.message);
+    }
+};
+
+// Hàm đếm tổng số giao dịch thành công với transactionType là 'nạp tiền'
+const getTotalDepositTransactions = async () => {
+    try {
+        const totalDepositTransactions = await Transaction.count({
+            where: {
+                //status: 'thành công', // Loại giao dịch có status là "thành công"
+                transactionType: 'nạp tiền', // Điều kiện transactionType là "nạp tiền"
+            },
+        });
+
+        return {
+            success: true,
+            total: totalDepositTransactions,
+            message: 'Tổng số giao dịch nạp tiền',
+        };
+    } catch (error) {
+        throw new Error('Lỗi khi đếm số giao dịch nạp tiền: ' + error.message);
     }
 };
 
@@ -248,7 +285,6 @@ const getDepositRevenue = async (year) => {
                 ],
                 where: {
                     transactionType: 'nạp tiền',
-                    status: 'Thành công',
                     createdAt: {
                         [Op.gte]: startDate,
                         [Op.lt]: endDate,
@@ -320,8 +356,65 @@ const getNewUsersByMonth = async (year) => {
         throw error;
     }
 };
+const getNewPostsByMonth = async (year) => {
+    try {
+        const monthlyPostCounts = [];
 
-  
+        // Lặp qua từng tháng trong năm (1 đến 12)
+        for (let month = 1; month <= 12; month++) {
+            let startDate = new Date(`${year}-${String(month).padStart(2, '0')}-01`);
+            let endDate = new Date(`${year}-${String(month + 1).padStart(2, '0')}-01`);
+
+            // Xử lý trường hợp tháng 12
+            if (month === 12) {
+                endDate = new Date(`${Number(year) + 1}-01-01`);
+            }
+
+            // Đếm số bài viết mới trong tháng
+            const result = await Post.count({
+                where: {
+                    createdAt: {
+                        [Op.gte]: startDate, // Từ ngày bắt đầu tháng
+                        [Op.lt]: endDate, // Đến trước ngày bắt đầu tháng tiếp theo
+                    },
+
+                },
+            });
+
+            // Lưu số lượng bài viết vào mảng
+            monthlyPostCounts.push({
+                month,
+                newPostsCount: result || 0, // Nếu không có bài viết nào thì gán 0
+            });
+        }
+
+        return {
+            success: true,
+            data: monthlyPostCounts,
+            message: `Số lượng bài viết mới được tạo trong năm ${year}`,
+        };
+    } catch (error) {
+        console.error('Error in getNewPostsByMonth service:', error);
+        throw error;
+    }
+};
+//Tổng số user
+const getTotalUpgradeLandlord = async () => {
+    try {
+        const TotalUpgradeLandlord = await UpgradeRequest.count({
+
+        });
+
+        return {
+            success: true,
+            total: TotalUpgradeLandlord,
+            message: 'Tổng số người nâng cấp tài khoản',
+        };
+    } catch (error) {
+        throw new Error('Lỗi khi đếm số người dùng: ' + error.message);
+    }
+};
+
 module.exports = {
     getTotalUsers,
     getNewUsersToday,
@@ -334,5 +427,9 @@ module.exports = {
     getTotalPaymentTransactions,
     getPaymentTransactionsToday,
     getDepositRevenue,
-    getNewUsersByMonth
+    getNewUsersByMonth,
+    getNewPostsByMonth,
+    getTotalUpgradeLandlord,
+    getTotalDepositTransactions,
+    getTotalPostType
 };
