@@ -241,7 +241,7 @@ async function updateWalletBalance(id, amount, orderId) {
 
         // Cập nhật status giao dịch
         await Transaction.update(
-            { status: 'Thanh Toán Momo thành công' },
+            { status: 'Thành công' },
             { where: { wallet_id: id, paycode: orderId } }
         );
 
