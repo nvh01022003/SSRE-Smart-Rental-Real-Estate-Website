@@ -82,7 +82,7 @@ async function updateWallet(walletId, amount, orderCode) {
 
         // Cập nhật trạng thái giao dịch
         await Transaction.update(
-            { status: 'Thanh toán PayOS thành công' },
+            { status: 'Thành công' },
             { where: { wallet_id: walletId, paycode: String(orderCode) } }
         );
     }

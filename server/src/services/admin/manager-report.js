@@ -284,7 +284,56 @@ const getDepositRevenue = async (year) => {
                     [Sequelize.fn('SUM', Sequelize.col('amount')), 'total_deposit']
                 ],
                 where: {
+                    status: 'Thành công',
                     transactionType: 'nạp tiền',
+                    createdAt: {
+                        [Op.gte]: startDate,
+                        [Op.lt]: endDate,
+                    },
+                },
+                raw: true,
+            });
+
+            // Lưu doanh thu của tháng vào mảng
+            monthlyRevenues.push({
+                month: month,
+                total_deposit: result[0]?.total_deposit || 0, // Nếu không có giao dịch, gán bằng 0
+            });
+        }
+
+        return {
+            success: true,
+            data: monthlyRevenues,
+            message: 'Doanh thu của 12 tháng trong năm ' + year,
+        };
+    } catch (error) {
+        console.error('Error in getDepositRevenue service:', error);
+        throw error;
+    }
+};
+
+const getPaymentByTime = async (year) => {
+    try {
+        const monthlyRevenues = [];
+
+        // Lặp qua từng tháng trong năm (1 đến 12)
+        for (let month = 1; month <= 12; month++) {
+            let startDate = new Date(`${year}-${String(month).padStart(2, '0')}-01`);
+            let endDate = new Date(`${year}-${String(month + 1).padStart(2, '0')}-01`);
+
+            // Kiểm tra nếu tháng là 12 thì tháng sau sẽ là năm sau
+            if (month === 12) {
+                endDate = new Date(`${Number(year) + 1}-01-01`);
+            }
+
+            // Query tính tổng tiền nạp cho tháng hiện tại
+            const result = await Transaction.findAll({
+                attributes: [
+                    [Sequelize.fn('SUM', Sequelize.col('amount')), 'total_deposit']
+                ],
+                where: {
+                    status: 'Thành công',
+                    transactionType: 'thanh toán',
                     createdAt: {
                         [Op.gte]: startDate,
                         [Op.lt]: endDate,
@@ -431,5 +480,6 @@ module.exports = {
     getNewPostsByMonth,
     getTotalUpgradeLandlord,
     getTotalDepositTransactions,
-    getTotalPostType
+    getTotalPostType,
+    getPaymentByTime
 };

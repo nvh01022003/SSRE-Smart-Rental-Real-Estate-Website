@@ -3,7 +3,7 @@ import { FaSearch, FaPlus } from 'react-icons/fa';
 import axios from 'axios';
 import { useSelector, useDispatch } from 'react-redux';
 import { toast } from 'react-toastify';
-import { apiGetPubliccitys, apiGetPublicDistrict, apiGetPublicWard } from '../../services';
+import { apiGetPubliccitys, apiGetPublicDistrict } from '../../services';
 import Swal from 'sweetalert2';
 import { fetchCategories } from '../../store/actions';
 import { Loading } from '../../components';
@@ -29,12 +29,8 @@ const ManagePost = () => {
     const [selectedCategory, setSelectedCategory] = useState("all");
     const [cities, setCities] = useState([]); // Danh sách Tỉnh/Thành phố
     const [districts, setDistricts] = useState([]); // Danh sách Quận/Huyện
-    const [wards, setWards] = useState([]); // Danh sách Phường/Xã
     const { categories } = useSelector(state => state.app);
     const [imageUrls, setImageUrls] = useState([]); // New state to store URLs
-
-    const [district, setDistrict] = useState('');
-    const [ward, setWard] = useState('');
 
     const [currentPage, setCurrentPage] = useState(1);
     const [itemsPerPage, setItemsPerPage] = useState(4);
@@ -101,25 +97,12 @@ const ManagePost = () => {
 
     const fetchDistricts = async (cityId) => {
         if (!cityId) {
-            setDistrict(''); // Đặt lại huyện khi không có tỉnh
             setDistricts([]); // Xóa danh sách huyện
             return;
         }
         const response = await apiGetPublicDistrict(cityId);
         if (response.status === 200) {
             setDistricts(response.data?.results);
-        }
-    };
-
-    const fetchWards = async (districtId) => {
-        if (!districtId) {
-            setWard(''); // Đặt lại phường khi không có huyện
-            setWards([]); // Xóa danh sách phường
-            return;
-        }
-        const response = await apiGetPublicWard(districtId);
-        if (response.status === 200) {
-            setWards(response.data?.results);
         }
     };
 
@@ -444,7 +427,7 @@ const ManagePost = () => {
                                             <td className='border border-gray-200 py-2 text-center align-middle'>{post.id}</td>
                                             <td className='border border-gray-200 px-4 py-2 truncate max-w-xs'>{post.title}</td> {/* Title truncation */}
                                             <td className='border border-gray-200 py-2 text-center align-middle'>{formatCurrency(post.price)}</td>
-                                            <td className='border border-gray-200  py-2 text-center align-middle'>{post.acreage}</td>
+                                            <td className='border border-gray-200  py-2 text-center align-middle'>{formatCurrency(post.acreage)}</td>
                                             <td className='border border-gray-200 px-4 py-2 text-center align-middle'>{formatDate(post.createdAt)}</td>
                                             <td className='border border-gray-200 px-4 py-2 text-center align-middle'>
                                                 <img
@@ -520,7 +503,7 @@ const ManagePost = () => {
                                                 <label className="block text-sm font-medium text-gray-700 mb-1">Giá (VNĐ / tháng)</label>
                                                 <input
                                                     type="text"
-                                                    value={selectedPost.price}
+                                                    value={formatCurrency(selectedPost.price)}
                                                     onChange={(e) => handlePriceChange(e)}
                                                     className="w-full border border-gray-300 rounded px-3 py-2"
                                                     disabled={!isEditing}
@@ -533,7 +516,7 @@ const ManagePost = () => {
                                                 <label className="block text-sm font-medium text-gray-700 mb-1">Diện tích (m²)</label>
                                                 <input
                                                     type="text"
-                                                    value={selectedPost.acreage}
+                                                    value={formatCurrency(selectedPost.acreage)}
                                                     onChange={(e) => handleAcreageChange(e)}
                                                     className="w-full border border-gray-300 rounded px-3 py-2"
                                                     disabled={!isEditing}

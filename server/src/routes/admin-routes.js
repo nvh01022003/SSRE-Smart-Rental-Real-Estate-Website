@@ -111,6 +111,8 @@ router.get("/getTotalDepositTransactions", authentication.authenticateToken, aut
 router.get("/getPaymentTransactionsToday", authentication.authenticateToken, authorization.checkRoleAdmin, managerReportController.getPaymentTransactionsToday);
 // get deposit revenue by time
 router.get("/getDepositRevenueByTime", authentication.authenticateToken, authorization.checkRoleAdmin, managerReportController.getDepositRevenueByTime);
+// get payment by time
+router.get("/getPaymentByTime", authentication.authenticateToken, authorization.checkRoleAdmin, managerReportController.getPaymentByTime);
 // get new users by month
 router.get("/newusers", authentication.authenticateToken, authorization.checkRoleAdmin, managerReportController.getNewUsersByMonth);
 // get new posts by month
