@@ -12,6 +12,10 @@
 }
 ```
 - Tạo một database trong MySQL với tên trùng khớp với thông số bạn đã cấu hình.
+-  Trỏ đến thư mục server. Chạy lệnh để tạo model và các migration cho database:
+     ```bash
+    npx sequelize db:migrate
+
 
 ---
 
