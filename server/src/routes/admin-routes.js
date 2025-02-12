@@ -1,0 +1,122 @@
+const express = require("express")
+const tenantsController = require("../controller/user/tenants-controller")
+const ladnlordController = require("../controller/user/ladnlord-controller")
+const validate = require("../middleware/validate/validate-user")
+const validateCategory = require("../middleware/validate/check-category-exits.js")
+const authentication = require("../controller/auth/auth")
+const authorization = require("../middleware/authorize/check-role")
+const managerUserController = require("../controller/admin/manager-user-controller")
+const managerCategoryController = require("../controller/admin/manager-category-controller.js")
+const managerPostController = require("../controller/admin/manager-post-controller.js")
+const transactionController = require('../controller/admin/manager-transaction-controller.js');
+const managerReportController = require("../controller/admin/manager-report-controller")
+
+const img = require("../middleware/upload/uploadImg")
+const multer = require('multer');
+const storage = multer.memoryStorage();
+const upload = multer({ storage });
+const router = express.Router()
+
+
+// MANAGE USER
+// show all user
+router.get("/showAllUser", authentication.authenticateToken, authorization.checkRoleAdmin, managerUserController.showAllUser)
+// delete user by select list id ( sử dụng cho phần chọn nhiều id sau đó xóa)
+router.delete("/deleteUsers", authentication.authenticateToken, authorization.checkRoleAdmin, managerUserController.deleteUsers)
+// show detail user by id
+router.get("/showDetailUser/:userId", authentication.authenticateToken, authorization.checkRoleAdmin, managerUserController.showDetailUser)
+// update user by id
+router.put("/updateUser/:userId", authentication.authenticateToken, authorization.checkRoleAdmin, validate.validateUpdateUserByAdmin, managerUserController.updateUser)
+// delete user by id
+router.delete("/deleteUser/:userId", authentication.authenticateToken, authorization.checkRoleAdmin, managerUserController.deleteUser, managerUserController.sendMailReasonDeleteUser)
+// find user by name
+router.get("/findUserByName", authentication.authenticateToken, authorization.checkRoleAdmin, managerUserController.findUserByEmail)
+// find user by role
+router.get("/findUserByRole", authentication.authenticateToken, authorization.checkRoleAdmin, managerUserController.findUserByRole)
+
+// MANAGE UPGRADE REQUEST
+// hiển thị các yêu cầu nâng cấp tài khoản
+router.get("/showAllUpgradeRequest", authentication.authenticateToken, authorization.checkRoleAdmin, managerUserController.showAllUpgradeRequest)
+
+// phê duyệt yêu cầu nâng cấp tài khoản
+// change role user by id
+router.put("/changeRoleUser/:userId", authentication.authenticateToken, authorization.checkRoleAdmin, managerUserController.changeRoleUser, managerUserController.sendMailApproveUpgradeRequest)
+// từ chối yêu cầu nâng cấp tài khoản
+router.put("/rejectUpgradeRequest/:userId", authentication.authenticateToken, authorization.checkRoleAdmin, managerUserController.rejectUpgradeRequest, managerUserController.sendMailRejectUpgradeRequest)
+
+
+// MANAGE CATEGORY
+// show all category
+router.get("/showAllCategory", authentication.authenticateToken, authorization.checkRoleAdmin, managerCategoryController.showAllCategory)
+// create category
+// check lại 
+router.post("/createCategory", authentication.authenticateToken, authorization.checkRoleAdmin, validateCategory.checkCategoryExits, managerCategoryController.createCategory)
+// update category by id
+router.put("/updateCategory/:categoryId", authentication.authenticateToken, authorization.checkRoleAdmin, validateCategory.checkCategoryExits, managerCategoryController.updateCategory)
+// delete category by id
+router.delete("/deleteCategory/:categoryId", authentication.authenticateToken, authorization.checkRoleAdmin, managerCategoryController.deleteCategory)
+
+
+// MANAGE POST
+// show all post in system
+router.get("/showAllPost", authentication.authenticateToken, authorization.checkRoleAdmin, managerPostController.showAllPost)
+// delete post by select list id ( sử dụng cho phần chọn nhiều id sau đó xóa)
+router.delete("/deletePosts", authentication.authenticateToken, authorization.checkRoleAdmin, managerPostController.deletePosts)
+// show detail post by id
+router.get("/showDetailPost/:postId", authentication.authenticateToken, authorization.checkRoleAdmin, managerPostController.showDetailPost)
+// delete post by id
+router.delete("/deletePost/:postId", authentication.authenticateToken, authorization.checkRoleAdmin, managerPostController.deletePost, managerPostController.sendMailReasonDeletePost)
+
+
+
+// MANAGE TRANSACTION
+router.get("/showAllDepositHistory", authentication.authenticateToken, authorization.checkRoleAdmin, transactionController.showAllDepositHistory);
+router.get("/showAllHistoryPayment", authentication.authenticateToken, authorization.checkRoleAdmin, transactionController.showAllHistoryPayment);
+
+// MANAGE TYPE POST
+// create type post
+router.post("/createTypePost", authentication.authenticateToken, authorization.checkRoleAdmin, managerPostController.createTypePost)
+// update type post by id
+router.put("/updateTypePost/:typePostId", authentication.authenticateToken, authorization.checkRoleAdmin, managerPostController.updateTypePost)
+// delete type post by id
+router.delete("/deleteTypePost/:typePostId", authentication.authenticateToken, authorization.checkRoleAdmin, managerPostController.deleteTypePost)
+// show all type post có pagination
+router.get("/showAllTypePost", managerPostController.showAllTypePost)
+
+
+// MANAGE REPORT
+// get total users
+router.get("/getTotalUsers", authentication.authenticateToken, authorization.checkRoleAdmin, managerReportController.getTotalUsers)
+// get new users today
+router.get("/getNewUsersToday", authentication.authenticateToken, authorization.checkRoleAdmin, managerReportController.getNewUsersToday)
+// get total posts
+router.get("/getTotalPosts", authentication.authenticateToken, authorization.checkRoleAdmin, managerReportController.getTotalPosts)
+// get total delete posts
+router.get("/getTotalDeletePosts", authentication.authenticateToken, authorization.checkRoleAdmin, managerReportController.getTotalDeletePosts);
+//get new posts today
+router.get("/getNewPostsToday", authentication.authenticateToken, authorization.checkRoleAdmin, managerReportController.getNewPostsToday);
+// get total category
+router.get("/getTotalCategory", authentication.authenticateToken, authorization.checkRoleAdmin, managerReportController.getTotalCategories);
+// get total post types
+router.get("/getTotalPostType", authentication.authenticateToken, authorization.checkRoleAdmin, managerReportController.getTotalPostType);
+// get total transactions
+router.get("/getTotalTransactions", authentication.authenticateToken, authorization.checkRoleAdmin, managerReportController.getTotalTransactions);
+// get total success transactions today
+router.get("/getTotalSuccessTransactionsToday", authentication.authenticateToken, authorization.checkRoleAdmin, managerReportController.getTotalSuccessTransactionsToday);
+//get total payment transactions
+router.get("/getTotalPaymentTransactions", authentication.authenticateToken, authorization.checkRoleAdmin, managerReportController.getTotalPaymentTransactions);
+//get total deposit transactions
+router.get("/getTotalDepositTransactions", authentication.authenticateToken, authorization.checkRoleAdmin, managerReportController.getTotalDepositTransactions);
+// get payment transactions today
+router.get("/getPaymentTransactionsToday", authentication.authenticateToken, authorization.checkRoleAdmin, managerReportController.getPaymentTransactionsToday);
+// get deposit revenue by time
+router.get("/getDepositRevenueByTime", authentication.authenticateToken, authorization.checkRoleAdmin, managerReportController.getDepositRevenueByTime);
+// get payment by time
+router.get("/getPaymentByTime", authentication.authenticateToken, authorization.checkRoleAdmin, managerReportController.getPaymentByTime);
+// get new users by month
+router.get("/newusers", authentication.authenticateToken, authorization.checkRoleAdmin, managerReportController.getNewUsersByMonth);
+// get new posts by month
+router.get("/newposts", authentication.authenticateToken, authorization.checkRoleAdmin, managerReportController.getNewPostsByMonth);
+// get total upgrade landlord
+router.get("/totalupgrade", authentication.authenticateToken, authorization.checkRoleAdmin, managerReportController.getTotalUpgradeLandlord);
+module.exports = router
